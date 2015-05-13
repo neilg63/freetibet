@@ -1,6 +1,0 @@
-name = Campaigner Reports
-description = Reports for online petition campaigns
-core = 7.x
-package = Campaigner
-
-dependencies[] = campaigner
