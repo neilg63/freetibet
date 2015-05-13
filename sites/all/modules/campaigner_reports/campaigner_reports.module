@@ -1,0 +1,218 @@
+<?php
+
+  /**
+   * Implements hook_menu to allow the reports page to be displayed and accessed.
+   *
+   * @return array
+   */
+function campaigner_reports_menu(){
+  $items = array();
+  $items['admin/reports/campaigner'] = array(
+    'title' => "Campaigner report",
+    'description' => "Reports concerning activity in the Campaigner module",
+    'type' => MENU_NORMAL_ITEM,
+    'access arguments' => array("view campaigner reports"),
+    'page callback' => "campaigner_reports_view_report",
+    "page arguments" => array("signatures")
+  );
+  $items['admin/reports/campaigner_spam'] = array(
+    'title' => "Campaigner spam report",
+    'type' => MENU_NORMAL_ITEM,
+    'access arguments' => array("view campaigner reports"),
+    'page callback' => "campaigner_reports_view_report",
+    'page arguments' => array("spam")
+  );
+  $items['admin/reports/campaigner_email_queue'] = array(
+    'title' => "Campaigner email queue",
+    "type" => MENU_NORMAL_ITEM,
+    'access arguments' => array("send queued campaigner email"),
+    'page callback' => "campaigner_reports_view_report",
+    'page arguments' => array("queue")
+  );
+  return $items;
+}
+
+  /**
+   * Implements hook_permission to allow a new permission to be added which regulates access to the reports page.
+   *
+   * @return array
+   *
+   */
+function campaigner_reports_permission(){
+  $items = array();
+  $items['view campaigner reports'] = array(
+    'title' => "View campaigner reports",
+    'description' => "Users with this permission are able to look at reports of activity from the Campaigner module",
+    'restrict access' => TRUE
+  );
+  return $items;
+}
+
+  function campaigner_reports_filters_signatures_submit($form, &$form_state){
+    $_SESSION['filters'] = array('action'=>$form_state['values']['action'], "type" => $form_state['values']['type'],
+                                 "hasComment" => $form_state['values']['hasComment'], "notSpam" => $form_state['values']['notSpam']);
+  }
+
+  function campaigner_reports_filters_signatures($form, &$form_state, $report){
+    $form = array();
+    $actionOptions = $report->getActionFilterOptions();
+    $form['filters'] = array(
+      '#type' => "fieldset",
+      '#collapsed' => TRUE,
+      '#title' => t("Filters"),
+      '#collapsible' => TRUE
+    );
+    $form['filters']['action'] = array(
+      '#type' => "select",
+      '#title' => t("Action"),
+      '#options' => $actionOptions,
+      '#default_value' => isset($_SESSION['filters']['action']) ? $_SESSION['filters']['action'] : 0
+    );
+    $form['filters']['type'] = array(
+      '#type' => "select",
+      "#title" => t("Type"),
+      '#options' => array(
+        '' => t("All types"),
+        'campaigner_email_target' => t("Email"),
+        "campaigner_petition" => t("Petition")
+      ),
+      '#default_value' => isset($_SESSION['filters']['type']) ? $_SESSION['filters']['type'] : ''
+    );
+    $form['filters']['hasComment'] = array(
+      '#type' => "checkbox",
+      '#title' => t("Has comment"),
+      '#description' => t("Shows only those signatures which have an attendant comment"),
+      '#default_value' => isset($_SESSION['filters']['hasComment']) ? $_SESSION['filters']['hasComment'] : 0
+    );
+    $form['filters']['notSpam'] = array(
+      '#type' => "checkbox",
+      "#title" => "Not spam",
+      '#description' => t("If checked only signatures not marked as spam will be shown, unchecked, everything is shown."),
+      '#default_value' => isset($_SESSION['filters']['notSpam']) ? $_SESSION['filters']['notSpam'] : 0
+    );
+    $form['submit'] = array(
+      '#type' => "submit",
+      '#value' => t("Filter")
+      );
+    $form['csv'] = array(
+      '#type' => "submit",
+      '#value' => t("Export CSV")
+    );
+    return $form;
+  }
+
+  /**
+   * This function handles the main work of displaying the reports.
+   */
+function campaigner_reports_view_report($chosenReport = "signatures"){
+  require drupal_get_path("module", "campaigner_reports") . "/includes/CampaignerReport.php";
+
+  $report = new CampaignerReport();
+  $report->chooseReport($chosenReport);
+  $csv = isset($_POST['op']) && $_POST['op'] === t("Export CSV") ? 1 : 0;
+  if (!$csv) {
+    $requestPage = isset($_GET['page']) ? $_GET['page'] : 0;
+    $report->setPage($requestPage);
+    $sort = isset($_GET['sort']) ? $_GET['sort'] : FALSE;
+
+    if ($sort) {
+      $direction = isset($_GET['direction']) && $_GET['direction'] == 1 ? "DESC" : "ASC";
+      $report->setSortColumn($sort, $direction);
+    }
+    $page            = array(
+      '#show_messages' => TRUE,
+      '#theme'         => "page",
+      '#type'          => "page"
+    );
+    $page['content'] = array();
+    if ($chosenReport === "signatures") {
+      $preambleMarkup = '<h2>Campaigner Reports</h2><div class="introduction">Campaigner Reports enable you to get access to details
+      of the usage of your campaigns.</div>';
+    }
+    else if ($chosenReport === "spam") {
+      $preambleMarkup = "<h2>Campaigner spam report</h2><div class='introduction'>The spam report lists all the comments in the system
+    that score over 0 on the spam rating ranked by spam rating.</div>";
+    }
+    else if ($chosenReport === "queue") {
+      $preambleMarkup = "";
+    }
+    $page["content"]['preamble'] = array(
+      '#type'   => 'markup',
+      '#markup' => $preambleMarkup
+    );
+
+    $page['content']['errors'] = array(
+      "#type"   => "markup",
+      "#markup" => "<div class='ajax-errors'></div>"
+    );
+
+    if (function_exists("campaigner_reports_filters_" . $chosenReport)) {
+      $form                        = drupal_get_form("campaigner_reports_filters_" . $chosenReport, $report);
+      $page['content']['controls'] = array(
+        '#type'   => "markup",
+        '#markup' => drupal_render($form)
+      );
+    }
+
+    $run = TRUE;
+    if ($run) {
+      if (!empty($_SESSION['filters'])) {
+        $report->filter($_SESSION['filters']);
+      }
+      $report->run();
+      $count                                      = $report->getCount();
+      $page['content']['report']                  = array(
+        'report_preamble' => array(
+          '#type'   => "markup",
+          '#markup' => "<p><strong>" . $count . "</strong> records loaded</p><table class='report-table'>"
+        )
+      );
+      $page['content']['report']['report_head']   = array(
+        '#type'   => "markup",
+        '#markup' => $report->renderHeader()
+      );
+      $page['content']['report']['report_body']   = array(
+        '#type'   => "markup",
+        '#markup' => $report->renderBody()
+      );
+      $page['content']['report']['report_footer'] = array(
+        '#type'   => "markup",
+        '#markup' => "</table>"
+      );
+
+      $parameters = array();
+      if ($sort) {
+        $parameters['sort']      = $sort;
+        $parameters['direction'] = $direction === "ASC" ? 0 : 1;
+      }
+      pager_default_initialize($count, 100);
+      $pagerMarkup = theme("pager");
+
+      $page['content']['report']['pager'] = array(
+        '#type'   => "markup",
+        "#markup" => $pagerMarkup
+      );
+      if ($chosenReport === "spam") {
+        drupal_add_js(drupal_get_path("module", "campaigner_reports") . "/js/spamLink.js", array("type"   => "file",
+                                                                                                 "scope"  => "footer",
+                                                                                                 "weight" => 10
+          ));
+      }
+      else if ($chosenReport === "queue") {
+        drupal_add_js(drupal_get_path("module", "campaigner_reports") . "/js/sendMail.js", array("type"   => "file",
+                                                                                                 "scope"  => "footer",
+                                                                                                 "weight" => 10
+          ));
+      }
+    }
+    return $page;
+  }
+  else {
+    if (!empty($_SESSION['filters'])) {
+      $report->filter($_SESSION['filters']);
+    }
+    $report->run();
+    $report->outputCSV();
+    drupal_exit();
+  }
+}

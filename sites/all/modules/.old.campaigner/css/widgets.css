@@ -1,0 +1,45 @@
+.socialproof #signature_block {
+    width: 300px;
+}
+
+.socialproof #signature_block .individual_signature {
+    width: 299px;
+    padding: 8px;
+    background-color: #eee;
+    margin: 5px;
+    font-size: 14px;
+}
+
+#thermometer_social {
+    float:right;
+    margin-left:15px;
+}
+
+.thermometer-holder {
+    width: 331px;
+    background-color: #EEEEEE;
+    height: 34px;
+    font-size: 1px;
+    margin-bottom: 32px;
+    padding: 0;
+    border-radius: 13px;
+    border: 2px solid #666;
+    margin-top: 15px;
+}
+
+
+.thermometer .thermometer-holder .counter {
+    background-color: #23BCB9;
+    height: 34px;
+    font-size: 1px;
+    margin: 0;
+    padding: 0;
+    border-radius: 11px;
+}
+
+.thermometer .thermometer-holder p {
+    font-size: 16px;
+    line-height: 1;
+    margin-top: 2px;
+    color: #5E5F66;
+}

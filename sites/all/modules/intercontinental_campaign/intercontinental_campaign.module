@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Intercontinental Campaign feature.
+ */
+
+include_once 'intercontinental_campaign.features.inc';

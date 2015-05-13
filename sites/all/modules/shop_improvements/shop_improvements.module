@@ -1,0 +1,19 @@
+<?php
+/**
+ * @file
+ * Code for the Shop improvements feature.
+ */
+
+include_once 'shop_improvements.features.inc';
+
+/*
+ * Cart string overrides
+ */
+ 
+$custom_strings = variable_get('locale_custom_strings_en', array());
+$custom_strings['']['@count pieces in stock'] = '@count available';
+$custom_strings['']['1 piece in stock'] = '1 available';
+variable_set('locale_custom_strings_en', $custom_strings);
+
+
+ 

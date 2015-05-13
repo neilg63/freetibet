@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Campaigner features feature.
+ */
+
+include_once 'campaigner_features.features.inc';

@@ -1,0 +1,8 @@
+name = Free Tibet Ubercart Reports
+description = Reports that provide additional detail in breakdowns of UberCart activity.
+dependencies[] = uc_cart
+dependencies[] = uc_order
+dependencies[] = uc_product
+dependencies[] = uc_shipping
+package = Ubercart - extra
+core = 7.x

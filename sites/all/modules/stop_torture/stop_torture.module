@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Stop torture feature.
+ */
+
+include_once 'stop_torture.features.inc';

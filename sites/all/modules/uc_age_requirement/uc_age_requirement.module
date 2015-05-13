@@ -1,0 +1,389 @@
+<?php
+  /**
+   * Implements hook_menu.
+   *
+   * @return array
+   */
+  function uc_age_requirement_menu() {
+    $menuItems = array();
+    // Set up the settings page for the module
+    $menuItems['admin/store/settings/uc_age_requirement'] = array(
+      'title'            => t("Age Requirement Feature"),
+      'description'      => "Allows configuration of the age requirement product feature",
+      'page callback'    => "drupal_get_form",
+      'page arguments'   => array("uc_age_requirement_admin"),
+      "access arguments" => array("administer store"),
+      'type'             => MENU_NORMAL_ITEM
+    );
+    return $menuItems;
+  }
+
+  /**
+   * Settings page callback for the module.
+   *
+   * @return mixed
+   */
+  function uc_age_requirement_admin() {
+    $form                              = array();
+    $form['uc_age_requirement_remove'] = array(
+      "#type"          => "checkbox",
+      '#title'         => t("Remove inappropriate products"),
+      '#description'   => t("When a user is found to be either too old or young for a product, checking this ensures it is removed from their cart"),
+      '#default_value' => variable_get("uc_age_requirement_remove", 0)
+    );
+    $form['uc_age_requirement_prevent'] = array(
+      "#type"          => "checkbox",
+      '#title'         => t("Prevent adding of inappropriate products"),
+      '#description'   => t("When a user is found to be either too old or young for a product, checking this ensures they can't add inappropriate items"),
+      '#default_value' => variable_get("uc_age_requirement_prevent", 0)
+    );
+    $form['uc_age_requirement_allow_change'] = array(
+      '#type' => "checkbox",
+      '#title' => t("Allow DOB change"),
+      '#description' => t("Checking this box allows a user to alter their date of birth entry once it has been submitted once"),
+      '#default_value' => variable_get("uc_age_requirement_allow_change", 1)
+    );
+    return system_settings_form($form);
+  }
+
+
+  // Product feature functionality
+
+  /**
+   * Implementation of hook_uc_product_feature().
+   */
+  function uc_age_requirement_uc_product_feature() {
+    $features[] = array(
+      'id'       => 'agerequirement',
+      'title'    => t('Age Requirement'),
+      'callback' => 'uc_age_requirement_feature_form',
+      'delete'   => 'uc_age_requirement_feature_delete',
+    );
+    return $features;
+  }
+
+  /**
+   * Callback for the feature form.
+   *
+   * @param $form
+   * @param $form_state
+   * @param $node
+   * @param $feature
+   *
+   * @return mixed
+   */
+  function uc_age_requirement_feature_form($form, &$form_state, $node, $feature) {
+    $pfid     = (!empty($feature) && !empty($feature['pfid'])) ? $feature['pfid'] : NULL;
+    $defaults = (!empty($feature)) ? uc_age_requirement_find_requirement($feature['nid']) : new stdClass;
+
+    $form['nid']                                = array(
+      '#type'  => 'hidden',
+      '#value' => $node->nid,
+    );
+    $form['pfid']                               = array(
+      '#type'  => 'hidden',
+      '#value' => $pfid,
+    );
+    $form['minimum_age']                        = array(
+      '#type'  => "fieldset",
+      '#title' => t("Minimum age")
+    );
+    $form['minimum_age']['product_age_minimum'] = array(
+      '#type'          => "textfield",
+      '#title'         => t("Minimum age"),
+      '#description'   => t("Enter a number of years (as digits e.g. 16) to use as the minimum age for a person purchasing this product (0 leaves no control)."),
+      '#default_value' => !empty($defaults->age_min) ? $defaults->age_min : 0
+    );
+    $form['maximum_age']                        = array(
+      '#type'  => "fieldset",
+      '#title' => t("Maximum age"),
+    );
+    $form['maximum_age']['product_age_maximum'] = array(
+      '#type'          => "textfield",
+      '#title'         => t("Maximum age"),
+      '#description'   => t("Enter a number of years (as digits e.g. 80) to use as the maximum age for a person purchasing this product (0 leaves no control)."),
+      '#default_value' => !empty($defaults->age_max) ? $defaults->age_max : 0
+    );
+    return $form;
+  }
+
+  /**
+   * Validation function for the feature form.
+   *
+   * @param $form
+   * @param $form_state
+   */
+  function uc_age_requirement_feature_form_validate($form, &$form_state) {
+    if (!empty($form_state['values']["product_age_maximum"])) {
+      if (!is_numeric($form_state['values']['product_age_maximum'])) {
+        form_set_error("product_age_maximum", t("Maximum age must be either blank, 0 or a whole number (e.g. 16)"));
+      }
+    }
+    if (!empty($form_state['values']["product_age_minimum"])) {
+      if (!is_numeric($form_state['values']['product_age_minimum'])) {
+        form_set_error("product_age_minimum", t("Minimum age must be either blank, 0 or a whole number (e.g. 16)"));
+      }
+    }
+  }
+
+  /**
+   * Submit function for the feature form.
+   *
+   * @param $form
+   * @param $form_state
+   */
+  function uc_age_requirement_feature_form_submit($form, &$form_state) {
+    if (!empty($form_state['values'])) {
+      $input            = array();
+      $input['pfid']    = $form_state['values']['pfid'];
+      $input['nid']     = $form_state['values']['nid'];
+      $input['age_min'] = $form_state['values']['product_age_minimum'];
+      $input['age_max'] = $form_state['values']['product_age_maximum'];
+
+      $feature                = array(
+        'pfid'        => $input['pfid'],
+        'nid'         => $form_state['values']['nid'],
+        'fid'         => 'agerequirement',
+        'description' => t("Sets maximum age to @max and minimum age to @min", array("@max" => $input['age_max'], "@min" => $input['age_min']))
+      );
+      $form_state['redirect'] = uc_product_feature_save($feature);
+      // Check whether we have this product already
+      $product = uc_age_requirement_find_requirement($input['nid']);
+      $key     = array();
+      if ($product) {
+        $key[] = "nid";
+      }
+      drupal_write_record("uc_age_requirements", $input, $key);
+    }
+  }
+
+  /**
+   * Helper function that loads the age requirement information for a given nid.
+   *
+   * @param $nid
+   *
+   * @return mixed
+   */
+  function uc_age_requirement_find_requirement($nid) {
+    return db_query("SELECT * FROM {uc_age_requirements} WHERE nid = :id", array(':id' => $nid))->fetchObject();
+  }
+
+  /**
+   * Delete a feature from a product.
+   *
+   * @param $node
+   */
+  function uc_age_requirement_feature_delete(&$node) {
+    db_query("DELETE FROM {uc_product_features} WHERE nid = :nid AND fid='agerequirement'", array(':nid' => $node->nid));
+    db_query("DELETE FROM {uc_age_requirements} WHERE nid = :nid", array(':nid' => $node->nid));
+  }
+
+// Provide functionality such as preventing orders from underage people
+
+  /**
+   * Implementation of hook_uc_checkout_pane
+   *
+   * @return array
+   */
+  function uc_age_requirement_uc_checkout_pane() {
+    return array("age-requirement" => array(
+      "title"    => t("Age verification"),
+      "desc"     => t("This panel checks for products requiring users to qualify by age and provides a Date of Birth form section to test age."),
+      "callback" => "uc_age_requirement_checkout_pane",
+      "weight"   => 4,
+      "enabled"  => TRUE
+    ));
+  }
+
+  /**
+   * Given an array of products, this function determines if any of the products are age restricted.
+   *
+   * @param $array
+   *
+   * @return bool TRUE if an age restricted product found, false otherwise
+   */
+  function uc_age_requirement_array_contains_an_age_restricted_product($array) {
+    if (!empty($array)) {
+      foreach ($array as $product) {
+        $isRestricted = uc_age_requirement_find_requirement($product->nid);
+        if (!empty($isRestricted)) {
+          return TRUE;
+        }
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * Callback for uc_checkout_pane for the age-requirement pane.
+   *
+   * @param $op
+   * @param $order
+   * @param $form
+   *
+   * @return null|array
+   */
+  function uc_age_requirement_checkout_pane($op, &$order, $form) {
+    switch ($op) {
+      // Add a date of birth form item if needed (i.e. if we have an age restricted product in the cart)
+      case "view":
+        // check if we have a restricted item
+        if (uc_age_requirement_array_contains_an_age_restricted_product(uc_cart_get_contents())) {
+          $response                    = array("description" => t("You are buying an age restricted item, so we need to check your age before proceeding"),
+                                               "contents"    => array());
+          $response['contents']['dob'] = array(
+            '#type'          => "date",
+            '#title'         => t("Your date of birth"),
+            '#description'   => t("Enter your date of birth above to confirm your age"),
+            '#required'      => TRUE,
+            '#default_value' => isset($_SESSION["date-of-birth"]) ? $_SESSION["date-of-birth"] : 0,
+            '#element_validate' => array("uc_age_requirement_uc_cart_checkout_form_validate")
+          );
+          $allowChange = variable_get("uc_age_requirement_allow_change", 1);
+          if (!$allowChange && isset($_SESSION['date-of-birth'])){
+            $response["contents"]['dob']['#disabled'] = TRUE;
+            $response['contents']['dob']['#description'] = t("Thanks! This has already been filled out.");
+          }
+          return $response;
+        }
+        break;
+
+
+    }
+    return NULL;
+  }
+
+  function uc_age_requirement_uc_cart_checkout_form_validate($element, &$form_state) {
+    if ($form_state['submitted'] !== TRUE){
+      return TRUE;
+    }
+    // Store the date of birth provided by the user and check that they exceed the minimum and are under the maximum age
+    // required based on the products in the cart
+    if (!empty($form_state['values']['panes']['age-requirement']) && !empty($form_state['values']['panes']['age-requirement']['dob'])) {
+      $dateOfBirth = $form_state['values']['panes']['age-requirement']['dob'];
+      $_SESSION["date-of-birth"] = $dateOfBirth;
+      $age                          = floor((time() - strtotime($dateOfBirth['day'] . "-" . $dateOfBirth['month'] . "-" . $dateOfBirth['year'])) / 31556926);
+      $_SESSION["uc-age-requirement-age"] = $age;
+      $cartContents                 = uc_cart_get_contents();
+      $minAge                       = uc_age_requirement_find_min_age($cartContents);
+      $maxAge                       = uc_age_requirement_find_max_age($cartContents);
+      if ($maxAge === 0) {
+        // this is a crazy old age, anyone exceeding this is lying
+        $maxAge = 200;
+      }
+      $status = $age >= $minAge && $age <= $maxAge;
+      if (!$status) {
+        $forceRemove = variable_get("uc_age_requirement_remove", 0);
+        $removed     = '';
+        if ($forceRemove) {
+          $badProducts = uc_age_requirement_find_unauthorised_products($cartContents, $age);
+          if (!empty($badProducts)) {
+            foreach ($badProducts as $product) {
+              uc_cart_remove_item($product->nid, $product->cart_id, $product->data);;
+            }
+            $removed = t(", @count product(s) have been removed from your order", array("@count" => count($badProducts)));
+          }
+        }
+        $reasonMinimum = ($minAge != 0 && $age < $minAge) ? t("Minimum age is @age years old.", array("@age" => $minAge)) : "";
+        $reasonMaximum = ($maxAge != 0 && $age > $maxAge) ? t("Maximum age is @age years old.", array("@age" => $maxAge)) : "";
+        drupal_set_message(t("You do not meet the age requirements for some of the products in this order@removed. @minReason @maxReason",
+          array("@minReason" => $reasonMinimum, "@maxReason" => $reasonMaximum, "@removed" => $removed)), "error");
+        drupal_goto("cart");
+      }
+    }
+    return $status;
+  }
+
+  /**
+   * Implements hook_uc_add_to_cart.
+   *
+   * Prevents the user from adding an item to the cart if they are not qualified to do so by age.
+   *
+   * @param $nid
+   * @param $qty
+   * @param $data
+   *
+   * @return array
+   */
+  function uc_age_requirement_uc_add_to_cart($nid, $qty, $data){
+    $result = array(
+      "success" => TRUE,
+    );
+    $prevent = variable_get("uc_age_requirement_prevent", 0);
+    if (isset($_SESSION["uc-age-requirement-age"]) && $prevent){
+      $requirement = uc_age_requirement_find_requirement($nid);
+      if (!empty($requirement)){
+        if (($requirement->age_min > 0 && $_SESSION["uc-age-requirement-age"] < $requirement->age_min) ||
+          ($requirement->age_max > 0 && $_SESSION["uc-age-requirement-age"] > $requirement->age_max)){
+          $result['success'] = FALSE;
+          $result['message'] = t("You are not permitted to buy this item due to age restrictions");
+        }
+      }
+    }
+    return array($result);
+  }
+
+  /**
+   * @param $products
+   * @param $age
+   *
+   * @return array
+   */
+  function uc_age_requirement_find_unauthorised_products($products, $age) {
+    $filtered = array();
+    if (!empty($products)) {
+      foreach ($products as $product) {
+        $productRestrictions = uc_age_requirement_find_requirement($product->nid);
+        if ($productRestrictions) {
+          if (($productRestrictions->age_max > 0 && $productRestrictions->age_max < $age) ||
+            ($productRestrictions->age_min > 0 && $productRestrictions->age_min > $age)
+          ) {
+            $filtered[] = $product;
+          }
+        }
+      }
+    }
+    return $filtered;
+  }
+
+  /**
+   * Find the maximum age allowed from an array of products.
+   *
+   * Example: if there are two products one for people less than 21 and one for people less than 25 then the maximum age will be 21.
+   *
+   * @param $products
+   *
+   * @return int
+   */
+  function uc_age_requirement_find_max_age($products) {
+    $max = 0;
+    if (!empty($products)) {
+      foreach ($products as $product) {
+        $productRestrictions = uc_age_requirement_find_requirement($product->nid);
+        if ($productRestrictions && $productRestrictions->age_max > 0) {
+          $max = $productRestrictions->age_max < $max ? $productRestrictions->age_max : $max;
+        }
+      }
+    }
+    return $max;
+  }
+
+  /**
+   * Find the minimum age allowed to buy all the items in the cart.
+   *
+   * @param $products
+   *
+   * @return int
+   */
+  function uc_age_requirement_find_min_age($products) {
+    $min = 0;
+    if (!empty($products)) {
+      foreach ($products as $product) {
+        $productRestrictions = uc_age_requirement_find_requirement($product->nid);
+        if ($productRestrictions && $productRestrictions->age_min > 0) {
+          $min = $productRestrictions->age_min > $min ? $productRestrictions->age_min : $min;
+        }
+      }
+    }
+    return $min;
+  }

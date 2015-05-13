@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Campaigner country regions feature.
+ */
+
+include_once 'campaigner_country_regions.features.inc';

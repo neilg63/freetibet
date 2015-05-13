@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Campaigner Upgrade feature.
+ */
+
+include_once 'campaigner_upgrade.features.inc';

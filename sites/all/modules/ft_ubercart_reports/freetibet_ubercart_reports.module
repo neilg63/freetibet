@@ -1,0 +1,283 @@
+<?php
+/**
+ * Implementation of hook_permission.
+ * @return array The permissions implemented for this module.
+ */
+function freetibet_ubercart_reports_permission(){
+  $permissions = array();
+  $permissions["view freetibet custom reports"] = array(
+    "title" => t("View the Free Tibet custom reports"),
+  );
+  return $permissions;
+}
+
+/**
+ * Implementation of hook_menu.
+ * @return array
+ */
+function freetibet_ubercart_reports_menu(){
+  $menuItems = array();
+  $menuItems["admin/store/reports/freetibet"] = array(
+    'page callback' => 'drupal_get_form',
+    'access arguments' => array('view freetibet custom reports'),
+    'page arguments' => array("freetibet_ubercart_reports_filter",4),
+    'title' => 'Free Tibet custom reports',
+    'type' => MENU_NORMAL_ITEM
+  );
+  return $menuItems;
+}
+
+/**
+ * Handles a request from drupal_get_form.
+ *
+ * @param $form
+ * @param $form_state
+ * @param $report
+ *
+ * @return mixed
+ */
+function freetibet_ubercart_reports_filter($form, $form_state, $report){
+  if (!class_exists("FreeTibetReportController")){
+    require dirname(__FILE__) . '/includes/FreeTibetReportController.php';
+  }
+  $reportController = new FreeTibetReportController();
+  $reports = $reportController->getReportList();
+
+  $form["report"] = array(
+    '#type' => "select",
+    '#options' => $reports,
+    '#title' => t("Select report")
+  );
+
+  $form['startdate'] = array(
+    '#type' => "select",
+    '#options' => freetibet_ubercart_reports_get_date_options_array(),
+    '#title' => t("Select start date"),
+    '#description' => t("Report outputs data recorded from the first to last day of the selected month")
+  );
+
+  $form['submit'] = array(
+    '#type' => "submit",
+    '#value' => t("Export CSV")
+  );
+  return $form;
+}
+
+/**
+ * Ensure that the filter form has been filled in acceptably.
+ * @param $form
+ * @param $form_state
+ *
+ * @return bool
+ */
+function freetibet_ubercart_reports_filter_validate($form, $form_state){
+  if (isset($form_state['values']) && isset($form_state["values"]['startdate'])){
+    // check that the startdate has a valid format (that we haven't been given bad data).
+    if (strpos($form_state['values']['startdate'], "_") === FALSE){
+      return FALSE;
+    }
+    $dates = explode("_", $form_state['values']['startdate']);
+    // Check that the values are numeric (to stop us getting bad input).
+    if (!is_numeric($dates[0]) || !is_numeric($dates[1])){
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
+/**
+ * Handle generating the CSV file and then include a link to it at the top of the form.
+ *
+ * @param $form
+ * @param $form_state
+ * @return bool
+ */
+function freetibet_ubercart_reports_filter_submit($form, $form_state){
+  if (!class_exists("FreeTibetReportController")){
+    require dirname(__FILE__) . '/includes/FreeTibetReportController.php';
+  }
+  $report = $form_state['values']['report'];
+  $reportController = new FreeTibetReportController();
+  /** @var FreeTibetReport $report  */
+  $report = $reportController->getReport($report);
+  if ($report !== FALSE){
+    $startDate = $form_state["values"]["startdate"];
+    $startDateArray = explode("_", $startDate);
+    // we need to add one to the month as it is counting based on array rather than from 1
+    $month = $startDateArray[1] + 1;
+    $year = $startDateArray[0];
+    $filename = $report->getFilename($month, $year);
+    $report->setDates($month, $year);
+    ini_set("max_execution_time",300);
+    $output = $report->outputCSV();
+    return TRUE;
+  }
+  drupal_set_message(t("Something was wrong with the data you provided"), "error");
+  return FALSE;
+}
+
+/**
+ * Gets an array of dates (month year) from a start date to the current date ready to be the options in a select element.
+ *
+ * @return array
+ */
+function freetibet_ubercart_reports_get_date_options_array(){
+  $firstYear = 2010;
+  $firstMonth = 0;
+  $firstDateQuery = db_query("SELECT created FROM {uc_orders} WHERE order_status NOT IN ('abandoned') ORDER BY created LIMIT 1")->fetchAll();
+  if ($firstDateQuery){
+    $firstRow = array_shift($firstDateQuery);
+    if (!empty($firstRow)){
+      $firstYear = date("Y", $firstRow->created);
+      $firstMonth = date("n", $firstRow->created) - 1;
+    }
+  }
+  $endYear = (int) date("Y");
+  $endMonth = (int) date("n");
+  $months = array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+  $options = array();
+  $currentYear = $firstYear;
+  // Loop until we get to the end of the years (first year calculated from DB, last year taken from system time)
+  while ($currentYear <= $endYear){
+    foreach ($months as $key => $name){
+      // If the current month's index is greater than the end month and we're in the final year then skip over (just in case
+      // the elements are out of order some how we don't break out.
+      // Or if we're on the first year and we've not hit the first month we act the same.
+      if (($currentYear == $endYear && $key >= $endMonth) || ($currentYear == $firstYear && $key < $firstMonth)){
+        continue;
+      }
+      $options[$currentYear . "_" . $key] = $name . " " . $currentYear;
+    }
+    $currentYear++;
+  }
+  return $options;
+}
+
+/**
+ * Format a date in a human readable format
+ * @param int $date A UNIX timestamp
+ * @return string The formatted date
+ */
+function freetibet_ubercart_reports_format_date($date){
+  return date("H:i d F Y", $date);
+}
+
+/**
+ * Takes a zone (UberCart method of representing e.g. County/State/&c.) and returns a string representation of that.
+ * @param int $zone The id of the Zone to be queries
+ *
+ * @return NULL|string Either a null value if something went wrong or a string representation of the zone (e.g. the name).
+ */
+function freetibet_ubercart_reports_format_zone($zone){
+  $query = db_query("SELECT zone_name FROM {uc_zones} WHERE zone_id = :zone", array(":zone"=>$zone));
+  $objects = $query->fetchAll();
+  if ($objects === FALSE)
+    return NULL;
+  $object = array_shift($objects);
+  if (!isset($object->zone_name))
+    return NULL;
+  return $object->zone_name;
+}
+
+/**
+ * Converts a ubercart country code into a string representation of the country (i.e. the country name).
+ * @param int $zone
+ *
+ * @return null|string
+ */
+function freetibet_ubercart_reports_format_country($zone){
+  $query = db_query("SELECT country_name FROM {uc_countries} WHERE country_id = :country", array(":country"=>$zone));
+  $objects = $query->fetchAll();
+  if ($objects === FALSE)
+    return NULL;
+  $object = array_shift($objects);
+  if (!isset($object->country_name))
+    return NULL;
+  return $object->country_name;
+}
+
+/**
+ * Tests whether an order contains a donation.
+ *
+ * This is designed to be used when filtering the OrderCollection but obviously can be used in other circumstances.
+ *
+ * @param OrderModel $order The order to test.
+ * @return bool
+ */
+function freetibet_ubercart_reports_order_contains_donation(OrderModel $order){
+    return $order->includesDonation();
+}
+
+/**
+ * Tests whether an order contains merchandise.
+ *
+ * @param OrderModel $order The order to test
+ *
+ * @return bool
+ */
+function freetibet_ubercart_reports_order_contains_merchandise(OrderModel $order){
+  return $order->includesMerchandise();
+}
+/**
+ * Tests whether an order doesn't contain merchandise.
+ *
+ * @param OrderModel $order The order to test
+ *
+ * @return bool
+ */
+function freetibet_ubercart_reports_order_contains_no_merchandise(OrderModel $order){
+  return !$order->includesMerchandise();
+}
+
+/**
+ * Extracts the estimated shipping costs charged to the user for a given order.
+ * @param array $lineItems An array of line items, one of which should be the shipping cost.
+ * @return string The formatted shipping costs value
+ */
+function freetibet_ubercart_reports_get_shipping_costs($lineItems){
+  if (!empty($lineItems)){
+    foreach ($lineItems as $lineItem){
+      if ($lineItem['type'] === "shipping"){
+        return freetibet_ubercart_reports_format_currency($lineItem["amount"]);
+      }
+    }
+  }
+  return freetibet_ubercart_reports_format_currency(0);
+}
+
+/**
+ * @param $lineItems
+ *
+ * @return string
+ */
+function freetibet_ubercart_reports_get_subtotal($lineItems){
+  if (!empty($lineItems)){
+    foreach ($lineItems as $lineItem){
+      if ($lineItem['type'] === "subtotal"){
+        return freetibet_ubercart_reports_format_currency($lineItem["amount"]);
+      }
+    }
+  }
+  return freetibet_ubercart_reports_format_currency(0);
+}
+
+/**
+ * For a provided order look up the shipment information.
+ *
+ * Designed to be called by array_walk.
+ *
+ * @param OrderModel $order
+ */
+function freetibet_ubercart_reports_get_order_shipment_information(OrderModel $order){
+  $order->fetchShipmentInformation();
+}
+
+/**
+ * Format a supplied value in the format £n.dd where n is any natural number and d is any value from 0 to 9.
+ * @param float|int $value The value to be formatted
+ *
+ * @return string A string in the desired format.
+ */
+function freetibet_ubercart_reports_format_currency($value){
+  return sprintf("£%01.2f", $value);
+}

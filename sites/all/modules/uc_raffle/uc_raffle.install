@@ -1,0 +1,71 @@
+<?php
+  /**
+   * Define the raffle entry table.
+   */
+  function uc_raffle_schema() {
+    $tables                     = array();
+    $tables['uc_raffle_ticket'] = array(
+      'description' => "Stores tickets generated for a raffle",
+      'fields'      => array(
+        'rtid'             => array(
+          "description" => "Primary key for table",
+          'type'        => "serial",
+          'not null'    => TRUE,
+        ),
+        'code'             => array(
+          'description' => "Unique code for the ticket",
+          'type'        => "varchar",
+          'length'      => 64
+        ),
+        'order_id'         => array(
+          'description' => "Foreign key for order that caused the generation of this raffle ticket",
+          'type'        => "int",
+          'unsigned'    => TRUE
+        ),
+        'order_product_id' => array(
+          'description' => "Foreign key for the order product table for the particular raffle product",
+          'type'        => "int",
+          'unsigned'    => TRUE
+        ),
+        'email'            => array(
+          'description' => "Email address of the user that ordered this raffle ticket",
+          'type'        => "varchar",
+          'length'      => 255
+        )
+      ),
+      'primary key' => array(
+        'rtid'
+      ),
+      "unique keys" => array(
+        'code' => array("code")
+      )
+    );
+    return $tables;
+  }
+
+  /**
+   * Adds a custom mailer.
+   */
+  function uc_raffle_install() {
+    $mailSystem              = variable_get("mail_system");
+    $mailSystem["uc_raffle"] = "RaffleMailSystem";
+    variable_set("mail_system", $mailSystem);
+  }
+
+  /**
+   * Remove our custom mailer.
+   */
+  function uc_raffle_uninstall() {
+    $mailSystem = variable_get("mail_system");
+    unset($mailSystem['uc_raffle']);
+    variable_set("mail_system", $mailSystem);
+  }
+
+  /**
+   * Set up mail system to use our custom HTML compatible emailer.
+   */
+  function uc_raffle_update_7001() {
+    $mailSystem              = variable_get("mail_system");
+    $mailSystem["uc_raffle"] = "RaffleMailSystem";
+    variable_set("mail_system", $mailSystem);
+  }
