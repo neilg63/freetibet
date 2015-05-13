@@ -19,6 +19,10 @@ sites/all/README.txt
 sites/all/modules/README.txt
 sites/all/themes/README.txt
 
+#iOS-generated files
+._*
+.DS_Store?
+
 # Ignore everything but the "sites" folder ( for non core developer )
 .htaccess
 web.config
