@@ -32,11 +32,13 @@ body {
   margin-left: auto;
   margin-right: auto;
   width: 100%;
-	max-width: 1360px;
+	max-width: 1424px;
 }
 
 #page-wrapper > div, #page-wrapper > header, #page-wrapper > footer {
-	padding: 0 1em;
+	width: 96%;
+	padding: 0 2%;
+	overflow: hidden;
 }
 
 #page {
@@ -68,18 +70,8 @@ body {
  * Content
  */
 
-.sidebar-first #content {
-}
-
-.sidebar-second #content {
-
-}
-
-.two-sidebars #content {
-
-}
-
-#content .section {
+#content {
+	width: 100%;
   margin: 0;
   padding: 0;
 }
