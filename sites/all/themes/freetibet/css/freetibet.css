@@ -28,7 +28,7 @@
 body {
     background:white;
     font-family: Helvetica, Arial, sans-serif;
-	color:#333333;
+	color: #666666;
 }
 
 h1,h2,h3,h4,h5,h6, #header ul.menu li a {
@@ -51,33 +51,27 @@ margin:15px;
 }
 
 #header {
-	background: white url(/sites/all/themes/freetibet/images/freeTIBET_logo.png) no-repeat top right;
+	background: white url(/sites/all/themes/freetibet/images/freeTIBET_logo.png) no-repeat bottom right;
 	height: 188px;
 	background-size: contain;
 }
 
 @media (max-width:319px) {
 	#header {
-		height: 89px;
+		min-height: 89px;
 	}
 }
 
 @media (max-width:419px) {
 	#header {
-		height: 120px;
-	}
-}
-
-@media (max-width:719px) {
-	#header {
-		height: 150px;
+		min-height: 120px;
 	}
 }
 
 #header .region-header {
 	position: absolute;
 	top: 0;
-	left: 0;
+	left: 2%;
 	width: 100%;
 	height: 100%;
 }
@@ -99,7 +93,7 @@ background: #F8FFF0 url("../images/status24.png") no-repeat 8px 8px;
 margin-left: 15px;
 }
 a:link, a:hover, a:visited, a:active {
-color: #2faeb9;
+	color: #2faeb9;
 }
 a:link, a:visited {
 text-decoration: none;
@@ -177,21 +171,98 @@ input.form-submit {
 	font-size: 1.5em;
 }
 
-@media screen and (max-width: 719px) {
+/* Search */
+#block-search-form {
+    position: absolute;
+    z-index: 99;
+    bottom: 0;
+		left: 0;
+}
+
+#block-search-form input.form-submit {
+    background:url('../images/search-button.png') no-repeat;
+    width:30px;
+    height:30px;
+    font-size:0;
+    margin:0;
+    padding:0;
+    position:relative;
+    top:-4px;
+}
+
+@media screen and (max-width: 799px) {
+	
+	#header {
+		min-height: 150px;
+		height: auto;
+	}
+	
+	#block-search-form,
+	#header .region-header {
+		position: relative;
+	}
+	
+	#header .block-menu-block,
 	#header .block-menu-block ul {
-		width: 0;
-		overflow:hidden;
+		-webit-transition: all 1s ease;
+		transition: all 1s ease;
+	}
+	
+	#header .region-header {
+		left: 0;
+		width: 1.5em;
+		height: 1.5em;
+		border: solid 1px #23BCB9;
+	}
+	
+	#header .region-header:hover {
+		width: 100%;
+		height: auto;
+		margin: 0 0 5em 0;
+	}
+	
+	#header .region-header:hover ul {
+		width: 100%;
+		height: auto;
+	}
+	#header .region-header nav,
+	#header .region-header > div  {
+		display: none;
+	}
+
+	#header .region-header:hover nav,
+	#header .region-header:hover > div {
+		display: block;
+		clear: both;
+		width:100%;
+		text-align: center;
+		background: white;
+	}
+	
+	#header .region-header:hover ul li {
+		clear: both;
+		width:100%;
+		text-align: center;
+		background: white;
+	}
+	
+	#header .region-header ul:hover li:hover {
+		background: #23BCB9;
+	}
+	
+	#header .region-header ul:hover li:hover a {
+		color: white;
 	}
 }
 
-@media screen and (min-width: 720px) {
+@media screen and (min-width: 800px) {
 	#header .block-menu-block ul > li {
 		font-size: 1.2em;
 		padding: 0 1em 0 0;
 	}
 }
 
-@media screen and (min-width: 840px) {
+@media screen and (min-width: 900px) {
 	#header .block-menu-block ul > li {
 		font-size: 1.33em;
 		padding: 0 1.25em 0 0;
@@ -215,31 +286,28 @@ input.form-submit {
 }
 
 @media screen and (min-width: 960px) {
+	
 	#header .block-menu-block ul > li {
 		font-size: 1.5em;
 		padding: 0 2em 0 0;
 	}
-	.not-front #content article.view-mode-full {
-		-webkit-column-count: 2;
-		column-count: 2;
-		-webkit-column-gap: 2em;
-		column-gap: 2em;
-		-webkit-column-rule: dashed 1px #cccccc;
-		column-rule: dashed 1px #cccccc;
-	}
-	.not-front #content .view-mode-full figure {
-		float: none;
-	}
+	
 }
 
-@media screen and (min-width: 1320px) {
+@media screen and (min-width: 1200px) {
 	#header .block-menu-block ul > li {
 		font-size: 1.8em;
 	}
-	.not-front #content article.view-mode-full {
+	.not-front #content .view-mode-full {
 		clear: both;
-		-webkit-column-count: 3;
-		column-count: 3;
+	}
+	.view-mode-full > .field-name-body {
+		-webkit-column-count: 2;
+		-webkit-column-gap: 6%;
+		-webkit-column-rule: dashed 1px #999999;
+		column-count: 2;
+		column-gap: 6%;
+		column-rule: dashed 1px #999999;
 	}
 }
 
@@ -260,33 +328,6 @@ ul#nice-menu-1 > li:hover > a.active, ul#nice-menu-1 li:hover > a , ul#nice-menu
 }
    
 /* Main menu nicemenus end */
-
-
-
-.sidebars .block {
-    font-size: 1.1em;
-    background:#D0E0E0;
-    color:#000;
-    width: 100%;
-    padding:0;
-    margin-bottom:15px;
-}
-
-.sidebars .block h2 {
-        width: 100%;
-}
-h2.block-title a {
- color:#000;
-}
-
-.region-sidebar-first .block h2, .wide-feature h2, .narrow-feature h2, #block-views-press-release-list-block h2, #block-views-press-release-list-block-1 h2, #block-views-press-release-list-block-2 h2 {
-
-    background:#23BCB9;
-    color:#000;
-    padding:5px 15px;
-    font-size:110%;
-    margin-bottom:15px;
-}
 
 #block-views-press-release-list-block-2 h2 {
     width:675px;
@@ -389,24 +430,7 @@ width: 160px;
     margin:0;
 }
 
-/* Search */
-#block-search-form {
-    position: absolute;
-    z-index: 99;
-    bottom: 0;
-		left: 0;
-}
 
-#block-search-form input.form-submit {
-    background:url('../images/search-button.png') no-repeat;
-    width:30px;
-    height:30px;
-    font-size:0;
-    margin:0;
-    padding:0;
-    position:relative;
-    top:-4px;
-}
 
 /* Publications */
 
@@ -1337,8 +1361,17 @@ div#content div.block-views {
 	max-width: 20%;
 }
 
+#content .node > .flexslider .field-name-field-link a {
+	color: #666666;
+}
+
+#content .node > .flexslider .field-name-field-link a:hover {
+	color: #2faeb9;;
+}
+
 #content .node > .flexslider .ds-1col,
-#content .node > .flexslider .ds-1col > div {
+#content .node > .flexslider .ds-1col .media-youtube-video,
+#content .node > .flexslider .ds-1col .media-vimeo-video {
 	position: absolute;
 	top: 0;
 	left:0;
@@ -1349,6 +1382,40 @@ div#content div.block-views {
 #content .field-name-field-media {
 	height: 54vw;
 }
+
+#content .field-name-field-box > article {
+	float: left;
+	width: 48%;
+	padding: 0;
+	margin: 0 2% 0 0;
+}
+
+#content .field-name-field-box .field-name-field-image {
+	width: 50%;
+	float: left;
+}
+
+#content .field-name-field-box .field-name-body {
+	padding: 0 0 0 4%;
+	float: right;
+	width: 46%;
+}
+
+@media screen and (max-width: 799px) {
+	#content .field-name-field-box > article {
+		width: 100%;
+		margin: 0;
+	}
+}
+
+@media screen and (min-width: 1200px) {
+	#content .field-name-field-box > article {
+		width: 31.33%;
+		margin: 0 2% 0 0;
+	}
+}
+
+
 
 @media screen and (min-width: 1414px) {
 	#content .field-name-field-media {

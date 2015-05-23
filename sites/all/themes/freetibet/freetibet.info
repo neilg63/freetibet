@@ -36,8 +36,7 @@ base theme  = zen
 stylesheets[all][]        = css/html-reset.css
 stylesheets[all][]        = css/wireframes.css
 stylesheets[all][]        = css/layout-responsive.css
-stylesheets[all][]        = css/page-backgrounds.css
-stylesheets[all][]        = css/tabs.css
+stylesheets[all][]        = icomoon/style.css
 stylesheets[all][]        = css/pages.css
 stylesheets[all][]        = css/blocks.css
 stylesheets[all][]        = css/navigation.css
@@ -59,15 +58,13 @@ stylesheets[all][]        = css/freetibet.css
 ; Add conditional stylesheets that are processed by IE. See the css/README.txt.
 
 ; To target all versions of IE with an ie.css, uncomment the following line:
-;stylesheets-conditional[IE][all][]       = css/ie.css
-stylesheets-conditional[lte IE 7][all][]  = css/ie7.css
-stylesheets-conditional[lte IE 6][all][]  = css/ie6.css
+stylesheets-conditional[lte IE 8][all][]  = css/ie8.css
 
 
 
 ; Optionally add some JavaScripts to your theme.
 
-;scripts[] = js/script.js
+scripts[] = js/sitewide.js
 
 
 
