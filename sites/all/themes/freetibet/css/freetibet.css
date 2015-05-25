@@ -51,30 +51,44 @@ margin:15px;
 }
 
 #header {
-	background: white url(/sites/all/themes/freetibet/images/freeTIBET_logo.png) no-repeat bottom right;
-	height: 188px;
+	position: relative;
+}
+
+#header .block {
+	margin: 0;
+}
+
+#logo {
+	position: absolute;
+	top: 0;
+	left:0;
+	width: 100%;
+	background-color: white;
+	background-image: url(/sites/all/themes/freetibet/images/freeTIBET_logo.png);
+	background-repeat:no-repeat;
+	background-position:top right;
 	background-size: contain;
 }
 
-@media (max-width:319px) {
-	#header {
-		min-height: 89px;
-	}
-}
-
-@media (max-width:419px) {
-	#header {
-		min-height: 120px;
-	}
+#header, #logo {
+	height: 120px;
 }
 
 #header .region-header {
 	position: absolute;
+	pointer-events: none;
 	top: 0;
 	left: 2%;
 	width: 100%;
 	height: 100%;
 }
+
+#header .region-header nav,
+#header .region-header > div,
+#header .region-header button {
+	pointer-events: auto;
+}
+
 
 /* Basic elements */
 div.messages {
@@ -104,41 +118,19 @@ text-decoration: underline;
 }
 
 input.form-text {
-    border:0;
-    padding:5px;
-    margin:5px 0;
+		font-size: 1em;
+    padding: 0.125em;
+    margin: 0.25em 0;
+		height: 1em;
+		border: solid 1px #2faeb9;
     font-weight:bold;
 }
 
 input.form-submit {
-    background:#000;
-    color:#fff;
-    padding:5px 8px;
-    margin:5px 0;
-    border:0;
-    font-weight:bold;
 	cursor: pointer;
 }
 .form-item input.error, .form-item textarea.error, .form-item select.error{
 	box-shadow: 1px 1px 2px #CC0000;
-}
-
-.region-content input.form-text {
-    border: 1px solid #bbb;
-}
-
-/* Regions */
-
-#page #header .section {
-    height: 141px;
-    margin-bottom: 16px;
-}
-
-#logo {
-    /* padding:20px 15px 37px 35px; Old logo */
-	padding: 20px 58px 19px 35px;
-    background:#ffffff;
-    color:#000000;
 }
 
 /* Main navigation */
@@ -179,22 +171,78 @@ input.form-submit {
 		left: 0;
 }
 
-#block-search-form input.form-submit {
-    background:url('../images/search-button.png') no-repeat;
-    width:30px;
-    height:30px;
-    font-size:0;
-    margin:0;
-    padding:0;
-    position:relative;
-    top:-4px;
+#block-search-form input.form-text {
+		width: 10em;
+		padding: 0.25em 0 0.25em 1.25em;
+		margin: 0;
+		background-color: transparent;
+		font-weight: normal;
 }
+
+#search-block-form .form-item {
+	margin: 0;
+}
+
+#search-block-form div {
+	display: inline-block;
+}
+
+#search-block-form .icon-search {
+	color: #aaaaaa;
+	position: absolute;
+	top: 0.375em;
+	left: 0.175em;
+}
+
+#search-block-form label {
+	display: none;
+}
+
+#block-search-form input.form-submit {
+		position: relative;
+		background: none;
+    height: 1.5em;
+    font-size: 0.9em;
+    margin:0;
+    padding: 0.125em 0;
+    position:relative;
+		color: #2faeb9;
+		border: none;
+}
+
+#header .icon-menu {
+	display: none;
+}
+
+
 
 @media screen and (max-width: 799px) {
 	
-	#header {
-		min-height: 150px;
+	#header, #logo {
+		height: 15vw;
+	}
+	
+	#logo {
+		background-position: top center;
+	}
+	
+	body.menu-expanded #header {
 		height: auto;
+	}
+	
+	body.menu-expanded #header .icon-menu {
+		color: #aaaaaa;
+	}
+		
+	#header .icon-menu {
+		border: none;
+		background: none;
+		position: absolute;
+		top: 0;
+		right: 0;
+		display: block;
+		color: #23BCB9;
+		font-size: 8vw;
 	}
 	
 	#block-search-form,
@@ -202,63 +250,82 @@ input.form-submit {
 		position: relative;
 	}
 	
-	#header .block-menu-block,
-	#header .block-menu-block ul {
+	#header .block-menu-block > div,
+	#header .block-menu-block nav {
 		-webit-transition: all 1s ease;
 		transition: all 1s ease;
 	}
 	
 	#header .region-header {
-		left: 0;
-		width: 1.5em;
-		height: 1.5em;
-		border: solid 1px #23BCB9;
-	}
-	
-	#header .region-header:hover {
 		width: 100%;
 		height: auto;
-		margin: 0 0 5em 0;
+		margin-top: 7vw;
+		padding: 6vw 0 0 0;
 	}
 	
-	#header .region-header:hover ul {
-		width: 100%;
-		height: auto;
-	}
+
 	#header .region-header nav,
 	#header .region-header > div  {
-		display: none;
+		height: 0;
+		overflow:hidden;
+	}
+	
+	body.menu-expanded #header .region-header > div,
+	body.menu-expanded #header .region-header nav {
+		height: auto;
 	}
 
-	#header .region-header:hover nav,
-	#header .region-header:hover > div {
-		display: block;
+	#header .region-header nav,
+	#header .region-header > div {
+		clear: both;
+		width:100%;
+		text-align: center;
+	}
+	
+	#header .region-header ul.menu li {
 		clear: both;
 		width:100%;
 		text-align: center;
 		background: white;
 	}
 	
-	#header .region-header:hover ul li {
-		clear: both;
-		width:100%;
-		text-align: center;
-		background: white;
+	#header #block-search-form {
+			text-align: left;
+			float: left;
+			clear: both;
 	}
 	
-	#header .region-header ul:hover li:hover {
+	#header #block-textsize-widget {
+			float: right;
+			clear: none;
+	}
+	
+	#header .region-header div {
+		width: auto;
+	}
+	
+	#block-search-form input.form-text {
+			width: 75%;
+	}
+	
+	#header .region-header ul li:hover {
 		background: #23BCB9;
 	}
 	
-	#header .region-header ul:hover li:hover a {
+	#header .region-header ul li:hover a {
 		color: white;
 	}
 }
 
 @media screen and (min-width: 800px) {
+	
 	#header .block-menu-block ul > li {
 		font-size: 1.2em;
 		padding: 0 1em 0 0;
+	}
+	
+	header#header .block-menu-block ul > li {
+		font-size: 2.1vw;
 	}
 }
 
@@ -268,6 +335,55 @@ input.form-submit {
 		padding: 0 1.25em 0 0;
 	}
 	
+}
+
+@media screen and (min-width: 960px) {
+	#header, #logo {
+		height: 135px;
+	}
+	header#header .block-menu-block ul > li {
+			font-size: 2vw;
+	}
+	#block-search-form input.form-text {
+			width: 12em;
+	}
+}
+
+@media screen and (min-width: 1080px) {
+	#header, #logo {
+		height: 144px;
+	}
+	header#header .block-menu-block ul > li {
+			font-size: 1.9vw;
+	}
+	#block-search-form input.form-text {
+			width: 14em;
+	}
+}
+
+@media screen and (min-width: 1200px) {
+	#header, #logo {
+		height: 165px;
+	}
+	
+	header#header .block-menu-block ul > li {
+			font-size: 1.8vw;
+	}
+	#block-search-form input.form-text {
+			width: 16em;
+	}
+}
+
+@media screen and (min-width: 1380px) {
+	#header, #logo {
+		height: 188px;
+	}
+	header#header .block-menu-block ul > li {
+			font-size: 1.75em;
+	}
+	#block-search-form input.form-text {
+			width: 18em;
+	}
 }
 
 .not-front #content article.view-mode-full{
@@ -513,24 +629,6 @@ img {
 		float: left;
  }
  
- .narrow-feature p {
-    margin:15px;
- }
- 
- .narrow-holder {
-    margin:10px 0 0 0;
-    padding:0;
- }
- 
- .narrow-feature h2 a {
-    color:#000;
-    text-decoration:none;
- }
- 
- .narrow-feature h2 a:hover {
-     text-decoration:underline;   
- }
- 
  /* Drop shadows */
 
 /* Hover links */
@@ -542,6 +640,7 @@ a:hover {
  #page-title {
  	margin: 0.25em auto 1em auto;
  	font-size: 2em;
+	border-bottom: solid 1px #23BCB9;
  }
  
  /*********** Ubercart ************/
@@ -1227,10 +1326,6 @@ div#content div.block-views {
     
     .field-name-uc-product-image img {
         width:250px;
-    }
-    
-    #edit-search-block-form--2 {   
-       width: 16em;
     }
     
     #cart-form-pane {

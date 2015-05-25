@@ -1,0 +1,97 @@
+ul.textsize-selector, ul.textsize-selector li {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul.textsize-selector {
+  list-style-type: none;
+	margin:0;
+  font-size: 20px;
+  font-size: 1.25rem;
+}
+
+
+ul.textsize-selector li {
+  display: inline-block;
+	margin: 0 5px 0 0;
+  margin: 0 0.4rem 0 0;
+	cursor: pointer;
+}
+
+ul.textsize-selector li.small {
+  font-size: 0.75em;
+}
+
+ul.textsize-selector li.medium {
+  font-size: 0.9em;
+}
+
+ul.textsize-selector li.large {
+  font-size: 1.2em;
+}
+
+ul.textsize-selector li.xlarge {
+  font-size: 1.5em;
+}
+
+ul.textsize-selector li.selected {
+  color: #23BCB9;
+}
+
+html.textsize-small #content {
+	font-size: 0.9rem;
+}
+
+html.textsize-large #content {
+	font-size: 1.2rem;
+}
+
+html.textsize-xlarge #content {
+	font-size: 1.5rem;
+}
+
+@media screen and (min-width:800px) {
+	#block-textsize-widget {
+		position: absolute;
+		bottom: 0;
+		left: 15em;
+	}
+}
+
+@media screen and (min-width:960px) {
+	#block-textsize-widget {
+		left: 17em;
+	}
+}
+
+@media screen and (min-width:1080px) {
+	#block-textsize-widget {
+		left: 19em;
+	}
+}
+
+@media screen and (min-width:1200px) {
+	#block-textsize-widget {
+		left: 21em;
+	}
+}
+
+@media screen and (min-width:1380px) {
+	#block-textsize-widget {
+		left: 24em;
+	}
+}
+
+#block-textsize-widget h3 {
+	font-size: 0.75rem;
+	text-transform: capitalize;
+	display: inline-block;
+	margin: 0 0 0 0.25em;
+	padding: 0;
+	font-weight: normal;
+	color: #aaaaaa;
+}
+
+#block-textsize-widget ul.textsize-selector {
+	display: inline-block;
+}

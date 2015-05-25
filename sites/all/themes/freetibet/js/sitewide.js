@@ -28,10 +28,10 @@
 	}
 	
 	
-	Drupal.p3 = {
+	Drupal.ft = {
 			
 		resizeIframes: function() {
-			var fc = Drupal.settings.p3.iframes;
+			var fc = Drupal.settings.ft.iframes;
 			if (fc.length>0) {
 				fc.fitIframes();
 			}
@@ -39,55 +39,7 @@
 
 		addTouchSupport: function() {
 			document.addEventListener("touchstart", function(){
-			}, true); 
-			//$('body').bind('touchstart', function() {});
-
-			//See more at: http://danlobo.co.uk/article/touching-hover-states#sthash.7tSUuAPn.dpuf
-		},
-		
-		highlightPlatform3: function() {
-			var ts = $('h1,h2,h3,h4,h5,h6,p,li,a,em,strong'),u3 = '\uF733' . toString(16), numT = ts.length,i=0,j=0,k=0,m=false,it,cs,tx,ws;
-			for (;i<numT;i++) {
-				it = ts.eq(i);
-				cs = it.contents();
-				ih = '';
-				for (j=0;j<cs.length;j++) {
-					if (cs[j] instanceof Text) {
-						if (cs[j].textContent) {
-							m = false;
-							tx = cs[j].textContent;
-							ws = tx.split(/\b/);
-							for (k=0;k<ws.length;k++) {
-								if (ws[k].length>6 && /\platform3\b/i.test(ws[k])) {
-									ws[k] = ws[k].replace('3', u3 );
-									m = true;
-								}
-							}
-							if (m) {
-								cs[j].textContent = ws.join('');
-							}
-						}
-					}
-				}
-			}
-			var codes = {
-				p: '\uE029',
-				l: '\uE01C',
-				a: '\uE000',
-				t: '\uE02F',
-				f: '\uE012',
-				o: '\uE021',
-				r: '\uE02C',
-				m: '\uE01E'	
-			},
-		animLink = $('a.animtext-link'),lt,cd;
-			for (t in codes) {
-				lt = animLink.find('.char-' + t);
-				if (lt.length>0) {
-					lt.html( codes[t].toString(16));
-				}
-			}
-			animLink.find('.char-3').html(u3);
+			}, true);
 		},
 		
 		shareThisLabelClick: function() {
@@ -103,239 +55,37 @@
 			}
 		},
 
+		menuToggle: function() {
+			$('.menu-toggle').on('click', function(e){
+				e.preventDefault();
+				e.stopImmediatePropagation();
+				var s = Drupal.settings.ft;
+				if (s.b.hasClass('menu-expanded')) {
+					s.b.removeClass('menu-expanded');
+				} else {
+					s.b.addClass('menu-expanded');
+				}
+			});
+		},
 			
 		init: function() {
-			Drupal.settings.p3 = {};
-			Drupal.settings.p3.iframes = $('.file-video, .file-audio-soundcloud');
+			Drupal.settings.ft = {};
+			var s = Drupal.settings.ft;
+			s.iframes = $('.file-video, .file-audio-soundcloud');
+			s.b = $('body');
 			this.resizeIframes();
 			//this.highlightPlatform3();
 			this.shareThisLabelClick();
 			this.addTouchSupport();
-			$(window).on('resize',Drupal.p3.resizeIframes);
+			this.menuToggle();
+			$(window).on('resize',Drupal.ft.resizeIframes);
 		}
 	};
 	
-  Drupal.behaviors.p3 = {
+  Drupal.behaviors.ft = {
     attach : function(context) {
     	// now initialize
-    	Drupal.p3.init();
+    	Drupal.ft.init();
     }
   };
 }(jQuery));
-if (Drupal.gmap) {
-	Drupal.gmap.addHandler('gmap',function(elem) {
-		var obj = this,
-		styles = [
-	      {
-	        stylers: [
-	          { hue: "#000000" }
-	        ]
-	      },
-	      {
-	          featureType: "landscape",
-	          elementType: "geometry.fill",
-	          stylers: [
-	            { visibility: "on" },
-	            { color: "#b8b8b8" }
-	          ]
-	        },
-	        {
-	            elementType: "geometry.fill",
-	            stylers: [
-	              { color: "#b8b8b8" }
-	            ]
-	          },
-	            { featureType: "landscape", 
-	          elementType: "geometry.fill", 
-	          stylers: [ 
-	            { color: "#b8b8b8" } 
-	          ] 
-	          },
-	          	{
-	            featureType: "landscape.man_made",
-	            elementType: "geometry.fill",
-	            stylers: [
-	              { color: "#e2e2e2" },
-	              { visibility: "on" }
-	            ]
-	          },
-	          {
-	            featureType: "road",
-	            elementType: "geometry.fill",
-	            stylers: [
-	              { visibility: "on" },
-	              { saturation: -100 }
-	            ]
-	          },
-	          {
-	            featureType: "road",
-	            elementType: "geometry.stroke",
-	            stylers: [
-	              { visibility: "off" }
-	            ]
-	          },
-	          {
-	          featureType: "road",
-	              elementType: "labels",
-	              stylers: [
-	                { visibility: "off" }
-	              ]
-	            },
-	          /*{
-	            featureType: "road.highway",
-	            stylers: [
-	              { color: "#EFEDBF" },
-	              { visibility: "simplified" }
-	            ]
-	          },
-	          {
-	            featureType: "road.arterial",
-	            stylers: [
-	              { visibility: "simplified" },
-	              { color: "#eeeeee" }
-	            ]
-	          },
-	            {
-	            featureType: "road.arterial",
-	            elementType: "labels.text.fill",
-	            stylers: [
-	              { color: "#585858" },
-	              { visibility: "on" }
-	            ]
-	          },*/
-	        	{
-	            elementType: "labels.text.stroke",
-	            stylers: [
-	              { visibility: "off" }
-	            ]
-	          },
-	          {
-	            featureType: "water",
-	            stylers: [
-	              { color: "#606060" },
-	              { visibility: "simplified" }
-	            ]
-	          },{
-	            featureType: "road.highway",
-	            elementType: "labels.text",
-	            stylers: [
-	              { visibility: "on" }
-	            ]
-	          },{
-	            featureType: "road.local",
-	            elementType: "labels.text",
-	            stylers: [
-	              { visibility: "off" }
-	            ]
-	          },{
-	            featureType: "road.arterial",
-	            elementType: "labels.text",
-	            stylers: [
-	              { visibility: "on" }
-	            ]
-	          },{
-	            featureType: "road",
-	            elementType: "labels.text.stroke",
-	            stylers: [
-	              { visibility: "off" }
-	            ]
-	          },
-	           {
-	          featureType: "road.highway",
-	          elementType: "geometry.fill", 
-	          stylers: [
-	            { color: "#eeeeee" }
-	          ]
-	          },
-	          {
-	          featureType: "road.highway",
-	          elementType: "geometry.stroke",
-	          stylers: [
-	            { color: "#eeeeee" }
-	          ]
-	          },
-	          {
-	          featureType: "road.arterial",
-	          elementType: "geometry.fill",
-	          stylers: [
-	            { color: "#eeeeee" }
-	          ]
-	          },
-	          {
-	          featureType: "transit",
-	          elementType: "geometry.stroke",
-	          stylers: [
-	            { color: "#444444" }
-	          ]
-	          },
-	          {
-	          featureType: "transit",
-	          elementType: "labels.icon",
-	              stylers: [
-	                { saturation: -100 }
-	              ]
-	              },
-	          {
-	          featureType: "road.arterial",
-	          elementType: "geometry.stroke",
-	          stylers: [
-	            { color: "#e9e9e9" }
-	          ]
-	          },
-	          {
-	          featureType: "road.local",
-	          elementType: "geometry.stroke",
-	          stylers: [
-	            { visibility: "off" }
-	          ]
-	          },
-	          {
-	          featureType: "road.local",
-	          elementType: "geometry.fill",
-	          stylers: [
-	            { color: "#e6e6e6" }
-	          ]
-	          },
-	         {
-	           featureType: "poi",
-	            elementType: "labels.icon",
-	            stylers: [
-	              { visibility: "off" }
-	            ]
-	          },
-	          {
-	              featureType: "poi.business",
-	               elementType: "labels",
-	               stylers: [
-	                 { visibility: "off" }
-	               ]
-	             },
-	          {
-	          featureType: "poi.medical",
-	          elementType: "labels",
-	          stylers: [
-	            { visibility: "off" }
-	          ]
-	          },
-	          {
-	          featureType: "administrative",
-	          elementType: "labels",
-	          stylers: [
-	            { visibility: "off" }
-	          ]
-	          }
-	      ];
-
-		obj.bind("init", function() {
-			var opts = obj.opts;
-			var mapOptions = {
-				styles: styles,
-				minZoom: 9,
-				maxZoom: 19,
-				mapTypeControl: false
-			};
-			obj.map.setOptions(mapOptions);
-		});
-	});
-
-}

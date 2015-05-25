@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Miscellaneous overrides for Freetibet site
+ */
+
+function ftoverrides_form_search_block_form_alter(&$form,&$form_state,$form_id) {
+
+	$form['background'] = array(
+		'#type' => 'markup',
+		'#markup' => '<div class="icon-search"></div>'
+	);
+	$form['search_block_form']['#attributes']['placeholder'] = t('Search words');
+	$form['actions']['submit']['#value'] = t('Go');
+}

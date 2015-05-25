@@ -10,7 +10,6 @@
 }
 
 .view-house-types li .arrow,
-.form-search .input-group-btn,
 #field-slideshow-1-pager a,
 [class^="icon-"], [class*=" icon-"] {
 	font-family: 'icomoon';
@@ -29,8 +28,10 @@
 .view-house-types li.selected .arrow:before,
 .icon-uniE604:before {
 	content: "\e604";
+	position: absolute;
+	transform: translateY(-0.25em);
 }
-.form-search .input-group-btn:before,
+
 .icon-search:before {
 	content: "\e600";
 }
@@ -48,4 +49,14 @@
 .expanded-view .arrow:before,
 .icon-close:before {
 	content: "\e605";
+}
+
+#content .flex-control-nav li {
+	margin: 0 0.75em 0.5em 0.75em;
+}
+
+#content .flex-control-paging li a {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 0.75em;
 }

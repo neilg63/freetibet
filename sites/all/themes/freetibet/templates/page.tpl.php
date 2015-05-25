@@ -31,30 +31,13 @@
       </div>
     <?php endif; ?>
 
-    <?php if ($secondary_menu): ?>
-      <nav class="header__secondary-menu" id="secondary-menu" role="navigation">
-        <?php print theme('links__system_secondary_menu', array(
-          'links' => $secondary_menu,
-          'attributes' => array(
-            'class' => array('links', 'inline', 'clearfix'),
-          ),
-          'heading' => array(
-            'text' => $secondary_menu_heading,
-            'level' => 'h2',
-            'class' => array('element-invisible'),
-          ),
-        )); ?>
-      </nav>
-    <?php endif; ?>
-
     <?php print render($page['header']); ?>
-
+		
   </header>
 
   <div id="main">
-
-    <div id="content" class="column" role="main">
-      <?php print render($page['highlighted']); ?>
+		<?php print render($page['highlighted']); ?>
+    <section id="content" class="column" role="main">
       <?php print $breadcrumb; ?>
       <a id="main-content"></a>
       <?php print render($title_prefix); ?>
@@ -72,7 +55,7 @@
 			<?php print render($tabs); ?>
     </div>
 
-  </div>
+  </section>
 
   <?php print render($page['footer']); ?>
 

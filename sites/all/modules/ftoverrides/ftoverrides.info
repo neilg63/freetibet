@@ -1,0 +1,5 @@
+name = "FreeTibet Overrides"
+description = "Miscellneous overrides for FreeTibet site"
+core = 7.x
+package = Custom
+

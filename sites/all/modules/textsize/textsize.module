@@ -1,0 +1,121 @@
+<?php
+
+/**
+ * @file
+ * Provides SurveyMonkey block
+ */
+
+
+function textsize_block_info() {
+	$blocks = array();
+	$title = t('Text size widget');
+	$blocks['widget'] = array(
+			'info' => $title,
+			'title' => $title,
+			'cache' => DRUPAL_CACHE_GLOBAL,
+	);
+	return $blocks;
+}
+
+/*
+* implements hook_block_view
+* List of book categories with active products
+*/
+function textsize_block_view($delta = '') {
+	$block = array();
+	switch ($delta) {
+		case 'widget':
+			$default_sizes = textsize_default();
+			$sizes = variable_get('textsize_sizes', $default_sizes);
+			$size_data = textsize_sizes();
+			
+			$data = array();
+			
+			foreach($sizes as $size) {
+				if (isset($size_data[$size])) {
+					$obj = new StdClass;
+					$obj->label = 'T';
+					$obj->attrs = array();
+					$classes = array();
+					$classes[] = $size;
+					if ($size == 'medium') {
+						$classes[] = 'selected';
+					}
+					$obj->attrs['class'] = $classes;
+					$obj->attrs['title'] = $size_data[$size];
+					$obj->attrs['data-size'] = $size;
+					$data[] = $obj;
+				}
+			}
+			
+			
+			$block['subject'] = '<none>';
+			
+			$mod_path = drupal_get_path('module', 'textsize');
+			$block['content'] = array(
+					'#markup' => theme('textsize_block',array('sizes'=> $data)),
+					'#attached' => array(
+							'js' => array(
+									$mod_path . '/js/textsize.js',
+							),
+							'css' => array(
+									$mod_path . '/css/textsize.css',
+							),
+					),
+			);
+			break;
+	}
+	return $block;
+}
+
+
+function textsize_block_configure($delta = '') {
+	$form = array();
+	switch ($delta) {
+		case 'widget':
+			$sizes = textsize_default();
+			$form['textsize_key'] = array(
+	      '#type' => 'select',
+	      '#title' => t('Available text sizes'),
+	      '#options' => textsize_sizes(),
+	      '#default_value' => variable_get('textsize_sizes', $sizes),
+	    );
+			break;
+	}
+	return $form;
+}
+
+function textsize_block_save($delta = '', $edit = array()) {
+	if ($delta == 'widget') {
+		variable_set('textsize_sizes', $edit['textsize_sizes']);
+	}
+}
+
+function textsize_theme($existing, $type, $theme, $path) {
+	$items = array();
+	$items['textsize_block'] = array(
+			'variables' => array(
+					'sizes' => array()
+			),
+			'template' => 'templates/textsize'
+	);
+	return $items;
+}
+
+
+function textsize_sizes() {
+	return array(
+		'small' => 'Small',
+		'medium' => 'Medium',
+		'large' => 'Large',
+		'xlarge' => 'Very large',
+	);
+}
+
+function textsize_default() {
+	return array(
+		'medium',
+		'large',
+		'xlarge',
+	);
+}
