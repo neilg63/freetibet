@@ -1,5 +1,6 @@
 name = "Text size widget"
 description = "Adds a text widget, which changes class name in outer html tag for use by stylesheet"
 core = 7.x
-package = Text
+package = User interface
+dependencies[] = jquerycookie
 

@@ -10,17 +10,54 @@
 
 
 div.tabs {
-  margin: 0 0 5px 0;
+  margin: 0 0 1em 0;
 }
 
 ul.primary {
   margin: 0;
-  padding: 0 0 0 10px; /* LTR */
+  padding: 0 0 0 1em;
   border-width: 0;
   list-style: none;
   white-space: nowrap;
   line-height: normal;
-  background: url(../images/tab-bar.png) repeat-x left bottom;
+}
+
+#main ul.tabs {
+	clear: both;
+	float: left;
+	margin: 1em 0;
+}
+
+ul.tabs-primary {
+	margin: 1em 0 2.5em 0;
+	height: 1.5em;
+	padding:0;
+	border-top: solid 1px #999999;
+	border-bottom: solid 1px #999999;
+}
+
+ul.tabs-primary li {
+	padding: 0;
+	margin: 0;
+	border-right: solid 1px #999999;
+	overflow:hidden;
+}
+
+ul.tabs-primary li:first-child {
+	border-left: solid 1px #999999;
+}
+
+ul.tabs-primary li a {
+	background: #dddddd;
+	padding: 0.5em 1em 0em 1em;
+	height: 1.5em;
+	overflow:hidden;
+	color: #999999;
+}
+
+ul.tabs-primary li a:hover, ul.tabs-primary li.is-active a {
+	background-color: #2faeb9;
+	color: black;
 }
 
 ul.primary li {
@@ -29,54 +66,20 @@ ul.primary li {
   padding: 0;
 }
 
-ul.primary li a {
+ul.primary > li > a {
   display: block;
-  height: 24px;
+  height: 1.5em;
   margin: 0;
-  padding: 0 0 0 5px; /* width of tab-left.png */
-  border-width: 0;
+  padding: 0.25em 0.5em;
   font-weight: bold;
   text-decoration: none;
-  color: #777;
-  background-color: transparent;
-  background: url(../images/tab-left.png) no-repeat left -38px;
 }
 
-ul.primary li a .tab {
+ul.primary li a > .tab {
   display: block;
-  height: 20px; /* 24px (parent) - 4px (padding) */
+  height: 1.25em; /* 24px (parent) - 4px (padding) */
   margin: 0;
-  padding: 4px 13px 0 6px;
-  border-width: 0;
-  line-height: 20px;
-  background: url(../images/tab-right.png) no-repeat right -38px;
-}
-
-ul.primary li a:hover,
-ul.primary li a:focus {
-  border-width: 0;
-  background-color: transparent;
-  background: url(../images/tab-left.png) no-repeat left -76px;
-}
-
-ul.primary li a:hover .tab,
-ul.primary li a:focus .tab {
-  background: url(../images/tab-right.png) no-repeat right -76px;
-}
-
-ul.primary li.active a,
-ul.primary li.active a:hover,
-ul.primary li.active a:focus {
-  border-width: 0;
-  color: #000;
-  background-color: transparent;
-  background: url(../images/tab-left.png) no-repeat left 0;
-}
-
-ul.primary li.active a .tab,
-ul.primary li.active a:hover .tab,
-ul.primary li.active a:focus .tab {
-  background: url(../images/tab-right.png) no-repeat right 0;
+  line-height: 1.25em;
 }
 
 ul.secondary {

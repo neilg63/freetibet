@@ -50,13 +50,3 @@
 .icon-close:before {
 	content: "\e605";
 }
-
-#content .flex-control-nav li {
-	margin: 0 0.75em 0.5em 0.75em;
-}
-
-#content .flex-control-paging li a {
-	width: 1.5em;
-	height: 1.5em;
-	border-radius: 0.75em;
-}

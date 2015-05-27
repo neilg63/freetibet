@@ -1,0 +1,4 @@
+name = Inline Files
+description = "Explore and reassign file references embedded in long text fields or blocks"
+package = Media
+core = 7.x

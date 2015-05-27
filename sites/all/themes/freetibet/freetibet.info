@@ -39,6 +39,7 @@ stylesheets[all][]        = css/layout-responsive.css
 stylesheets[all][]        = icomoon/style.css
 stylesheets[all][]        = css/pages.css
 stylesheets[all][]        = css/blocks.css
+stylesheets[all][]        = css/tabs.css
 stylesheets[all][]        = css/navigation.css
 stylesheets[all][]        = css/views-styles.css
 stylesheets[all][]        = css/nodes.css

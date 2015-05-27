@@ -1,0 +1,11 @@
+<?php
+
+
+/*
+* implements hook_init
+*/
+function jquerycookie_init() {
+			$mod_path = drupal_get_path('module', 'jquerycookie');
+			$str_min = variable_get('jquerycookie_debug',0) === 1? '.min' : '';
+			drupal_add_js($mod_path . '/js/cookie'.$str_min.'.js');
+}

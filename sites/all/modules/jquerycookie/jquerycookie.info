@@ -1,0 +1,4 @@
+name = "Jquery Cookie Plugin"
+description = "Pre-loads jQuery Cookie Plugin for use by other modules"
+core = 7.x
+package = User interface

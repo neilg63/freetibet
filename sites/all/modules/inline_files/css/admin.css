@@ -1,0 +1,4 @@
+table td img.media-thumbnail {
+	max-width: 150px; 
+	height: auto;
+}

@@ -1,0 +1,22 @@
+<?php
+
+
+function inline_files_menu() {
+	$items = array();
+  $admin = array(
+    'title' => 'Inline Files',
+		'type' => MENU_LOCAL_TASK,
+    'page callback' => 'inline_files_node_list',
+		'access arguments' => array('administer site configuration'),
+    'file' => 'inline_files.admin.inc',
+		'weight' => 3
+  );
+	
+	$items['admin/content/file/inline-files'] = $admin;
+	
+	$admin['type'] = MENU_DEFAULT_LOCAL_TASK;
+	
+	$items['admin/content/file/inline-files/nodes'] = $admin;
+	
+	return $items;
+}
