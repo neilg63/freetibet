@@ -1,0 +1,4 @@
+name = "Jquery Mobile Events"
+description = "Lightweight jQuery Mobile Events. Adds touch events for use in event handlers"
+core = 7.x
+package = User interface

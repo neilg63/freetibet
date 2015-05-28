@@ -82,6 +82,7 @@ scripts[] = js/sitewide.js
 regions[help]           = Help
 regions[page_top]       = Page top
 regions[navigation]     = Navigation bar
+regions[top]         		= Header top
 regions[header]         = Header
 regions[highlighted]    = Highlighted
 regions[content]        = Content

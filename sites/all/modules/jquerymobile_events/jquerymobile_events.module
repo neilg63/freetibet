@@ -1,0 +1,13 @@
+<?php
+
+define('JQUERYMOBILE_EVENTS_WEIGHT', 2);
+
+/*
+* implements hook_init
+*/
+function jquerymobile_events_init() {
+			$mod_path = drupal_get_path('module', 'jquerymobile_events');
+			$str_min = variable_get('jquerymobile_events_debug',0) === 1? '' : '.min';
+			$weight = (int) variable_get('jquerymobile_events_weight',JQUERYMOBILE_EVENTS_WEIGHT);
+			drupal_add_js($mod_path . '/js/jquery.mobile-events'.$str_min.'.js', array('weight' => $weight));
+}

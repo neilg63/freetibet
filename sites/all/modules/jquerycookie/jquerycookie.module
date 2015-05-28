@@ -1,11 +1,13 @@
 <?php
 
+define('JQUERYCOOKIE_WEIGHT', 2);
 
 /*
 * implements hook_init
 */
 function jquerycookie_init() {
 			$mod_path = drupal_get_path('module', 'jquerycookie');
-			$str_min = variable_get('jquerycookie_debug',0) === 1? '.min' : '';
-			drupal_add_js($mod_path . '/js/cookie'.$str_min.'.js');
+			$str_min = variable_get('jquerycookie_debug',0) === 1? '' : '.min';
+			$weight = (int) variable_get('jquerycookie_weight',JQUERYCOOKIE_WEIGHT);
+			drupal_add_js($mod_path . '/js/cookie'.$str_min.'.js', array('weight' => $weight));
 }

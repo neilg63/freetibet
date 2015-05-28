@@ -7,14 +7,14 @@ ul.textsize-selector {
   list-style-type: none;
 	margin:0;
   font-size: 20px;
-  font-size: 1.25rem;
+  font-size: 1.25em;
 }
 
 
 ul.textsize-selector li {
   display: inline-block;
 	margin: 0 5px 0 0;
-  margin: 0 0.4rem 0 0;
+  margin: 0 0.4em 0 0;
 	cursor: pointer;
 }
 
@@ -39,46 +39,67 @@ ul.textsize-selector li.selected {
 }
 
 html.textsize-small #content {
-	font-size: 0.9rem;
+	font-size: 0.9em;
 }
 
 html.textsize-large #content {
-	font-size: 1.2rem;
+	font-size: 1.2em;
 }
 
 html.textsize-xlarge #content {
-	font-size: 1.5rem;
+	font-size: 1.5em;
+}
+
+#block-textsize-widget {
+	font-size: 1rem;
+}
+
+#block-textsize-widget {
+	position: absolute;
+	top: 1em;
+	left: 1%;
+}
+
+@media screen and (max-width:360px) {
+	#header #block-textsize-widget {
+		display: none;
+	}
+}
+
+@media screen and (max-width:480px) {
+	#block-textsize-widget {
+		font-size: 0.625rem;
+	}
+}
+
+@media screen and (min-width:481px) and (max-width:640px) {
+	#block-textsize-widget {
+		font-size: 0.75rem;
+	}
 }
 
 @media screen and (min-width:800px) {
 	#block-textsize-widget {
-		position: absolute;
-		bottom: 0;
-		left: 15em;
-	}
-}
-
-@media screen and (min-width:960px) {
-	#block-textsize-widget {
-		left: 17em;
+		top: 3em;
+		left: 2%;
 	}
 }
 
 @media screen and (min-width:1080px) {
 	#block-textsize-widget {
-		left: 19em;
+		top: 3.5em;
 	}
 }
 
 @media screen and (min-width:1200px) {
 	#block-textsize-widget {
-		left: 21em;
+		top: 4em;
 	}
 }
 
 @media screen and (min-width:1380px) {
 	#block-textsize-widget {
-		left: 24em;
+		top: 5em;
 	}
 }
 
