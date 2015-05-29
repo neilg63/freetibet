@@ -38,6 +38,9 @@ body {
 #page-wrapper > div, #page-wrapper > header, #page-wrapper > footer {
 	width: 96%;
 	padding: 0 2%;
+}
+
+#page-wrapper > header, #page-wrapper > footer {
 	overflow: hidden;
 }
 

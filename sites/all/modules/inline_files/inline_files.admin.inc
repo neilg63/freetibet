@@ -54,8 +54,9 @@ function inline_files_node_table($form,&$form_state,$page = 0,$bundle = NULL,$ty
 		$file_dir = base_path() . $public_path;
 		$rgx = '(src|href)=["\']*([^"\'> ]*)(' . $file_dir . ')?/(([^"\'>\/]+?/)*[^"\'>\/]+?\.(\w+))[^\w.]';
 	
-		$field_info = field_info_field_map();
-		$fileFields = array(); 
+		$field_info = field_info_fields();
+		$fileFields = array();
+		$imageFields = array();
 		foreach ($field_info as $fName => $field_data) {
 			switch ($field_data['type']) {
 				case 'image':
@@ -99,7 +100,7 @@ function inline_files_node_table($form,&$form_state,$page = 0,$bundle = NULL,$ty
 							if (!$is_domain) {
 									$is_image = (bool) preg_match('#^(jpe?g|png|gif|bmp)$#',$extension);
 									$file_type = $is_image? 'image' : 'file';
-									$file = inline_files_match_entity($sub_path,$validFields,$file_type);
+									$file = inline_files_match_entity($sub_path,$validFields,$file_type,$field_info,$index);
 									$sub_path = urldecode($sub_path);
 									$longSrc =  $file_dir . '/' . $sub_path;
 									if ($file->fid > 0) {
@@ -139,7 +140,13 @@ function inline_files_node_table($form,&$form_state,$page = 0,$bundle = NULL,$ty
 									$cells['published'] =  $item->status>0? 'yes' : 'no';
 									$cells['created'] =  format_date($item->created,'short');
 										$fref = $file->fid > 0? $file->fid : $sub_path;
-									$key = $item->nid . '-' . $file->default_field. '-' . $fref;
+										if (isset($field_info[$file->default_field]['cardinality'])) {
+											$intPlural = $field_info[$file->default_field]['cardinality'] == 1? 0 : 1;
+										}
+										else {
+											$intPlural = 0;
+										}
+										$key = $item->nid . '-' . $file->default_field. '-' . $intPlural . '-' .$fref;
 									$rows[$key] = $cells;
 								}		
 						}
@@ -185,7 +192,9 @@ function inline_files_node_table_submit(&$form, &$form_state) {
 				$nid = (int) array_shift($parts);
 				if (!empty($parts)) {
 					$field_ref = array_shift($parts);
-					if (!empty($parts)) {
+					if (!empty($parts) && count($parts) > 1) {
+						$plural = array_shift($parts);
+						$plural = (bool) $plural;
 						$fileRef = implode('-', $parts);
 						$fid = 0;
 						if (is_numeric($fileRef)) {
@@ -194,7 +203,7 @@ function inline_files_node_table_submit(&$form, &$form_state) {
 						if ($fid > 0) {
 							$node = node_load($nid);
 							if (is_object($node)) {
-								$field = inline_files_build_file_field($node,$field_ref,$fid);
+								$field = inline_files_build_file_field($node,$field_ref,$fid,$plural);
 								node_save($node);
 							}
 						}
@@ -204,16 +213,22 @@ function inline_files_node_table_submit(&$form, &$form_state) {
 		}
 	}
 }
-function inline_files_build_file_field($node,$field_ref = NULL,$fid = 0) {
+function inline_files_build_file_field($node,$field_ref = NULL,$fid = 0,$plural = false) {
 	if (is_string($field_ref) && !empty($field_ref) && isset($node->{$field_ref})) {
 		$lang = (!empty($node->language))? $node->language : LANGUAGE_NONE;
+		$items = field_get_items('node',$node,$field_ref);
+		if (empty($items)) {
+			$items = array();
+		}
+		$item = array(
+			'fid' => $fid,
+			'title' => $node->title
+		);
+		if ($plural || empty($items)) {
+			$items[] = $item;
+		}
 		$node->{$field_ref} = array(
-			$lang => array(
-				array(
-					'fid' => $fid,
-					'title' => $node->title
-				),
-			),
+			$lang => $items
 		);
 	}
 }
@@ -252,7 +267,7 @@ function inline_files_nodes_get($page=0,$count=false, $bundle = NULL) {
 	return $data;
 }
 
-function inline_files_match_file_fields($bundle,&$fileFields,&$field_info) {
+function inline_files_match_file_fields($bundle,&$fileFields,&$field_info,$type = 'file') {
 	static $inline_files_field_data = array();
 	if (!isset($inline_files_field_data[$bundle])) {
 		$validFields = array();
@@ -322,27 +337,35 @@ function inline_files_table($header,$rows,$attrs = array(),$caption=NULL,$addPag
 	}
 }
 
-function inline_files_match_entity($file_path = '',$file_fields = array(), $type = NULL) {
+function inline_files_match_entity($file_path = '',$file_fields = array(), $type = NULL,&$field_info, $delta = 0) {
 	$query = db_select('file_managed','f')->fields('f',array('fid'));
-	$default_field = "none";
+	$default_field = NULL;
+	$simpleType = $type == 'image'? $type : 'file';
 	if (!empty($file_fields)) {
 		foreach ($file_fields as $index => $field_name) {
+			$cardinality = $field_info[$field_name]['cardinality'];
+			$field_type = $field_info[$field_name]['type'];
 			switch ($field_name) {
 				case 'field_image':
-					$default_field = $field_name;
-						break;
-				default:
-				if (empty($default_field)) {
+					if (($delta === 0 || $cardinality < 0 ||  $cardinality > $delta) && $simpleType == 'image') {
 						$default_field = $field_name;
-				}
+					}
+					break;
+				default:
+					if (empty($default_field) && $simpleType == $field_type) {
+						$default_field = $field_name;
+					}
 				break;
 			}
 			$query->leftJoin('field_data_'.$field_name,'im'.$index,'f.fid = im'.$index.'.'.$field_name.'_fid');
 			$query->addField('im' . $index,'entity_id','entity_id' . $index);
 			$query->addField('im' . $index,'entity_type','entity_type' . $index);
 		}
+		
 	}
-	
+	if (empty($default_field)) {
+		$default_field = "none";
+	}
 	$rgx = '://(' . $file_path . '|'.urldecode($file_path).')$';
 	$query->condition('f.uri',$rgx,'REGEXP');
 	$result = $query->execute();

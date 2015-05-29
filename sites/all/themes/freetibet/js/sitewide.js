@@ -82,7 +82,7 @@
 	
 	Drupal.ft = {
 			
-		resizeIframes: function() {
+		resizeHandler: function() {
 			var s = Drupal.settings.ft, fc = s.iframes;
 			s.width = window.viewportSize.getWidth();
 			if (fc.length>0) {
@@ -143,12 +143,12 @@
 			s.menuItems = s.header.find('.region-header nav li');
 			s.numMenuItems = s.menuItems.length;
 			s.logo = $('#logo');
-			this.resizeIframes();
+			this.resizeHandler();
 			//this.highlightPlatform3();
 			this.shareThisLabelClick();
 			this.addTouchSupport();
 			this.menuToggle();
-			$(window).on('resize',Drupal.ft.resizeIframes);
+			$(window).on('resize orientationchange',Drupal.ft.resizeHandler);
 		}
 	};
 	

@@ -79,7 +79,8 @@ function uc_donation_theme() {
  * Implements hook_node_access().
  */
 function uc_donation_node_access($node, $op, $account) {
-	return uc_product_node_access($op, $node, $account);
+	//return uc_product_node_access($op, $node, $account);
+	return true;
 }
 
 /**
