@@ -1,10 +1,10 @@
 @font-face {
-    font-family: 'husarbold';
-    src: url('fonts/HusarBold.eot');
-    src: url('fonts/HusarBold.eot?#iefix') format('embedded-opentype'),
-         url('fonts/HusarBold.woff') format('woff'),
-         url('fonts/HusarBold.ttf') format('truetype'),
-         url('fonts/HusarBold.svg#intro_condblack_free') format('svg');
+    font-family: 'metabold';
+    src: url('fonts/MetaBold.eot');
+    src: url('fonts/MetaBold.eot?#iefix') format('embedded-opentype'),
+         url('fonts/MetaBold.woff') format('woff'),
+         url('fonts/MetaBold.ttf') format('truetype'),
+         url('fonts/MetaBold.svg#MetaBold') format('svg');
     font-weight: normal;
     font-style: normal;
 
@@ -14,12 +14,12 @@
 
 
 @font-face {
-    font-family: 'intro_condlight_free';
-    src: url('fonts/intro_cond_light_free-webfont.eot');
-    src: url('fonts/intro_cond_light_free-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/intro_cond_light_free-webfont.woff') format('woff'),
-         url('fonts/intro_cond_light_free-webfont.ttf') format('truetype'),
-         url('fonts/intro_cond_light_free-webfont.svg#intro_condlight_free') format('svg');
+    font-family: 'metanormal';
+    src: url('fonts/MetaNormal.eot');
+    src: url('fonts/MetaNormal.eot?#iefix') format('embedded-opentype'),
+         url('fonts/MetaNormal.woff') format('woff'),
+         url('fonts/MetaNormal.ttf') format('truetype'),
+         url('fonts/MetaNormal.svg#MetaNormal') format('svg');
     font-weight: normal;
     font-style: normal;
 
@@ -27,12 +27,12 @@
 
 body {
     background:white;
-    font-family: Helvetica, Arial, sans-serif;
-	color: #666666;
+    font-family: metanormal, Helvetica, Arial, sans-serif;
+		color: #666666;
 }
 
 h1,h2,h3,h4,h5,h6, #header ul.menu li a {
-    font-family: husarbold, Helvetica, Arial, sans-serif;
+    font-family: metabold, Helvetica, Arial, sans-serif;
     text-transform: uppercase;
     font-weight: bold;
 }
@@ -463,7 +463,7 @@ input.form-submit {
 .not-front #content .view-mode-full figure {
 	clear: both;
 	float: left;
-	margin: 0 0 1em 1em;
+	padding: 0 1em 1em 0;
 	-webkit-margin-before: 0;
 	-webkit-margin-after: 0;
 	-webkit-margin-start: 0;
@@ -1176,14 +1176,14 @@ border-bottom: none;
 }
 
 #content .node > .flexslider .field-name-field-link {
-	max-width: 20%;
+	max-width: 23%;
 	padding: 1em 2% 1em 2%;
 	bottom: 0;
 	text-align: right;
 }
 
 #content .node > .flexslider .image .field-name-field-link {
-	right: 5%;
+	right: 2%;
 }
 
 #content .node > .flexslider .video .field-name-field-link {
@@ -1227,6 +1227,7 @@ border-bottom: none;
 	overflow: hidden;
 }
 
+#content .flexslider .slides > li,
 #content .flex-slide {
 	height: 36vw;
 }
@@ -1241,7 +1242,7 @@ border-bottom: none;
 	width: 48%;
 	padding: 0;
 	margin: 0 2% 0 0;
-	height: 20rem;
+	height: 20em;
 	overflow: hidden;
 }
 
@@ -1268,9 +1269,45 @@ border-bottom: none;
 }
 
 @media screen and (max-width: 799px) {
+	
+	
 	#content .field-name-field-box > article {
 		width: 100%;
 		margin: 0;
+	}
+	
+	#content .node > .flexslider .slides > li,
+	#content .node > .flexslider .slides > li figure {
+		height: 54vw;
+	}
+	
+	#content .node > .flexslider .slides > li figcaption {
+		height: 15vw;
+		padding-top: 1em;
+		z-index: 3;
+	}
+	
+	#content .node > .flexslider .slides > li picture, #content .node > .flexslider .slides > li img {
+		position: relative;
+		z-index: 20;
+	}
+	
+	#content .node > .flexslider .slides > li .video .file-video {
+		width: 100%;
+	}
+	
+	#content .node > .flexslider .video figcaption {
+		opacity: 0;
+		left: 2%;
+		top: auto;
+		bottom: 10%;
+		width: 80%;
+		font-size: 0.9em;
+		color: white;
+	}
+	
+	#content .node > .flexslider .video:hover figcaption {
+		opacity: 1;
 	}
 }
 
@@ -1284,9 +1321,14 @@ border-bottom: none;
 
 
 @media screen and (min-width: 1414px) {
+	#content .flexslider .slides > li,
 	#content .flex-slide {
 		height: 510px;
 	}
+}
+
+#content .flex-control-nav {
+	bottom: -3.25rem;
 }
 
 #content .flex-control-nav li {
