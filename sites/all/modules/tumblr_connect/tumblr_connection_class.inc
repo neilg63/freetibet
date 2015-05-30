@@ -144,7 +144,7 @@ class TumblrConnection implements TumblrConnectionInterface {
   const DEFAULT_GENERATOR = 'public-action';
 
   private function __construct() {
-    
+
   }
 
   /**
@@ -181,19 +181,17 @@ class TumblrConnection implements TumblrConnectionInterface {
    *
    */
   function init($email, $password, $generator_name, $teaser_only) {
-    $login = NULL;
-    if (is_null($email) || is_null($password)) {
-      $login = $this->getLogin();
-    }
+
+    $initConfig = $this->getInitConfig();
 
     if (is_null($email)) {
-      $this->email = $login['email'];
+      $this->email = $initConfig['email'];
     } else {
       $this->email = $email;
     }
 
     if (is_null($password)) {
-      $this->password = $login['password'];
+      $this->password = $initConfig['password'];
     } else {
       $this->password = $password;
     }
@@ -203,7 +201,7 @@ class TumblrConnection implements TumblrConnectionInterface {
     $this->generator->setGenerator($generator_name);
     $this->generator->setEmail($this->email);
     $this->generator->setPassword($this->password);
-    $this->teaserOnly = $teaser_only;
+    $this->teaserOnly = $initConfig['teaserOnly'];
 
     $this->command = new TumblrRequestCommand();
 
@@ -332,7 +330,7 @@ class TumblrConnection implements TumblrConnectionInterface {
       $this->msg_request->setBody(urlencode($this->expandUrlPath($node_body)));
     }
     $this->msg_request->setTitle($node->title);
-    
+
     $tags = tumblr_connect_get_taxonomy_terms($node);
     if (!empty($tags)) {
       $this->msg_request->setTags($tags);
@@ -470,11 +468,12 @@ class TumblrConnection implements TumblrConnectionInterface {
    * @return
    *   Array of of login information.
    */
-  function getLogin() {
+  function getInitConfig() {
     $tumblr_conf = DbTumblrConnectConfig::factory()->getCachedConfig();
-    $login['email'] = $tumblr_conf->getEmail();
-    $login['password'] = $tumblr_conf->getPassword();
-    return $login;
+    $initConfig['email'] = $tumblr_conf->getEmail();
+    $initConfig['password'] = $tumblr_conf->getPassword();
+    $initConfig['teaserOnly'] = $tumblr_conf->getTeaserOnly();
+    return $initConfig;
   }
 
   /**
@@ -495,7 +494,7 @@ class TumblrConnection implements TumblrConnectionInterface {
 }
 
 /**
- * Extracts a comma-delimted list of taxonomy terms names 
+ * Extracts a comma-delimted list of taxonomy terms names
  * associated with a node instance.
  *
  * @param  $node

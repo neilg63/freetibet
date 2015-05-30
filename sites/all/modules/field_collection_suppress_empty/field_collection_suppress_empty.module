@@ -1,0 +1,20 @@
+<?php
+
+/*
+ * implements hook_node_view_alter
+ */
+function field_collection_suppress_empty_node_view_alter(&$build) {
+	if (isset($build['#node']) && is_object($build['#node'])) {
+		foreach ($build as $key => $data) {
+			if (strpos($key,'#') !== 0 && is_array($build[$key]) && isset($build[$key]['#formatter'])) {
+				if ($build[$key]['#formatter'] == 'field_collection_view') {
+					$items = field_get_items('node',$build['#node'],$data['#field_name']);
+					$hasItems = (count($items) > 0 && isset($items[0]) && isset($items[0]['value']) && $items[0]['value'] > 0);
+					if (!$hasItems) {
+						unset($build[$key]);
+					}
+				}
+			}
+		}
+	}
+}

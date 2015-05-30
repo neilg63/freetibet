@@ -1,0 +1,4 @@
+name = "Suppress Default image"
+description = "Suppresses display of default image (field_image) in full page view mode if Hide Main Image (field_hide_default_image) is checked"
+package = "Custom"
+core = "7.x"

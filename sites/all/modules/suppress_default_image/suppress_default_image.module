@@ -1,0 +1,17 @@
+<?php
+
+/*
+ * implements hook_node_view
+ */
+function suppress_default_image_node_view($node, $view_mode, $langcode) {
+	if (isset($node->field_image) && isset($node->field_hide_default_image) && $view_mode == 'full' && isset($node->content['field_image'])) {
+		$value = false;
+		$items = field_get_items('node',$node,'field_hide_default_image');
+		if (!empty($items) && isset($items[0]) && isset($items[0]['value'])) {
+			$value = (bool) $items[0]['value'];
+		}
+		if ($value) {
+			unset($node->content['field_image']);
+		}
+	}
+}

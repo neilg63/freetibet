@@ -1,0 +1,4 @@
+name = "Field Collection Suppress"
+description = "Suppress field collection labels in node views when none are available"
+package = "Custom"
+core = "7.x"

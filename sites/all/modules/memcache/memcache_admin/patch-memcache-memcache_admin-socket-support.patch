@@ -1,0 +1,10 @@
+--- memcache_admin/memcache_admin.module	2012-01-07 01:13:42.000000000 -0500
++++ memcache_admin/memcache_admin.module	2012-05-10 11:58:38.000000000 -0400
+@@ -259,4 +259,7 @@
+       $b = memcache_admin_bin_mapping($b);
+       if ($b == $bin) {
++        if (substr($server, 0, 7) == 'unix://') {
++          $server .= ':0';
++        }
+         $servers[] = $server;
+ 
