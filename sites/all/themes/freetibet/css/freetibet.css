@@ -372,7 +372,7 @@ input.form-submit {
 	
 	#content #page-title {
 		position: relative;
-		margin: -2.125rem auto 0.5em auto;
+		margin: -2.25rem auto 0.5em auto;
 		padding: 0 45% 0 0;
 	}
 	
@@ -385,6 +385,9 @@ input.form-submit {
 		font-size: 2.1vw;
 	}
 	
+	#content .field-name-field-box > article {
+		height: 20em;
+	}
 }
 
 @media screen and (min-width: 900px) {
@@ -555,7 +558,7 @@ a:hover {
 }
 
 #page-title {
- 	margin: 1em auto 0.5em auto;
+ 	margin: 0 auto 0.5em auto;
 	padding: 0.5em 0;
  	font-size: 2em;
 	border-bottom: solid 1px #23BCB9;
@@ -1242,7 +1245,6 @@ border-bottom: none;
 	width: 48%;
 	padding: 0;
 	margin: 0 2% 0 0;
-	height: 20em;
 	overflow: hidden;
 }
 
@@ -1352,6 +1354,7 @@ border-bottom: none;
 
 #content .field-name-sharethis {
 	clear: both;
-	margin: 1em 0;
-	padding: 1em 0;
+	margin: 0 0 1em 1em;
+	padding: 1em 0 1em 1em;
+	float: right;
 }

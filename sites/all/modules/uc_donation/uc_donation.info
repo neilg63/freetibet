@@ -3,6 +3,3 @@ description = "This node module the creation of donation products."
 dependencies[] = uc_cart
 package = Ubercart - extra
 core = 7.x
-
-files[] = uc_donation.install
-files[] = uc_donation.module

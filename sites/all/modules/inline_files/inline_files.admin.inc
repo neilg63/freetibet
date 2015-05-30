@@ -3,7 +3,8 @@
 define('INLINE_FILES_PER_PAGE', 25);
 
 function inline_files_node_list() {
-	$page = $_GET['page'];
+	$page = array_key_exists('page',$_GET)? (int) $_GET['page'] : 0;
+	$pager = '';
 	$bundle = arg(4);
 	if (!is_string($bundle) || strlen($bundle) < 3) {
 		$bundle = NULL;
@@ -175,10 +176,12 @@ function inline_files_node_table($form,&$form_state,$page = 0,$bundle = NULL,$ty
 		'#type' => 'submit',
 		'#value' => 'Update'
 	);
-	$form['bottom_pager'] = array(
-		'#type' => 'markup',
-		'#markup' => $pager
-	);
+	if (!empty($pager)) {
+		$form['bottom_pager'] = array(
+			'#type' => 'markup',
+			'#markup' => $pager
+		);
+	}
 	$form['#submit'] = array('inline_files_node_table_submit');
 	return $form;
 }
@@ -193,7 +196,7 @@ function inline_files_node_table_submit(&$form, &$form_state) {
 				if (!empty($parts)) {
 					$field_ref = array_shift($parts);
 					if (!empty($parts) && count($parts) > 1) {
-						$plural = array_shift($parts);
+						$plural = array_shift($parts);/181
 						$plural = (bool) $plural;
 						$fileRef = implode('-', $parts);
 						$fid = 0;
