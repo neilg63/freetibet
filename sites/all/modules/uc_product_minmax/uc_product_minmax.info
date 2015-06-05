@@ -3,13 +3,12 @@ description = Set a minimum and maximum quantity for products in a cart necessar
 package = Ubercart - extra
 core = 7.x
 files[] = uc_product_minmax.module
-files[] = uc_product_minmax.install
 dependencies[] = uc_product
 stylesheets[all][] = uc_product_minmax.css
 configure = admin/store/settings/products/edit/features
-; Information added by drupal.org packaging script on 2011-02-25
+; Information added by drupal.org packaging script on 2013-10-19
 version = "7.x-1.x-dev"
 core = "7.x"
 project = "uc_product_minmax"
-datestamp = "1298620519"
+datestamp = "1382149554"
 

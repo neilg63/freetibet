@@ -1,0 +1,125 @@
+<?php
+
+/*
+ * Overrides for content types, node display views
+ * and editing forms 
+ * for the Serpentine Gallery site
+ */
+
+/*
+ * implements hook_menu
+*/
+function page_viewmode_menu() {
+	$items = array();
+	
+  $items['admin/structure/ds/page_view_modes'] = array(
+	  'title' => t('Custom Page View Modes'),
+	  'page callback' => 'drupal_get_form',
+  	'page arguments' => array('page_viewmode_settings'),
+		'access arguments' => array("administer site configuration"),
+	  'type' => MENU_LOCAL_TASK,
+  	'file' => 'page_viewmode.admin.inc',
+	);
+  return $items;
+}
+
+/*
+ * implements hook_node_load
+*/
+function page_viewmode_node_load($nodes,$types) {
+	$enabledTypes = page_viewmode_enabled_types();
+	$validTypes = array_keys($enabledTypes);
+	if (!empty($validTypes) && count(array_intersect($validTypes, $types))) {
+		foreach ($nodes as $node) {
+			if (in_array($node->type,$validTypes)) {
+				$node->page_viewmode = page_viewmode_value($node);
+			}
+		}
+	}
+}
+
+/*
+ * implements hook_node_view
+*/
+function page_viewmode_node_view($node,$view_mode) {
+	if ($view_mode == 'full') {
+		$node->node_page = true;
+		if (isset($node->page_viewmode) && !empty($node->page_viewmode) && 	$node->page_viewmode != 'full') {
+			$node->content = node_view($node,$node->page_viewmode);
+			$node->content['#page_viewmode'] = 'full';
+			$node->node_page = true;
+		}
+	} else {
+		$node->node_page = false;
+	}
+}
+
+/*
+ * Get custom full page view mode
+ * @param StdClass $node
+ * @param bool $raw
+ * @return string
+*/
+function page_viewmode_value($node,$raw = false) {
+	$view_mode = $raw? '' : 'full';
+	if (is_object($node) && $node->nid > 0) {
+		$query = db_select('page_viewmode','pv')->fields('pv',array('view_mode') );
+		$query->condition('entity_id', $node->nid);
+		$result = $query->execute();
+		if ($result) {
+			$custom_mode = $result->fetchField();
+			if (!empty($custom_mode)) {
+				$view_mode = $custom_mode; 
+			}
+		}
+	}
+	
+	return $view_mode;
+}
+
+/*
+ * implements hook_node_insert
+*/
+function page_viewmode_node_insert($node) {
+	page_viewmode_node_save($node);
+}
+
+/*
+ * implements hook_node_update
+*/
+function page_viewmode_node_update($node) {
+	page_viewmode_node_save($node);
+}
+
+function page_viewmode_node_save($node) {
+	if (isset($node->page_viewmode) && is_string($node->page_viewmode) && $node->nid > 0) {
+		module_load_include('inc', 'page_viewmode','page_viewmode.edit');
+		_page_viewmode_node_save($node);
+	}
+}
+
+/*
+* implements hook_node_FORM_ID_form_alter
+*/
+function page_viewmode_form_node_form_alter(&$form,$form_state,$form_id) {
+	if (isset($form['#node'])) {
+		module_load_include('inc', 'page_viewmode','page_viewmode.edit');
+		_page_viewmode_form_node_form_alter($form, $form_state, $form_id);
+	}
+}
+
+/*
+ * Fetch hash table of comtent types with alternative view modes
+ * @return array
+ */
+function page_viewmode_enabled_types() {
+	static $page_viewmode_enabled_types;
+	if (!is_array($page_viewmode_enabled_types)) {
+		$default = array();
+		$page_viewmode_enabled_types = variable_get('page_viewmode_options',$default);
+		if (!is_array($page_viewmode_enabled_types)) {
+			$page_viewmode_enabled_types = $default;
+		}
+	}
+	return $page_viewmode_enabled_types;
+}

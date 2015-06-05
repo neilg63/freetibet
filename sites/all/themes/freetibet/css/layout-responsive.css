@@ -36,8 +36,15 @@ body {
 }
 
 #page-wrapper > div, #page-wrapper > header, #page-wrapper > footer {
-	width: 96%;
 	padding: 0 2%;
+}
+
+#page-wrapper > div, #page-wrapper > header {
+	width: 96%;
+}
+
+#page-wrapper > footer {
+	width: 92%;
 }
 
 #page-wrapper > header, #page-wrapper > footer {

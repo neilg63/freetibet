@@ -49,10 +49,12 @@ function inline_files_node_table($form,&$form_state,$page = 0,$bundle = NULL,$ty
 	if ($total > 0) {
 		$data = inline_files_nodes_get($page,false,$bundle);
 	}
+
 	$rows = array();
 	if (!empty($data)) {
 		$public_path = variable_get('file_public_path','sites/default/files');
 		$file_dir = base_path() . $public_path;
+		$file_root_dir = 	realpath(DRUPAL_ROOT. DIRECTORY_SEPARATOR . str_replace('/',DIRECTORY_SEPARATOR, $public_path)) . DIRECTORY_SEPARATOR;
 		$rgx = '(src|href)=["\']*([^"\'> ]*)(' . $file_dir . ')?/(([^"\'>\/]+?/)*[^"\'>\/]+?\.(\w+))[^\w.]';
 	
 		$field_info = field_info_fields();
@@ -85,11 +87,16 @@ function inline_files_node_table($form,&$form_state,$page = 0,$bundle = NULL,$ty
 				}	
 				if (isset($matches[4])) {
 					foreach ($matches[4] as $index => $sub_path) {
-						$fd = '';
+						
+						$parts = explode('?',$sub_path);
+						if (count($parts)> 1) {
+							array_pop($parts);
+							$sub_path = implode('?', $parts);
+						}
+						$fd = $sub_path. '<br />';
 						if (!empty($matches[2][$index]) == $file_dir) {
 							$src = NULL;
 							$extension = strtolower($matches[6][$index]);
-						
 							$is_domain = (bool) (
 								preg_match('#^(org|uk|com|net|info|edu)$#',$extension)
 									|| preg_match('#^www\.#',$matches[3][$index])
@@ -100,15 +107,21 @@ function inline_files_node_table($form,&$form_state,$page = 0,$bundle = NULL,$ty
 							);
 							if (!$is_domain) {
 									$is_image = (bool) preg_match('#^(jpe?g|png|gif|bmp)$#',$extension);
+									$full_path = $file_root_dir .$sub_path;
+									$file_exists = file_exists($full_path);
+									$file_size = 0;
+									if ($file_exists) {
+										$file_size = filesize($full_path);
+									}
 									$file_type = $is_image? 'image' : 'file';
 									$file = inline_files_match_entity($sub_path,$validFields,$file_type,$field_info,$index);
 									$sub_path = urldecode($sub_path);
 									$longSrc =  $file_dir . '/' . $sub_path;
 									if ($file->fid > 0) {
-										if ($is_image) {
+										if ($is_image && $file_exists) {
 											$src = image_style_url('media_thumbnail',$sub_path);
 										}
-										$fd = l('[file]','file/'.$file->fid.'/edit', $opts);
+										$fd .= l('[file]','file/'.$file->fid.'/edit', $opts);
 										switch ($file->related_entity_type) {
 											case 'node':
 												$fd .= ' ' . l('[entity]', 'node/'.$file->related_entity_id.'/edit', $opts);
@@ -125,7 +138,13 @@ function inline_files_node_table($form,&$form_state,$page = 0,$bundle = NULL,$ty
 										$fd .= ' (matched on <em>'.$file->related_entity_field.'<em>)';
 									}
 									if ($is_image) {
-										$img = l('<img src="'.$src.'" title="'.$src.'" class="media-thumbnail">',$longSrc,$imgOpts);
+										if ($file_exists) {
+											$img = '<img src="'.$src.'" title="'.$src.'" class="media-thumbnail">';
+											$img = l($img,$longSrc,$imgOpts);
+										}
+										else {
+											$img = $src . ' (N/A)';
+										}					
 									}
 									else {
 										$img = l('[File]' , $src);
@@ -133,6 +152,16 @@ function inline_files_node_table($form,&$form_state,$page = 0,$bundle = NULL,$ty
 									/*if (preg_match('#www\.freetibet#',$src)) {
 										var_dump($matches,$index);exit;
 									}*/
+									if ($file_exists)	{
+										$fd .= " " .format_size($file_size);
+										if ($is_image) {
+											$size = getimagesize($full_path);
+											if (is_array($size) && isset($size[0])) {
+												$fd .= ',  ' . $size[0] . " x " . $size[1] . 'px';
+											}
+										}
+									}
+										
 									$cells = array();
 									$cells['title'] = l($item->title,'node/'.$item->nid.'/edit',$opts) . ' ('.$type_names[$item->type].')';
 									$cells['images'] = $img;
@@ -196,7 +225,7 @@ function inline_files_node_table_submit(&$form, &$form_state) {
 				if (!empty($parts)) {
 					$field_ref = array_shift($parts);
 					if (!empty($parts) && count($parts) > 1) {
-						$plural = array_shift($parts);/181
+						$plural = array_shift($parts);
 						$plural = (bool) $plural;
 						$fileRef = implode('-', $parts);
 						$fid = 0;

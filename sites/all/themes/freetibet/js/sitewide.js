@@ -92,6 +92,7 @@
 				s.header.removeAttr('style');
 			  s.b.removeClass('menu-expanded');
 			}
+			s.header.removeAttr('style');
 		},
 
 		addTouchSupport: function() {
@@ -117,14 +118,17 @@
 				e.preventDefault();
 				e.stopImmediatePropagation();
 				var s = Drupal.settings.ft,h;
-				if (s.width <= s.desktopWidth) {	
-					if (s.b.hasClass('menu-expanded')) {
+				if (s.width <= s.desktopWidth) {
+					var expanded = s.b.hasClass('menu-expanded');
+					if (!expanded || s.header.attr('style') == undefined) {
+						h = (s.menuItems.first().outerHeight() * s.numMenuItems) + (s.sbox.outerHeight() * 1.5) + s.logo.height();
+						s.header.css('height', h + 'px');
+					}
+					if (expanded) {
 						h = s.logo.height();
 						s.header.css('height', h + 'px');
 						s.b.removeClass('menu-expanded');
 					} else {
-						h = (s.menuItems.first().height() * s.numMenuItems) + (s.sbox.height() * 1.5) + s.logo.height();
-						s.header.css('height', h + 'px');
 						s.b.addClass('menu-expanded');
 					}
 				}

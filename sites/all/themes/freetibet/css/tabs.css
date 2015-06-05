@@ -29,8 +29,9 @@ ul.primary {
 }
 
 ul.tabs-primary {
-	margin: 1em 0 2.5em 0;
-	height: 1.5em;
+	clear: both;
+	margin: 1em 0;
+	height: 2em;
 	padding:0;
 	border-top: solid 1px #999999;
 	border-bottom: solid 1px #999999;
@@ -48,16 +49,16 @@ ul.tabs-primary li:first-child {
 }
 
 ul.tabs-primary li a {
-	background: #dddddd;
+	background: #eeeeee;
 	padding: 0.5em 1em 0em 1em;
-	height: 1.5em;
+	height: 1em;
 	overflow:hidden;
-	color: #999999;
+	color: #888888;
 }
 
 ul.tabs-primary li a:hover, ul.tabs-primary li.is-active a {
 	background-color: #2faeb9;
-	color: black;
+	color: white;
 }
 
 ul.primary li {

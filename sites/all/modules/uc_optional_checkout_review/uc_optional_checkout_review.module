@@ -5,8 +5,6 @@
  * Makes the review button on the Ubercart checkout page optional (set by store admin).
  *
  * Original author: Oliver Coleman, oliver@e-geek.com.au
- * The D7 version doesn't work with Paypal, So this is a re-port of the
- * original D6 version.
  */
 
 /**
@@ -35,44 +33,23 @@ function uc_optional_checkout_review_form_uc_cart_checkout_form_alter(&$form, &$
  */
 function uc_optional_checkout_review_uc_cart_checkout_form_submit($form, &$form_state) {
   if (variable_get('uc_optional_checkout_review', FALSE)) {
-    // Clear the previous redirect because we're going to override it anyway.
-    unset($form_state['redirect']);
+    $order = uc_order_load($_SESSION['cart_order']);
 
-    // Cause the review form to be loaded because some modules may
-    // do some of their processing here.
-    uc_cart_checkout_review();
-
-    // Payment method doesn't seem to be set unless we pass TRUE
-    $order = uc_order_load($_SESSION['cart_order'], TRUE);
-    $form_state['uc_order'] = $order;
     if ($order->payment_method == 'paypal_wps') {
-      $wps_form = uc_paypal_wps_form($form, $form_state, $order);
+      $wps_form = drupal_retrieve_form('uc_paypal_wps_form', $form_state, $order);
+      drupal_prepare_form('uc_paypal_wps_form', $wps_form, $form_state, $order);
       $wps_url = $wps_form['#action'] . '?';
       foreach (element_children($wps_form) as $key) {
-        if(isset($wps_form[$key]['#value'])) {
-          $wps_url .= urlencode($key) . '=' . urlencode($wps_form[$key]['#value']) . '&';
-        }
-      }     
+        $wps_url .= urlencode($key) . '=' . urlencode($wps_form[$key]['#value']) . '&';
+      }
       $wps_url = trim($wps_url, '&');
       drupal_goto($wps_url);
     }
     else {
-      // Now submit the form.  Obviously the $form_state isn't actually
-      // correct... hopefully nothing will care.
-      uc_cart_checkout_review_form_submit($form, $form_state);
-
-// And check for an error.
-      if ($form_state['redirect'] == 'cart/checkout/review') {
-        // There's an error, so pretend the user clicked back.
-        uc_cart_checkout_review_form_back($form, $form_state);
-      }
+      $form_state['values']['op'] = t('Submit order');
+      $form_state['uc_order'] = $order;
+      drupal_form_submit('uc_cart_checkout_review_form', $form_state);
+      $form_state['programmed'] = FALSE;
     }
-
-    // Ultimately the $form_state changes made by functions above are used.
-  }
-  else if ($form_state['redirect'] != 'cart/checkout') {
-    // Log any unexpected URLs in 'redirect'.
-    watchdog('uc_cart', 'Checkout returned unexpected destination url: %url',
-      array('%url' => $form_state['redirect']), WATCHDOG_DEBUG);
   }
 }

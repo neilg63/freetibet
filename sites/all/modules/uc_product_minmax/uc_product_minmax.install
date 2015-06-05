@@ -60,6 +60,10 @@ function uc_product_minmax_schema() {
   return $schema;
 }
 
+function uc_product_minmax_install() {
+
+}
+
 function uc_product_minmax_uninstall() {
   variable_del('uc_product_minmax_weight');
 }

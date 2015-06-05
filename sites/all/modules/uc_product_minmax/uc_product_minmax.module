@@ -478,9 +478,7 @@ function uc_product_minmax_values_load($pfid) {
  *   The min and max object.
  */
 function uc_product_minmax_feature_load($nid) {
-  if (db_table_exists("uc_product_minmax")){
-    return db_query("SELECT * FROM {uc_product_minmax} WHERE nid = :nid", array(':nid' => $nid))->fetchObject();
-  }
+  return db_query("SELECT * FROM {uc_product_minmax} WHERE nid = :nid", array(':nid' => $nid))->fetchObject();
 }
 
 /**

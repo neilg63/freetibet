@@ -326,3 +326,8 @@ function freetibet_menu_link($variables) {
 	$output = l($element['#title'], $element['#href'], $element['#localized_options']);
 	return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
 }
+
+
+function freetibet_references_dialog_links($links) {
+  return theme('links', array('links' => $links, 'attributes' => array('class' => array('references-dialog-links'))));
+}

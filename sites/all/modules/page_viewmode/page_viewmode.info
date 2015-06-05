@@ -1,0 +1,5 @@
+name = Page View Mode
+description = Customise the view mode of a full page view on a per node basis
+core = 7.x
+dependencies[] = ds
+package = "Display Suite"

@@ -15,4 +15,3 @@ Credits:
    - http://enviro-geek.net
  - Drupal 6 port: Cedar Myers
  - Drupal 7 port: Molfar
- - Drupal 7 port: malcolmp (re-ported because it didn't work for paypal)
