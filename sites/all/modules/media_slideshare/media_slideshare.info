@@ -1,0 +1,17 @@
+name = Media: Slideshare
+description = Provides Slideshare support to the Media module.
+package = "Media"
+core = 7.x
+
+files[] = media_slideshare.info
+files[] = media_slideshare.module
+files[] = includes/MediaSlideshareStreamWrapper.inc
+files[] = includes/MediaInternetSlideshareHandler.inc
+
+dependencies[] = media_internet
+; Information added by drupal.org packaging script on 2013-10-01
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "media_slideshare"
+datestamp = "1380586568"
+

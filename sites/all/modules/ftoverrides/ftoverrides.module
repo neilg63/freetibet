@@ -21,30 +21,79 @@ function ftoverrides_form_search_block_form_alter(&$form,&$form_state,$form_id) 
 function ftoverrides_node_view($node,$view_mode) {
 	switch ($node->type) {
 		case 'media_section':
-			$mode = 'full';
-			$items = field_get_items('node',$node,'field_layout_mode');
-			if (!empty($items) && isset($items[0]) && isset($items[0]['value']) && is_string($items[0]['value'])) {
-				$mode = $items[0]['value'];
-			}
-			if (!empty($items) && isset($items[0]) && isset($items[0]['value']) && is_string($items[0]['value'])) {
-				$mode = $items[0]['value'];
-			}
+		case 'text':
+		case 'box':
+		case 'take_action':
+			$override_view_modes = array('full','default');
+			if (in_array($view_mode,$override_view_modes)) {
+				$mode = 'full';
+				$items = field_get_items('node',$node,'field_layout_mode');
+				if (!empty($items) && isset($items[0]) && isset($items[0]['value']) && is_string($items[0]['value'])) {
+					$mode = $items[0]['value'];
+				}
+				if (!empty($items) && isset($items[0]) && isset($items[0]['value']) && is_string($items[0]['value'])) {
+					$mode = $items[0]['value'];
+				}
 			
-			$show_title = false;
-			$items = field_get_items('node',$node,'field_show_title');
-			if (!empty($items) && isset($items[0]) && isset($items[0]['value']) && is_numeric($items[0]['value'])) {
-				$show_title = (bool) $items[0]['value'];
-			}
-			if ($mode != 'full' && empty($node->page_viewmode)) {
-				$node->page_viewmode = $mode;
-				$node->content = node_view($node,$mode);
-			}
-			if (!$show_title && isset($node->content['title'])) {
-				unset($node->content['title']);
+				$show_title = false;
+				$items = field_get_items('node',$node,'field_show_title');
+				if (!empty($items) && isset($items[0]) && isset($items[0]['value']) && is_numeric($items[0]['value'])) {
+					$show_title = (bool) $items[0]['value'];
+				}
+				if ($mode != 'full' && empty($node->page_viewmode)) {
+					$node->page_viewmode = $mode;
+					$node->content = node_view($node,$mode);
+				}
+				if (!$show_title && isset($node->content['title'])) {
+					unset($node->content['title']);
+				}
 			}
 			break;
 	}
 }
+
+/*
+ * Implements hook_ds_fields_info
+*/
+
+function ftoverrides_ds_fields_info($entity_type) {
+	$fields = array();
+
+	switch ($entity_type) {
+		case 'file':
+			$fields['related_text'] = array(
+					'title' => t('Text in referencing entity'),
+					'field_type' => DS_FIELD_TYPE_FUNCTION,
+					'function' => 'ftoverrides_related_text',
+					'properties' => array(
+							'settings' => array(
+							),
+					)
+			);
+			return array($entity_type => $fields);
+			break;
+	}
+	return;
+}
+
+function ftoverrides_related_text($field) {
+	if (isset($field['entity']) && is_object($field['entity']) && $field['entity_type'] == 'file') {
+		$text = '';
+		$entity = $field['entity'];
+		if ($entity->referencing_entity instanceof FieldCollectionItemEntity) {
+			if (isset($entity->referencing_entity->field_text)) {
+				$items = field_get_items('field_collection_item',$entity->referencing_entity,'field_text');
+				if (is_array($items) && !empty($items) && isset($items[0]['safe_value'])) {
+					if (is_string($items[0]['safe_value'])) {
+						return $items[0]['safe_value'];
+					}
+				}
+			}
+			return $text;
+		}
+	}
+}
+
 
 function ftoverrides_form_node_form_alter(&$form, $form_state, $form_id) {
 	if (isset($form['node_class']) && isset($form['node_class']['css_class'])) {
@@ -65,4 +114,31 @@ function ftoverrides_form_node_form_alter(&$form, $form_state, $form_id) {
 			$form['node_class']['css_class']['#options'] = $arrClasses;
 			$form['node_class']['css_class']['#description'] = t("Class name will be added to wrapper tag of the node in full page view");
   }
+
+	$node = $form['#node'];
+	if (is_object($node) && isset($node->type)) {
+		if (isset($form['field_layout_mode'])) {
+			$view_modes = ftoverrides_get_available_view_modes($node->type);
+			$lang = (isset($node->language))? $node->language : LANGUAGE_NONE;
+			$form['field_layout_mode'][$lang]['#options'] = $view_modes;
+		}
+	}
+}
+
+function ftoverrides_get_available_view_modes($bundle = NULL) {
+	$view_modes = array();
+	$prefix = 'field_bundle_settings_node__';
+	$data = variable_get($prefix . $bundle, NULL);
+	$excludeViewModes = array('search_index','summary','teaser','default','full');
+	$view_modes = array(
+			'full' => 'Full (Default full page view)',
+	);
+	if (is_array($data) && isset($data['view_modes']) && is_array($data['view_modes']) && !empty($data['view_modes'])) {
+		foreach ($data['view_modes'] as $name => $data) {
+			if ($data['custom_settings'] && !in_array($name,$excludeViewModes)) {
+				$view_modes[$name] = $name;
+			}
+		}
+	}
+	return $view_modes;
 }

@@ -1,0 +1,280 @@
+diff --git a/includes/MediaInternetSlideshareHandler.inc b/includes/MediaInternetSlideshareHandler.inc
+index 4c4554e..8d3738d 100644
+--- a/includes/MediaInternetSlideshareHandler.inc
++++ b/includes/MediaInternetSlideshareHandler.inc
+@@ -1,4 +1,5 @@
+ <?php
++
+ /**
+  * @file
+  * media_internet handler for slideshare.
+@@ -11,62 +12,29 @@
+  */
+ class MediaInternetSlideshareHandler extends MediaInternetBaseHandler {
+ 
+-  static $slideshare;
+-
+   public static function parse($embedCode) {
+     $pattern = '@slideshare\.net/([^"\&\? ]+)@i';
+     preg_match($pattern, $embedCode, $matches);
+     if (isset($matches[1])) {
+-      return $matches[1];
++      return file_stream_wrapper_uri_normalize('slideshare://' . $matches[1]);
+     }
+   }
+ 
+   public function claim($embedCode) {
+     $parse = self::parse($embedCode);
+-    if ($parse && self::getObjectFromUrl($embedCode)) {
++    if ($parse) {
+       return TRUE;
+     }
+   }
+ 
+-  public function validate() {
+-    $slideshow = self::$slideshare;
+-    if ($slideshow) {
+-      $uri = file_stream_wrapper_uri_normalize('slideshare://s/' . $slideshow['slideshow_id']);
+-      $existing_files = file_load_multiple(array(), array('uri' => $uri));
+-      if (count($existing_files)) {
+-        throw new MediaInternetValidationException(t('You have entered a URL for a slideshare presentation that is already in your library.'));
+-      }
+-    }
+-    else {
+-      throw new MediaInternetValidationException(t('Cannot find presentation for given slideshare embed code.'));
+-    }
+-  }
+-
+   public function save() {
+     $file = $this->getFileObject();
+-    db_insert('media_slideshare_url')
+-    ->fields(array(
+-      'id' => self::$slideshare['slideshow_id'],
+-      'url' => self::parse($this->embedCode),
+-    ))
+-    ->execute();
+-
+     file_save($file);
+     return $file;
+   }
+ 
+   public function getFileObject() {
+-    $uri = file_stream_wrapper_uri_normalize('slideshare://s/' . self::$slideshare['slideshow_id']);
++    $uri = $this->parse($this->embedCode);
+     return file_uri_to_object($uri);
+   }
+-
+-  public static function getObjectFromUrl($embedCode) {
+-    $url = 'http://www.slideshare.net/' . self::parse($embedCode);
+-    $response = drupal_http_request('http://www.slideshare.net/api/oembed/2?format=json&url=' . $url);
+-    if ($response->code == '200') {
+-      self::$slideshare = drupal_json_decode($response->data);
+-      return self::$slideshare;
+-    }
+-  }
+-
+ }
+diff --git a/includes/MediaSlideshareStreamWrapper.inc b/includes/MediaSlideshareStreamWrapper.inc
+index 87e30c2..0e1b8d2 100644
+--- a/includes/MediaSlideshareStreamWrapper.inc
++++ b/includes/MediaSlideshareStreamWrapper.inc
+@@ -10,14 +10,6 @@
+  */
+ class MediaSlideshareStreamWrapper extends MediaReadOnlyStreamWrapper {
+ 
+-  protected $base_url = 'http://www.slideshare.net/slideshow/embed_code';
+-
+-  function interpolateUrl() {
+-    if ($parameters = $this->get_parameters()) {
+-      return $this->base_url . '/' . $parameters['s'];
+-    }
+-  }
+-
+   function getTarget($f) {
+     return FALSE;
+   }
+@@ -27,24 +19,20 @@ class MediaSlideshareStreamWrapper extends MediaReadOnlyStreamWrapper {
+   }
+ 
+   function getOriginalThumbnailPath() {
+-    $parts = $this->get_parameters();
+-    $id = check_plain($parts['s']);
+-
+-    $url = db_query("SELECT url FROM {media_slideshare_url} WHERE id=:id", array(':id' => $id))->fetchField();
++    $url = $this->getURI();
+     if ($url) {
+-      $slideshare = MediaInternetSlideshareHandler::getObjectFromUrl('http://www.slideshare.net/' . $url);
+-      if (!empty($slideshare['thumbnail'])) {
+-        return $slideshare['thumbnail'];
++      $response = drupal_http_request('http://www.slideshare.net/api/oembed/2?format=json&url=' . $url);
++      if ($response->code == '200') {
++        $response = drupal_json_decode($response->data);
++        return $response['thumbnail'];
+       }
+     }
+   }
+-
+-  function getLocalThumbnailPath() {
+-
+-    $parts = $this->get_parameters();
+-    $id = check_plain($parts['s']);
+-
+-    $local_path = 'public://media-slideshare/' . $id . '.jpg';
++  /**
++   * Get local thumbnail path.
++   */
++  public function getLocalThumbnailPath() {
++    $local_path = 'public://media-slideshare/' . substr($this->getURI(), 8) . '.jpg';
+     if (!file_exists($local_path)) {
+       $dirname = drupal_dirname($local_path);
+       file_prepare_directory($dirname, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
+diff --git a/media_slideshare.info b/media_slideshare.info
+index 49be723..2630afb 100644
+--- a/media_slideshare.info
++++ b/media_slideshare.info
+@@ -8,4 +8,6 @@ files[] = media_slideshare.module
+ files[] = includes/MediaSlideshareStreamWrapper.inc
+ files[] = includes/MediaInternetSlideshareHandler.inc
+ 
+-dependencies[] = media_internet
+\ No newline at end of file
++dependencies[] = media_internet
++
++
+diff --git a/media_slideshare.install b/media_slideshare.install
+index c376333..a4409fc 100644
+--- a/media_slideshare.install
++++ b/media_slideshare.install
+@@ -1,10 +1,5 @@
+ <?php
+ /**
+- * @file
+- * Install, update and uninstall functions for the Media: Issuu module.
+- */
+-
+-/**
+  * Implements hook_schema().
+  */
+ function media_slideshare_schema() {
+@@ -34,4 +29,25 @@ function media_slideshare_schema() {
+  */
+ function media_slideshare_update_7001() {
+   drupal_install_schema('media_slideshare');
++}
++
++/**
++ * Implements hook_uninstall().
++ */
++function media_slideshare_uninstall() {
++  $document = file_type_load('document');
++  if (isset($document->mimetypes['document/slideshare'])) {
++    unset($document->mimetypes['document/slideshare']);
++  }
++  file_type_save($document);
++}
++
++/**
++ * Implements hook_install().
++ */
++function media_slideshare_install() {
++  //Add mimetye to document file_type.
++  $document = file_type_load('document');
++  $document->mimetypes[] = 'document/slideshare';
++  file_type_save($document);
+ }
+\ No newline at end of file
+diff --git a/media_slideshare.module b/media_slideshare.module
+index b99d732..2ce0e2c 100644
+--- a/media_slideshare.module
++++ b/media_slideshare.module
+@@ -9,7 +9,8 @@
+ function media_slideshare_theme($existing, $type, $theme, $path) {
+   return array(
+     'media_slideshare_document' => array(
+-      'variables' => array('uri' => NULL, 'width' => NULL, 'height' => NULL),
++      'type' => 'document',
++      'variables' => array('uri' => NULL, 'width' => NULL, 'height' => NULL, 'document_id' => NULL ),
+       'path' => $path . '/theme',
+       'template' => 'media-slideshare-document',
+     ),
+@@ -20,21 +21,26 @@ function media_slideshare_theme($existing, $type, $theme, $path) {
+  * Preprocess function for theme('media_slideshare_document').
+  */
+ function media_slideshare_preprocess_media_slideshare_document(&$variables) {
+-  $wrapper = file_stream_wrapper_get_instance_by_uri($variables['uri']);
+-  $parts = $wrapper->get_parameters();
+-  $variables['document_id'] = check_plain($parts['s']);
+-  $variables['url'] = 'http://www.slideshare.net/slideshow/embed_code/' . $variables['document_id'];
++  $arr = explode('//', $variables['uri']);
++  $url = 'http://www.slideshare.net/' .  end( $arr );
++  $response = drupal_http_request('http://www.slideshare.net/api/oembed/2?format=json&url=' . $url);
++  if ($response->code == '200') {
++      $response = drupal_json_decode($response->data);
++      $variables['url'] = '//www.slideshare.net/slideshow/embed_code/' . $response['slideshow_id'];
++  }
+   $variables['width'] = isset($variables['width']) ? $variables['width'] : '425';
+   $variables['height'] = isset($variables['height']) ? $variables['height'] : '355';
++  $variables['document_id'] = isset($variables['document_id']) ? $variables['document_id'] : $response['slideshow_id'];
+ }
+ 
+ /**
+  * Implements hook_file_formatter_info().
+  */
+ function media_slideshare_file_formatter_info() {
++  $formatters = array();
+   $formatters['media_slideshare_document'] = array(
+     'label' => t('Slideshare presentation'),
+-    'file types' => array('default'),
++    'file types' => array('document'),
+     'default settings' => array(
+       'width' => '425',
+       'height' => '355',
+@@ -44,12 +50,12 @@ function media_slideshare_file_formatter_info() {
+   );
+   $formatters['media_slideshare_image'] = array(
+     'label' => t('Slideshare Preview Image'),
+-    'file types' => array('default'),
++    'file types' => array('document'),
+     'default settings' => array(
+       'image_style' => '',
+     ),
+     'view callback' => 'media_slideshare_file_formatter_image_view',
+-    'settings callback' => 'media_slideshare_file_formatter_image_view',
++    'settings callback' => 'media_slideshare_file_formatter_image_settings',
+   );
+   return $formatters;
+ }
+@@ -218,4 +224,20 @@ function media_slideshare_ctools_plugin_api($owner, $api) {
+   if (isset($api_versions[$owner][$api])) {
+     return array('version' => $api_versions[$owner][$api]);
+   }
+-}
+\ No newline at end of file
++}
++
++/**
++ * Implements hook_file_mimetype_mapping_alter().
++ *
++ * Regster the document/slideshow mimetype.
++ */
++ function media_slideshare_file_mimetype_mapping_alter(&$mapping) {
++   $mapping['mimetypes'][] = 'document/slideshare';
++ }
++
++ /**
++ * Implements hook_file_default_types_alter().
++ */
++ function media_slideshare_file_default_types_alter(&$types) {
++   $types['document']->mimetypes[] = 'document/slideshare';
++ }
+diff --git a/theme/media-slideshare-document.tpl.php b/theme/media-slideshare-document.tpl.php
+index f934593..c9c65de 100644
+--- a/theme/media-slideshare-document.tpl.php
++++ b/theme/media-slideshare-document.tpl.php
+@@ -12,4 +12,4 @@
+ ?>
+ <div class="media-slideshare-wrapper" id="media-slideshare-<?php print $document_id; ?>" style="width:<?php print $width; ?>">
+   <iframe src="<?php print $url; ?>?rel=0" width="<?php print $width; ?>" height="<?php print $height; ?>" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+-</div>
+\ No newline at end of file
++</div>

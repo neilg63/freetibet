@@ -1,0 +1,221 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function media_slideshare_theme($existing, $type, $theme, $path) {
+  return array(
+    'media_slideshare_document' => array(
+      'variables' => array('uri' => NULL, 'width' => NULL, 'height' => NULL),
+      'path' => $path . '/theme',
+      'template' => 'media-slideshare-document',
+    ),
+  );
+}
+
+/**
+ * Preprocess function for theme('media_slideshare_document').
+ */
+function media_slideshare_preprocess_media_slideshare_document(&$variables) {
+  $wrapper = file_stream_wrapper_get_instance_by_uri($variables['uri']);
+  $parts = $wrapper->get_parameters();
+  $variables['document_id'] = check_plain($parts['s']);
+  $variables['url'] = 'http://www.slideshare.net/slideshow/embed_code/' . $variables['document_id'];
+  $variables['width'] = isset($variables['width']) ? $variables['width'] : '425';
+  $variables['height'] = isset($variables['height']) ? $variables['height'] : '355';
+}
+
+/**
+ * Implements hook_file_formatter_info().
+ */
+function media_slideshare_file_formatter_info() {
+  $formatters['media_slideshare_document'] = array(
+    'label' => t('Slideshare presentation'),
+    'file types' => array('default'),
+    'default settings' => array(
+      'width' => '425',
+      'height' => '355',
+    ),
+    'view callback' => 'media_slideshare_file_formatter_embed_view',
+    'settings callback' => 'media_slideshare_file_formatter_embed_settings',
+  );
+  $formatters['media_slideshare_image'] = array(
+    'label' => t('Slideshare Preview Image'),
+    'file types' => array('default'),
+    'default settings' => array(
+      'image_style' => '',
+    ),
+    'view callback' => 'media_slideshare_file_formatter_image_view',
+    'settings callback' => 'media_slideshare_file_formatter_image_view',
+  );
+  return $formatters;
+}
+
+/**
+ * Implements hook_file_formatter_FORMATTER_view().
+ */
+function media_slideshare_file_formatter_embed_view($file, $display, $langcode) {
+  $scheme = file_uri_scheme($file->uri);
+  if ($scheme == 'slideshare') {
+    $element = array(
+      '#theme' => 'media_slideshare_document',
+      '#uri' => $file->uri,
+    );
+    foreach (array('width', 'height') as $setting) {
+      $element['#' . $setting] = isset($file->override[$setting]) ? $file->override[$setting] : $display['settings'][$setting];
+    }
+    return $element;
+  }
+}
+
+/**
+ * Implements hook_file_formatter_FORMATTER_settings().
+ */
+function media_slideshare_file_formatter_embed_settings($form, &$form_state, $settings) {
+  $element = array();
+  $element['width'] = array(
+    '#title' => t('Width'),
+    '#type' => 'textfield',
+    '#default_value' => $settings['width'],
+  );
+  $element['height'] = array(
+    '#title' => t('Height'),
+    '#type' => 'textfield',
+    '#default_value' => $settings['height'],
+  );
+  return $element;
+}
+
+/**
+ * Implements hook_file_formatter_FORMATTER_view().
+ */
+function media_slideshare_file_formatter_image_view($file, $display, $langcode) {
+  $scheme = file_uri_scheme($file->uri);
+  if ($scheme == 'slideshare') {
+    $wrapper = file_stream_wrapper_get_instance_by_uri($file->uri);
+    $image_style = $display['settings']['image_style'];
+    $valid_image_styles = image_style_options(FALSE);
+    if (empty($image_style) || !isset($valid_image_styles[$image_style])) {
+      $element = array(
+        '#theme' => 'image',
+        '#path' => $wrapper->getOriginalThumbnailPath(),
+      );
+    }
+    else {
+      $element = array(
+        '#theme' => 'image_style',
+        '#style_name' => $image_style,
+        '#path' => $wrapper->getLocalThumbnailPath(),
+      );
+    }
+    return $element;
+  }
+}
+
+
+/**
+ * Implements hook_file_formatter_FORMATTER_settings().
+ */
+function media_slideshare_file_formatter_image_settings($form, &$form_state, $settings) {
+  $element = array();
+  $element['image_style'] = array(
+    '#title' => t('Image style'),
+    '#type' => 'select',
+    '#options' => image_style_options(FALSE),
+    '#default_value' => $settings['image_style'],
+    '#empty_option' => t('None (original image)'),
+  );
+  return $element;
+}
+
+/**
+ * Implements hook_file_default_displays().
+ */
+function media_slideshare_file_default_displays() {
+  $default_displays = array();
+
+  // Default settings for displaying as a Slideshare document.
+  $default_document_settings = array(
+    'media_large' => array(
+      'width' => 640,
+      'height' => 480,
+    ),
+    'media_original' => array(
+      'width' => 425,
+      'height' => 355,
+    ),
+  );
+  foreach ($default_document_settings as $view_mode => $settings) {
+    $display_name = 'document__' . $view_mode . '__media_slideshare_document';
+    $default_displays[$display_name] = (object) array(
+        'api_version' => 1,
+        'name' => $display_name,
+        'status' => 1,
+        'weight' => 1,
+        'settings' => $settings,
+    );
+  }
+
+  $default_image_styles = array(
+    'media_preview' => 'square_thumbnail',
+    'media_large' => 'large',
+    'media_original' => ''
+  );
+  foreach ($default_image_styles as $view_mode => $image_style) {
+    $display_name = 'document__' . $view_mode . '__media_slideshare_image';
+    $default_displays[$display_name] = (object) array(
+      'api_version' => 1,
+      'name' => $display_name,
+      'status' => 1,
+      'weight' => 2,
+      'settings' => array('image_style' => $image_style),
+    );
+  }
+
+  return $default_displays;
+}
+
+
+/**
+ * Implements hook_media_internet_providers().
+ */
+function media_slideshare_media_internet_providers() {
+  $path = drupal_get_path('module', 'media_slideshare');
+  return array(
+    'MediaInternetSlideshareHandler' => array(
+      'title' => 'slideshare',
+      'image' => $path . '/images/slideshare.gif'
+    ),
+  );
+}
+
+/**
+ * Implements hook_stream_wrappers().
+ */
+function media_slideshare_stream_wrappers() {
+  return array(
+    'slideshare' => array(
+      'name' => t('Slideshare presentation'),
+      'class' => 'MediaSlideshareStreamWrapper',
+      'description' => t('Presentations provided by Slideshare.'),
+      'type' => STREAM_WRAPPERS_READ_VISIBLE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_ctools_plugin_api().
+ */
+function media_slideshare_ctools_plugin_api($owner, $api) {
+  static $api_versions = array(
+    'file_entity' => array(
+      'file_default_displays' => 1,
+    ),
+  );
+  if (isset($api_versions[$owner][$api])) {
+    return array('version' => $api_versions[$owner][$api]);
+  }
+}

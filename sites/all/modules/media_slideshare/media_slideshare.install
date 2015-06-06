@@ -1,0 +1,37 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the Media: Issuu module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function media_slideshare_schema() {
+  $schema['media_slideshare_url'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => '',
+      ),
+      'url' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => '',
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+  return $schema;
+}
+
+/**
+ * Implements hook_update_N().
+ */
+function media_slideshare_update_7001() {
+  drupal_install_schema('media_slideshare');
+}
