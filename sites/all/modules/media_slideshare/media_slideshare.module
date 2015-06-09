@@ -93,10 +93,24 @@ function media_slideshare_file_formatter_embed_settings($form, &$form_state, $se
  * Implements hook_file_formatter_FORMATTER_view().
  */
 function media_slideshare_file_formatter_image_view($file, $display, $langcode) {
-  $scheme = file_uri_scheme($file->uri);
+	if (is_object($file) && isset($file->uri)) {
+		$uri = $file->uri;
+	} else {
+		$uri = 'slideshare://';
+	}
+  $scheme = file_uri_scheme($uri);
   if ($scheme == 'slideshare') {
-    $wrapper = file_stream_wrapper_get_instance_by_uri($file->uri);
-    $image_style = $display['settings']['image_style'];
+    $wrapper = file_stream_wrapper_get_instance_by_uri($uri);
+		$image_style = NULL;
+		if (isset($display['settings'])) {
+			$image_style = $display['settings']['image_style'];
+		}
+		else if (is_array($file) && isset($file['displays']['settings'])) {
+			if (isset($file['displays']['settings']['image_style'])) {
+				$image_style = $file['displays']['settings']['image_style'];
+			}
+		}
+    
     $valid_image_styles = image_style_options(FALSE);
     if (empty($image_style) || !isset($valid_image_styles[$image_style])) {
       $element = array(
@@ -218,4 +232,11 @@ function media_slideshare_ctools_plugin_api($owner, $api) {
   if (isset($api_versions[$owner][$api])) {
     return array('version' => $api_versions[$owner][$api]);
   }
+}
+
+/**
+ * Implements hook_file_mimetype_mapping_alter().
+ */
+function media_slideshare_file_mimetype_mapping_alter(&$mapping) {
+  $mapping['mimetypes'][] = 'document/slideshare';
 }

@@ -1,0 +1,19 @@
+
+name = Media: Thinglink
+description = Integrates Thinglink.com images with Media.
+package = "Media"
+core = 7.x
+dependencies[] = media
+dependencies[] = media_internet
+files[] = media_thinglink.module
+files[] = includes/MediaInternetThinglinkHandler.inc
+files[] = includes/MediaThinglinkStreamWrapper.inc
+files[] = includes/MediaThinglinkStyles.inc
+files[] = includes/media_thinglink.formatters.inc
+files[] = includes/media_thinglink.styles.inc
+files[] = includes/media_thinglink.variables.inc
+
+version = "7.x-0.1-dev"
+core = "7.x"
+project = "media_thinglink"
+

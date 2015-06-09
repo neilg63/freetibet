@@ -276,18 +276,28 @@ input.form-submit {
 }
 
 #content .view-mode-full > .field-name-field-image {
-	clear: left;
-	float: left;
-	padding: 0 1em 1em 0;
+	clear: none;
+	float: right;
+	padding: 0 0 1em 1em;
+}
+
+#content figure {
+	-moz-margin-before: 0;
+	-moz-margin-after: 0;
+	-moz-margin-start: 0;
+	-moz-margin-end: 0;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	-webkit-margin-start: 0;
+	-webkit-margin-end: 0;
+	position: relative;
+	display: block;
+	overflow: hidden;
 }
 
 #content .view-mode-full figure.view-mode-medium {
 	margin: 0;
 	padding: 0;
-	-webkit-margin-before: 0;
-	-webkit-margin-after: 0;
-	-webkit-margin-start: 0;
-	-webkit-margin-end: 0;
 }
 
 #content .page-section {
@@ -966,6 +976,11 @@ border-bottom: none;
 	margin:0;
 }
 
+#content .node > .flexslider figure {
+	margin: 0;
+	padding: 0;
+}
+
 #content .node > .flexslider .image figcaption {
 	background-color: black;
 	background-color: rgba(0,0,0,0.5);
@@ -1043,9 +1058,12 @@ border-bottom: none;
 	overflow: hidden;
 }
 
+#content .media-youtube-video, #content .media-youtube-vimeo {
+	height: 100%;
+}
 #content .flexslider .slides > li,
 #content .flex-slide {
-	height: 34.56vw;
+	height: 32.56vw;
 }
 
 #content .field-name-field-box {
@@ -1061,7 +1079,7 @@ border-bottom: none;
 	overflow: hidden;
 }
 
-.field-name-field-box .field-name-image,
+.field-name-field-box .field-name-field-image,
 .field-name-field-box .field-name-body {
 	width: 100%;
 	float: none;
@@ -1074,11 +1092,11 @@ border-bottom: none;
 	text-indent: -1em;
 }
 
-#content aside.field-name-field-key-points {
+#content aside.group-highlights {
 	padding: 0 0 2em 0;
 }
 
-#content aside.field-name-field-key-points h4 {
+#content aside.group-highlights h4 {
 	border-bottom: solid 1px #666666;
 	padding: 0 0 0.5em 0;
 	margin: 1em 0 0.5em 0;
@@ -1086,7 +1104,7 @@ border-bottom: none;
 	text-align: center;
 }
 
-#content aside.field-name-field-key-points div p {
+#content aside.group-highlights div p {
 	margin: 0 0 1em 0;
 	font-size: 1.1em;
 }
@@ -1115,6 +1133,10 @@ figure.view-mode-medium figcaption {
 	text-align: center;
 }
 
+.view-mode-full .media-slideshare-wrapper iframe {
+	min-height: 60vw;
+}
+
 figure.view-mode-medium_text:hover figcaption,
 figure.view-mode-medium:hover figcaption {
 	opacity: 1;
@@ -1126,6 +1148,11 @@ figure.view-mode-medium:hover figcaption {
 .node-take-action.view-mode-full button.large-button,
 .node-take-action.view-mode-default button.large-button {
 	float: right;
+}
+
+#content .node .node-take-action.view-mode-full,
+#content .node .node-take-action.view-mode-default {
+	clear: both;
 }
 
 .node-take-action.view-mode-full .field-name-body,
@@ -1151,6 +1178,40 @@ figure.view-mode-medium:hover figcaption {
 
 div.large-button {
 	padding-left: 5%;
+}
+
+#content .node .node-media-section .media-item {
+	position:relative;
+}
+
+#content .node .view-mode-image_text .field-name-field-text {
+	position: absolute;
+	width: 50%;
+	bottom: 5%;
+	left: 22.5%;
+	padding: 1% 2.5%;
+	font-size: 1.5em;
+}
+
+#content .node .view-mode-image_text.white-text .field-name-field-text {
+	color: white;
+}
+
+#content .node .view-mode-image_text.translucent-black-text-box .field-name-field-text {
+	background-color: rgba(0,0,0,0.5);
+}
+
+#content .node .view-mode-image_text.translucent-white-text-box .field-name-field-text {
+	background-color: rgba(255,255,255,0.5);
+}
+
+#content .node .view-mode-image_text.large-text .field-name-field-text {
+	font-size: 2.25em;
+}
+
+#content .node .view-mode-row figure {
+	padding: 0;
+	margin: 0;
 }
 
 #content .sharethis-wrapper > span {
@@ -1290,15 +1351,21 @@ figure, figcaption,
 		float: right;
 		width: 45%;
 	}
+	
+	#content .node .view-mode-row figure {
+		float: left;
+		width: 49.9%;
+	}
+	
 }
 
 @media screen and (min-width: 800px) {
 
-	#content aside.field-name-field-key-points {
+	#content aside.group-highlights {
 		float: right;
 		clear: right;
 		width: 45%;
-		padding: 0 0 2em 2%;
+		padding: 0 0 4em 2%;
 	}
 	
 	#content .has-default-image .field-name-body {
@@ -1366,15 +1433,21 @@ figure, figcaption,
 	#block-search-form input.form-text {
 			width: 18em;
 	}
+	
+	#content .node .view-mode-row {
+		clear: both;
+	}
+	
+	#content .node .view-mode-row figure {
+		width: 33.3%;
+	}
 }
 
 @media screen and (min-width: 1200px) {
 	
-	#content aside.field-name-field-key-points {
-		float: right;
-		clear: right;
+	#content aside.group-highlights {
 		width: 25%;
-		padding: 0 0 2em 2em;
+		padding: 0 0 6em 2em;
 	}
 	#content .has-default-image .field-name-body {
 		clear: none;
@@ -1442,6 +1515,18 @@ figure, figcaption,
 		padding: 0 0 0 4%;
 		float: right;
 		width: 46%;
+	}
+	
+	#content .node .node-media-section .media-item {
+		clear: both;
+	}
+	
+	#content .node-media-section.view-mode-default figure,
+	#content .node-media-section.view-mode-full figure {
+		clear: both;
+		float: right;
+		margin: 0 0 1em 1em;
+		padding:; 0;
 	}
 }
 
@@ -1515,12 +1600,19 @@ figure, figcaption,
 }
 
 @media screen and (min-width: 481px) and (max-width: 960px) {
-	#content .view-mode-full > .field-name-field-image {
-		width: 50%;
-		height: auto;
-	}
+	
 	#content .view-mode-full figure.view-mode-medium img {
 		width: 100%;
+	}
+}
+
+@media screen and (min-width: 481px) and (max-width: 1200px) {
+	#content .view-mode-full > .field-name-field-image {
+		float: left;
+		clear: left;
+		width: 50%;
+		height: auto;
+		padding: 0 1em 1em 0;
 	}
 }
 
@@ -1537,6 +1629,9 @@ figure, figcaption,
 	#content .flexslider .slides > li,
 	#content .flex-slide {
 		height: 490px;
+	}
+	.view-mode-full .media-slideshare-wrapper iframe {
+		min-height: 816px;
 	}
 }
 

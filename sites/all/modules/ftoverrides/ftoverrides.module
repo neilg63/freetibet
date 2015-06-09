@@ -35,17 +35,20 @@ function ftoverrides_node_view($node,$view_mode) {
 					$mode = $items[0]['value'];
 				}
 			
-				$show_title = false;
-				$items = field_get_items('node',$node,'field_show_title');
-				if (!empty($items) && isset($items[0]) && isset($items[0]['value']) && is_numeric($items[0]['value'])) {
-					$show_title = (bool) $items[0]['value'];
-				}
-				if ($mode != 'full' && empty($node->page_viewmode)) {
-					$node->page_viewmode = $mode;
-					$node->content = node_view($node,$mode);
-				}
-				if (!$show_title && isset($node->content['title'])) {
-					unset($node->content['title']);
+				$show_title = true;
+				if (isset($node->field_show_title)) {
+					$show_title = false;
+					$items = field_get_items('node',$node,'field_show_title');
+					if (!empty($items) && isset($items[0]) && isset($items[0]['value']) && is_numeric($items[0]['value'])) {
+						$show_title = (bool) $items[0]['value'];
+					}
+					if ($mode != 'full' && empty($node->page_viewmode)) {
+						$node->page_viewmode = $mode;
+						$node->content = node_view($node,$mode);
+					}
+					if (!$show_title && isset($node->content['title'])) {
+						unset($node->content['title']);
+					}
 				}
 			}
 			break;
@@ -96,33 +99,8 @@ function ftoverrides_related_text($field) {
 
 
 function ftoverrides_form_node_form_alter(&$form, $form_state, $form_id) {
-	if (isset($form['node_class']) && isset($form['node_class']['css_class'])) {
-      
-			
-			$form['node_class']['css_class']['#type'] = 'select';
-			
-			$arrClasses = array('' => "[none] ");
-			
-			$classes = array(
-				'key-points-as-column',
-				'full-width-section-images',
-				'section-images-as-column'
-			);
-			
-			$arrClasses += drupal_map_assoc($classes);
-			
-			$form['node_class']['css_class']['#options'] = $arrClasses;
-			$form['node_class']['css_class']['#description'] = t("Class name will be added to wrapper tag of the node in full page view");
-  }
-
-	$node = $form['#node'];
-	if (is_object($node) && isset($node->type)) {
-		if (isset($form['field_layout_mode'])) {
-			$view_modes = ftoverrides_get_available_view_modes($node->type);
-			$lang = (isset($node->language))? $node->language : LANGUAGE_NONE;
-			$form['field_layout_mode'][$lang]['#options'] = $view_modes;
-		}
-	}
+	module_load_include('inc','ftoverrides','ftoverrides.edit');
+	_ftoverrides_form_node_form_alter($form,$form_state,$form_id);
 }
 
 function ftoverrides_get_available_view_modes($bundle = NULL) {
@@ -141,4 +119,18 @@ function ftoverrides_get_available_view_modes($bundle = NULL) {
 		}
 	}
 	return $view_modes;
+}
+
+
+function ftoverrides_wysiwyg_editor_settings_alter(&$settings, $context) {
+	if ($context['profile']->editor == 'ckeditor') {
+		switch ($context['profile']->format) {
+			case 'full_html':
+				$settings['height'] = 360;
+				break;
+			case 'filtered_html':
+				$settings['height'] = 200;
+				break;
+		}
+	}
 }

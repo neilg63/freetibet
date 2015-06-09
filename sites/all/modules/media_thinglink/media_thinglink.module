@@ -1,0 +1,172 @@
+<?php
+
+/**
+ * @file media_thinglink/media_thinglink.module
+ *
+ * Media: Thinglink provides a stream wrapper and formatters for videos provided
+ * by Thinglink, available at http://thinglink.com/.
+ *
+ * @TODO:
+ * Tie in Thinglink API.
+ * Allow editors to search for videos to display on the browser.
+ * Allow editors to put in a thinglink username to display on the browser.
+ * Allow editors to log in w/ their credentials.
+ * Allow editors to upload videos to Thinglink.
+ */
+
+// A registry of variable_get defaults.
+include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'media_thinglink') . '/includes/media_thinglink.variables.inc';
+
+// Hooks and callbacks for integrating with Styles module for display.
+// @todo Can save a little overhead for people without Styles module by wrapping
+//   this inside a module_exists('styles'). However, is that safe to do in
+//   global context? If not, is there any down side to doing it in hook_init()?
+include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'media_thinglink') . '/includes/media_thinglink.styles.inc';
+
+// Hooks and callbacks for integrating with File Entity module for display.
+include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'media_thinglink') . '/includes/media_thinglink.formatters.inc';
+
+/**
+ * Implements hook_permission().
+ */
+function media_thinglink_permission() {
+  return array(
+    'configure thinglink' => array(
+      'title' => t('Configure Media Thinglink settings'),
+    ),
+  );
+};
+
+/*
+ * Thinglink js code embed and settings originally from Peter Rukavinas thinglink module
+ */
+function media_thinglink_menu() {
+  $items = array();
+  $items['admin/config/media/media_thinglink'] = array(
+    'title' => 'Thinglink settings',
+    'description' => 'Configure required settings for Media: Thinglink.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('media_thinglink_settings_form'),
+    'access arguments' => array('configure thinglink'),
+    'file' => 'includes/media_thinglink.admin.inc',
+  );
+  $items['media/add/media_thinglink'] = array(
+    'title' => 'Add media from Thinglink',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('media_thinglink_add'),
+    'access arguments' => array('configure thinglink'),
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'includes/media_thinglink.admin.inc',
+    'weight' => -1,
+  );
+
+  $items['admin/content/media/add/media_thinglink'] = $items['media/add/media_thinglink'];
+  return $items;
+}
+
+function media_thinglink_init() {
+  $id = variable_get('thinglink_id', '');
+  $endpoint = variable_get('thinglink_endpoint', 'http://www.thinglink.com/jse/embed.js');
+
+  if ($id) {
+    drupal_add_js('__tlid = ' . drupal_to_js($id) . ';', 'inline', 'footer');
+  }
+  drupal_add_js($endpoint, array('type' => 'external', 'scope' => 'footer', 'weight' => 100, 'defer' => TRUE));
+}
+
+
+/**
+ * Implements hook_media_internet_providers().
+ */
+function media_thinglink_media_internet_providers() {
+  $path = drupal_get_path('module', 'media_thinglink');
+  return array(
+    'MediaInternetThinglinkHandler' => array(
+      'title' => 'thinglink',
+      'image' => $path . '/images/stream-thinglink.png'
+    ),
+  );
+}
+
+/**
+ * Implements hook_stream_wrappers().
+ */
+function media_thinglink_stream_wrappers() {
+  return array(
+    'thinglink' => array(
+      'name' => t('Thinglink images'),
+      'class' => 'MediaThinglinkStreamWrapper',
+      'description' => t('Images provided by Thinglink.'),
+      'type' => STREAM_WRAPPERS_READ_VISIBLE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_theme().
+ */
+function media_thinglink_theme($existing, $type, $theme, $path) {
+  return array(
+    'media_thinglink_preview_style' => array(
+      'variables' => array('style_name' => NULL),
+      'file' => 'media_thinglink.theme.inc',
+      'path' => $path . '/includes/themes',
+    ),
+    'media_thinglink_field_formatter_styles' => array(
+      'variables' => array('element' => NULL, 'style' => NULL),
+      'file' => 'media_thinglink.theme.inc',
+      'path' => $path . '/includes/themes',
+    ),
+    // Note that all the variables after options are now deprecated.
+    'media_thinglink_image' => array(
+      'variables' => array('uri' => NULL),
+      'file' => 'media_thinglink.theme.inc',
+      'path' => $path . '/includes/themes',
+      'template' => 'media-thinglink-image',
+    ),
+    'media_thinglink_embed' => array(
+      'variables' => array('style_name' => NULL, 'uri' => NULL, 'alt' => NULL, 'title' => NULL),
+      'file' => 'media_thinglink.theme.inc',
+      'path' => $path . '/includes/themes',
+    ),
+    'media_thinglink_styles' => array(
+      'variables' => array('element' => NULL, 'style' => NULL),
+      'file' => 'media_thinglink.theme.inc',
+      'path' => $path . '/includes/themes',
+    ),
+  );
+}
+
+/**
+ * Implements hook_media_parse().
+ *
+ * @todo This hook should be deprecated. Refactor Media module to not call it
+ *   any more, since media_internet should be able to automatically route to the
+ *   appropriate handler.
+ */
+function media_thinglink_media_parse($embed_code) {
+  $handler = new MediaInternetThinglinkHandler($embed_code);
+  return $handler->parse($embed_code);
+}
+
+/**
+ * Implements hook_media_format_form_prepare_alter().
+ */
+function media_thinglink_media_format_form_prepare_alter(&$form, &$form_state, $media) {
+  $settings = array('autosubmit' => ($media->type == "image"));
+  drupal_add_js(array('media_format_form' => $settings), 'setting');
+}
+
+/**
+ * Implements hook_ctools_plugin_api().
+ */
+function media_thinglink_ctools_plugin_api($owner, $api) {
+  static $api_versions = array(
+    'file_entity' => array(
+      'file_default_displays' => 1,
+    ),
+  );
+  if (isset($api_versions[$owner][$api])) {
+    return array('version' => $api_versions[$owner][$api]);
+  }
+}

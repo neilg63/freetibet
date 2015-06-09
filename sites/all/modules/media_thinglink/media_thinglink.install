@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Media: Thinglink module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function media_thinglink_install() {
+  drupal_load('module', 'media_thinglink');
+  foreach (media_thinglink_variable_default() as $variable => $value) {
+    if (($test = variable_get('media_thinglink_' . $variable, TRUE)) == variable_get('media_thinglink_' . $variable, FALSE)) {
+      media_thinglink_variable_set($variable, $test);
+      variable_del('media_thinglink_' . $variable);
+    }
+  }
+
+  return array();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function media_thinglink_uninstall() {
+  include_once('includes/media_thinglink.variables.inc');
+  foreach (media_thinglink_variable_default() as $name => $value) {
+    media_thinglink_variable_del($name);
+  }
+  return array(array('success' => TRUE, 'query' => "Deleted all variables in the Media: Thinglink namespace."));
+}
+
