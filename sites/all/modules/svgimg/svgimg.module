@@ -1,0 +1,107 @@
+<?php
+
+
+define('SVGIMG_PNG_PATH','svgimg');
+
+function svgimg_menu() {
+	$items = array();
+	$path = svgimg_path();
+	
+  $items[$path . '/%'] = array(
+     'title' => 'SVG PNG render',
+     'description' => 'Configure Metatag defaults.',
+     'page callback' => 'svgimg_render',
+     'access callback' => TRUE,
+     'file' => 'svgimg.render.inc',
+   );
+	
+	return $items;
+}
+
+/*
+* implements hook_field_attach_view_alter
+*/
+function svgimg_field_attach_view_alter(&$output, $context) {
+	foreach ($output as $field_name => &$field_data) {
+
+		if (is_array($field_data) && isset($field_data['#field_type']) && is_array($field_data['#items']) ) {
+			switch ($field_data['#field_type']) {
+				case 'image':
+				case 'file':
+					$count = count($field_data['#items']);
+					if ($count > 0) {
+						module_load_include('inc', 'svgimg');
+						svgimg_image_svg_loop_items($field_data,$count);
+					}
+					break;		
+			}
+		}
+	}
+}
+
+/*
+ * Implements hook_field_formatter_info()
+ */
+function svgimg_field_formatter_info() {
+	return array(
+		'svgimg' => array(
+				'label' => t('Inline SVG'),
+				'field types' => array('image','file'),
+				'settings' => array(
+				),
+		),
+  );
+}
+
+/*
+ * Implements hook_field_formatter_settings_summary()
+*/
+function svgimg_field_formatter_settings_summary($field, $instance, $view_mode) {
+	$summary = '';
+	$display = $instance['display'][$view_mode];
+	switch ($display['type']) {
+		case 'svgimg': 
+			module_load_include('inc', 'svgimg','svgimg.admin');
+			$summary = _svgimg_field_formatter_settings_summary($field, $instance, $view_mode,$display['type']);
+			break;
+	}
+	return $summary;
+}
+
+/*
+ * Implements hook_field_formatter_settings_form()
+*/
+function svgimg_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+	$display = $instance['display'][$view_mode];
+	$element = array();
+	switch ($display['type']) {
+		case 'svgimg': 
+			module_load_include('inc', 'svgimg','svgimg.admin');
+			$element = _svgimg_field_formatter_settings_form($field, $display,$form, $form_state);
+			break;
+	}
+	return $element;
+}
+
+/*
+ * Implements hook_field_formatter_view()
+*/
+function svgimg_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  switch ($display['type']) {
+    case 'svgimg':
+    	if (!empty($items) && is_array($items)) {
+    		module_load_include('inc', 'svgimg');
+    		$element = svgimg_build_element($items,$display);
+    	}
+    	break;
+  }
+  return $element;
+}
+
+/*
+* Fetch path to directory for PNG alternatives
+*/
+function svgimg_path() {
+	return variable_get('file_public_path','sites/default/files') . '/' . SVGIMG_PNG_PATH;
+}

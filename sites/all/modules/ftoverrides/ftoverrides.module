@@ -24,6 +24,12 @@ function ftoverrides_node_view($node,$view_mode) {
 		case 'text':
 		case 'box':
 		case 'take_action':
+			if (node_is_page($node)) {
+				$nid = ftoverrides_fetch_parent_nid($node);
+				if ($nid > 0) {
+					drupal_goto('node/' . $nid);
+				}
+			}
 			$override_view_modes = array('full','default');
 			if (in_array($view_mode,$override_view_modes)) {
 				$mode = 'full';
@@ -77,6 +83,19 @@ function ftoverrides_ds_fields_info($entity_type) {
 			break;
 	}
 	return;
+}
+
+
+function ftoverrides_fetch_parent_nid($node) {
+	$query = new EntityFieldQuery();
+	$query->entityCondition('entity_type', 'node')
+	->fieldCondition('field_page_sections', 'target_id', $node->nid, '=');
+	$result = $query->execute();
+	if (is_array($result) && isset($result['node']) && is_array($result['node']) && !empty($result['node'])) {
+		$nids = array_keys($result['node']);
+		return array_shift($nids);
+	}
+	return 0;
 }
 
 function ftoverrides_related_text($field) {

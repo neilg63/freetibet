@@ -1006,6 +1006,10 @@ border-bottom: none;
 	text-align: left;
 }
 
+#content .svg-img {
+	max-width: 100%;
+}
+
 #content .node > .flexslider .field-name-field-link {
 	max-width: 23%;
 	padding: 1em 2% 1em 2%;
@@ -1352,9 +1356,20 @@ figure, figcaption,
 		width: 45%;
 	}
 	
+	#content .node-media-section figure.view-mode-medium {
+		float: right;
+	}
 	#content .node .view-mode-row figure {
 		float: left;
 		width: 49.9%;
+	}
+	
+	#content figure.view-mode-medium {
+		max-width: 49.9%;
+	}
+	
+	#content .view-mode-full > .field-name-field-image figure.view-mode-medium {
+		max-width: 100%;
 	}
 	
 }
@@ -1440,6 +1455,9 @@ figure, figcaption,
 	
 	#content .node .view-mode-row figure {
 		width: 33.3%;
+	}
+	#content .node-media-section figure.view-mode-medium {
+		max-width: 33.3%;
 	}
 }
 

@@ -110,29 +110,29 @@ function media_thinglink_theme($existing, $type, $theme, $path) {
     'media_thinglink_preview_style' => array(
       'variables' => array('style_name' => NULL),
       'file' => 'media_thinglink.theme.inc',
-      'path' => $path . '/includes/themes',
+      'path' => $path . '/themes',
     ),
     'media_thinglink_field_formatter_styles' => array(
       'variables' => array('element' => NULL, 'style' => NULL),
       'file' => 'media_thinglink.theme.inc',
-      'path' => $path . '/includes/themes',
+      'path' => $path . '/themes',
     ),
     // Note that all the variables after options are now deprecated.
     'media_thinglink_image' => array(
       'variables' => array('uri' => NULL),
       'file' => 'media_thinglink.theme.inc',
-      'path' => $path . '/includes/themes',
+      'path' => $path . '/themes',
       'template' => 'media-thinglink-image',
     ),
     'media_thinglink_embed' => array(
       'variables' => array('style_name' => NULL, 'uri' => NULL, 'alt' => NULL, 'title' => NULL),
       'file' => 'media_thinglink.theme.inc',
-      'path' => $path . '/includes/themes',
+      'path' => $path . '/themes',
     ),
     'media_thinglink_styles' => array(
       'variables' => array('element' => NULL, 'style' => NULL),
       'file' => 'media_thinglink.theme.inc',
-      'path' => $path . '/includes/themes',
+      'path' => $path . '/themes',
     ),
   );
 }
