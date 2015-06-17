@@ -6,7 +6,9 @@
 function svgimg_theme_media_thumbnail($variables) {
   $label = '';
   $element = $variables['element'];
-
+  if (!isset($element['#name'])) {
+    $element['#name'] = $element['#file']->filename;
+  }
  // Wrappers to go around the thumbnail.
   $attributes = array(
     'title' => $element['#name'],

@@ -150,6 +150,14 @@ function svgimg_image_svg_fetch_size(array &$item) {
       $size['width'] = (int) (string) $attrs['width'];
 		}
 	}
+	if ($size['height'] < 1) {
+          if ($size['width'] > 0) {
+            $size['height'] = $size['width'];
+          }
+          else {
+            $size = svgimg_default_size();
+          }
+        }
 	return $size;
 }
 
@@ -224,3 +232,17 @@ function svgimg_uri($uri, $style_name = NULL) {
 	$fileRef .= '.png';
 	return $path . '/' . $fileRef;
 }
+
+/*
+* Fetch assoc array of default PNG alternative width x height if none available
+* @return array
+*/
+function svgimg_default_size() {
+	$parts = explode('x', SVGIMG_DEFAULT_SIZE);
+	$svgimg_default_size = array(
+		'width' => (int) $parts[0],
+		'height' => (int) $parts[1]
+	);
+	return variable_get('svgimg_default_size', $svgimg_default_size);
+}
+

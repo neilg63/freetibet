@@ -29,12 +29,11 @@ function svgimg_render($png_ref) {
 		}
 		// Check if ImageMagick extension is installed
 		if (class_exists('Imagick') ) {
-			//$im = new Imagick();
+			$im = new Imagick();
 			$svg_path = DRUPAL_ROOT. DIRECTORY_SEPARATOR . $directory_path . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR,$svg_uri);
 				
 			if (file_exists($svg_path)) {
 				module_load_include('inc', 'svgimg');
-
 				$svg = file_get_contents($svg_path);
 				$xml = simplexml_load_string($svg);
 				
@@ -43,7 +42,6 @@ function svgimg_render($png_ref) {
 										
 				$attrs = $xml->attributes();
 				$data = svgimg_fetch_style_size($style_name);
-
 				
 				if ( isset($attrs['height'])) {
 					if (!empty($style_name)) {
@@ -67,7 +65,15 @@ function svgimg_render($png_ref) {
 						$size = svgimg_default_size();
 					}
 				}
-				$im->readImageBlob($svg);
+				$valid_svg = true;
+				try {
+				  $im->readImageBlob($svg);
+                                }
+                                catch (Exception $e) {
+                                  watchdog("error", "SVG file could not be parsed for PNG conversion: " . $e->getMessage());
+				  $valid_svg = false;
+                                }
+				if ($valid_svg) {
 				$im->setImageFormat("png24");
 				$im->resizeImage($size['width'], $size['height'], imagick::FILTER_LANCZOS, 1);
 				$parts = explode(DIRECTORY_SEPARATOR, $full_path);
@@ -84,6 +90,7 @@ function svgimg_render($png_ref) {
 				drupal_add_http_header('Content-Type', 'image/png');
 				print $im;
 				exit;
+                            }
 			}
 		}
 		else {
@@ -97,15 +104,3 @@ function svgimg_render($png_ref) {
 	}
 }
 
-/*
-* Fetch assoc array of default PNG alternative width x height if none available
-* @return array
-*/
-function svgimg_default_size() {
-	$parts = explode('x', SVGIMG_DEFAULT_SIZE);
-	$svgimg_default_size = array(
-		'width' => (int) $parts[0],
-		'height' => (int) $parts[1]
-	);
-	return variable_get('svgimg_default_size', $svgimg_default_size);
-}
