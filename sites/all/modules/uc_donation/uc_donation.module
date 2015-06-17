@@ -102,9 +102,15 @@ function uc_donation_node_info($reset = FALSE) {
  * Implements hook_form_alter().
  */
 function uc_donation_form_alter(&$form, &$form_state, $form_id) {
-	if (substr($form_id, 0, 27) == 'uc_product_add_to_cart_form') {
-		$node =  $form['node']['#value'];
-		if ($node->type == 'donation') {
+	if (substr($form_id, 0, 27) == 'uc_product_add_to_cart_form' || $form_id == 'donation_node_form') {
+		$node = NULL;
+		if ($form_id == 'donation_node_form') {
+			$node = $form['#node'];
+		}
+		else if (isset($form['node']['#value'])) {
+			$node =  $form['node']['#value'];
+		}
+		if (is_object($node) && $node->type == 'donation') {
 			$form['donate_amount'] = array(
           '#type' => 'textfield',
           '#title' => t('Amount'),
@@ -233,13 +239,21 @@ function uc_donation_view($node, $teaser = 0, $page = 0) {
  * @see http://drupal.org/node/1354
  */
 function uc_donation_add_to_cart_form_validate($form, &$form_state) {
-        $donate_amount = floatval(preg_replace('/[^0-9\.]*/', '', $form_state['values']['donate_amount']));
-	if (!is_numeric($donate_amount) || $donate_amount <= 0) {
-		form_set_error('donate_amount', t('You have entered an invalid amount.'));
-	}
-	else {
-		form_set_value($form['donate_amount'], $donate_amount, $form_state);
-	}
+  if (isset( $form_state['values']['donate_amount'] )) {
+		$donate_amount = $form_state['values']['donate_amount'];
+		$is_number = is_numeric($donate_amount);
+		if ($is_number) {
+			$donate_amount = floatval(preg_replace('/[^0-9\.]*/', '', $donate_amount));
+		} else {
+			$donate_amount = -1;
+		}
+    if ($donate_amount <= 0) {
+      form_set_error('donate_amount', t('You have entered an invalid amount.'));
+    }
+    else {
+      form_set_value($form['donate_amount'], $donate_amount, $form_state);
+   }
+  }
 }
 
 /**

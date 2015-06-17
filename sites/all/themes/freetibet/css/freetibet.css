@@ -1135,6 +1135,8 @@ figure.view-mode-medium figcaption {
 	height: 90%;
 	padding: 5%;
 	text-align: center;
+	font-size: 1em;
+	font-size: 1.6vw;
 }
 
 .view-mode-full .media-slideshare-wrapper iframe {
@@ -1152,11 +1154,20 @@ figure.view-mode-medium:hover figcaption {
 .node-take-action.view-mode-full button.large-button,
 .node-take-action.view-mode-default button.large-button {
 	float: right;
+	margin: 0 2em 2em 0;
 }
 
-#content .node .node-take-action.view-mode-full,
-#content .node .node-take-action.view-mode-default {
+#content .node .view-mode-full,
+#content .node .view-mode-default {
+	padding: 2em 0;
 	clear: both;
+}
+
+#content .node .node-media-section > h2,
+#content .node .node-take-action > h2,
+#content .node .node-text > h2 {
+	padding: 1em 0 0.125em 0;
+	margin: 1em 0 0.125em 0;
 }
 
 .node-take-action.view-mode-full .field-name-body,
@@ -1174,6 +1185,7 @@ figure.view-mode-medium:hover figcaption {
 	padding: 0.25em;
 	border-radius: 0.25em;
 	white-space: nowrap;
+	margin: 0 0.5em 0.5em 0;
 }
 
 .large-button a:hover {
@@ -1191,10 +1203,49 @@ div.large-button {
 #content .node .view-mode-image_text .field-name-field-text {
 	position: absolute;
 	width: 50%;
-	bottom: 5%;
+	top: 50%;
 	left: 22.5%;
 	padding: 1% 2.5%;
 	font-size: 1.5em;
+	font-size: 1.5vw;
+	vertical-align: middle;
+	-moz-transform: translateY(-50%);
+	-webkit-transform: translateY(-50%);
+	transform: translateY(-50%);
+}
+
+#content .node .view-mode-image_text.text-box-top-left .field-name-field-text {
+	width: 50%;
+	top: 5%;
+	left: 2.5%;
+}
+
+#content .node .view-mode-image_text.text-box-top-left .field-name-field-text,
+#content .node .view-mode-image_text.text-box-top-right .field-name-field-text,
+#content .node .view-mode-image_text.text-box-bottom-left .field-name-field-text,
+#content .node .view-mode-image_text.text-box-bottom-right .field-name-field-text {
+	-moz-transform: translateY(0);
+	-webkit-transform: translateY(0);
+	transform: translateY(0);
+}
+
+#content .node .view-mode-image_text.text-box-top-right .field-name-field-text {
+	top: 5%;
+	left: auto;
+	right: 2.5%;
+}
+
+#content .node .view-mode-image_text.text-box-bottom-left .field-name-field-text {
+	top: auto;
+	left: 2.5%;
+	bottom: 5%;
+}
+
+#content .node .view-mode-image_text.text-box-bottom-right .field-name-field-text {
+	top: auto;
+	left: auto;
+	right: 2.5%;
+	bottom: 5%;
 }
 
 #content .node .view-mode-image_text.white-text .field-name-field-text {
@@ -1211,6 +1262,11 @@ div.large-button {
 
 #content .node .view-mode-image_text.large-text .field-name-field-text {
 	font-size: 2.25em;
+	font-size: 2.25vw;
+}
+
+#content .node .view-mode-full_media .file-video iframe {
+	height: 56.25vw;
 }
 
 #content .node .view-mode-row figure {
@@ -1218,26 +1274,32 @@ div.large-button {
 	margin: 0;
 }
 
+#block-sharethis-sharethis-block {
+	
+}
+
+#block-sharethis-sharethis-block {
+	clear: left;
+}
+
+#block-sharethis-sharethis-block .sharethis-wrapper > span,
 #content .sharethis-wrapper > span {
 	display: inline-block;
 	margin: 0 0 1em 0.75em;
 }
 
+#block-sharethis-sharethis-block .sharethis-wrapper > span .stLarge,
 #content .sharethis-wrapper > span .stLarge {
 	-moz-filter: grayscale(100%);
 	-webkit-filter: grayscale(100%);
 	filter: grayscale(100%)
 }
 
+#block-sharethis-sharethis-block .sharethis-wrapper > span:hover .stLarge,
 #content .sharethis-wrapper > span:hover .stLarge {
 	-moz-filter: grayscale(0%);
 	-webkit-filter: grayscale(0%);
 	filter: grayscale(0%)
-}
-
-#content .node .view-mode-default,
-#content .node .view-mode-column {
-	clear: left;
 }
 
 figure, figcaption,
@@ -1337,6 +1399,12 @@ figure, figcaption,
 	
 	#header .region-header ul li:hover a {
 		color: white;
+	}
+	
+	figure.view-mode-medium_text figcaption,
+	figure.view-mode-medium figcaption {
+		font-size: 1.5em;
+		font-size: 3vw;
 	}
 }
 
@@ -1498,6 +1566,7 @@ figure, figcaption,
 	#block-search-form input.form-text {
 			width: 22em;
 	}
+	
 }
 
 @media screen and (min-width: 960px) {
@@ -1615,6 +1684,12 @@ figure, figcaption,
 	#content .view-mode-full figure.view-mode-medium.file-video iframe {
 		height: 56.25vw;
 	}
+	
+	#content .node .view-mode-image_text .field-name-field-text {
+		width: 90%;
+		left: 7.5%;
+		font-size: 3vw;
+	}
 }
 
 @media screen and (min-width: 481px) and (max-width: 960px) {
@@ -1650,6 +1725,13 @@ figure, figcaption,
 	}
 	.view-mode-full .media-slideshare-wrapper iframe {
 		min-height: 816px;
+	}
+	#content .node .view-mode-full_media .file-video iframe {
+		height: 790px;
+	}
+	figure.view-mode-medium_text figcaption,
+	figure.view-mode-medium figcaption {
+		font-size: 1.33em;
 	}
 }
 

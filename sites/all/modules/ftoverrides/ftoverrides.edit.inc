@@ -65,6 +65,7 @@ function _ftoverrides_form_node_form_alter(&$form,&$form_state,$form_id = NULL) 
 			case 'take_action';
 			case 'media_section':
 			case 'box':
+			case 'key_points':
 				$form['path']['#access'] = FALSE;
 				$form['author']['#access'] = FALSE;
 				$form['metatags']['#access'] = FALSE;

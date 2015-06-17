@@ -1,7 +1,17 @@
 <?php
+/*
+* This is the main module file
+*/
 
-
+/*
+* Path within file directory to PNG rendering callback subdirectory
+*/
 define('SVGIMG_PNG_PATH','svgimg');
+
+/*
+* Define default size for PNG alternatives where none can be read from source XML
+*/
+define('SVGIMG_DEFAULT_SIZE', '1024x800');
 
 function svgimg_menu() {
 	$items = array();
@@ -48,6 +58,9 @@ function svgimg_field_formatter_info() {
 				'label' => t('Inline SVG'),
 				'field types' => array('image','file'),
 				'settings' => array(
+					'wrapper_tag' => 'figure',
+					'classes' => NULL,
+					'add_script' => NULL,
 				),
 		),
   );
@@ -62,7 +75,7 @@ function svgimg_field_formatter_settings_summary($field, $instance, $view_mode) 
 	switch ($display['type']) {
 		case 'svgimg': 
 			module_load_include('inc', 'svgimg','svgimg.admin');
-			$summary = _svgimg_field_formatter_settings_summary($field, $instance, $view_mode,$display['type']);
+			$summary = _svgimg_field_formatter_settings_summary($field, $instance, $view_mode,$display);
 			break;
 	}
 	return $summary;
@@ -97,6 +110,21 @@ function svgimg_field_formatter_view($entity_type, $entity, $field, $instance, $
     	break;
   }
   return $element;
+}
+
+/*
+* Implements hook_theme_registry_alter
+* Provide custom media thumbnail for SVG images
+*/
+function svgimg_theme_registry_alter(&$theme_registry) {
+	if (!empty($theme_registry['media_thumbnail']['function'])) {
+		$theme_registry['media_thumbnail']['function'] = 'svgimg_theme_media_thumbnail';
+		$theme_path = drupal_get_path('module', 'svgimg');
+		$file_path = $theme_path . '/svgimg.theme.inc';
+		$theme_registry['media_thumbnail']['file'] = $file_path;
+		$theme_registry['media_thumbnail']['theme_path'] = $theme_path;
+		$theme_registry['media_thumbnail']['includes'] = array($file_path);
+	}
 }
 
 /*

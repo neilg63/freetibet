@@ -24,6 +24,7 @@ function ftoverrides_node_view($node,$view_mode) {
 		case 'text':
 		case 'box':
 		case 'take_action':
+		case 'key_points':
 			if (node_is_page($node)) {
 				$nid = ftoverrides_fetch_parent_nid($node);
 				if ($nid > 0) {
@@ -58,7 +59,81 @@ function ftoverrides_node_view($node,$view_mode) {
 				}
 			}
 			break;
+		case 'donation':
+			if (isset($node->content['add_to_cart']) && isset($node->content['add_to_cart']['#form'])) {
+				$add_to_cart_form =& $node->content['add_to_cart']['#form'];
+				if (isset($add_to_cart_form['donate_amount']) && isset($add_to_cart_form['varprice'])) {
+					$add_to_cart_form['donate_amount'] = array(
+						'#type' => 'hidden',
+						'#name' => 'donate_amount',
+						'#value' => $add_to_cart_form['varprice']['#default_value']
+					);
+				}
+			}
+			break;
+		case 'page':
+			ftoverrides_set_first_page_section_position($node,$view_mode);
+			break;
 	}
+}
+
+function ftoverrides_set_first_page_section_position($node,$view_mode) {
+	if ($view_mode == 'full' && isset($node->field_page_sections) && isset($node->content['field_page_sections']) && isset($node->content['top'])) {
+		$move_first_page_section = _ftoverrides_set_first_page_section_position($node,$view_mode);
+	}
+	if (!$move_first_page_section  && isset($node->content['top'])) {
+		unset($node->content['top']);
+	}
+}
+
+function _ftoverrides_set_first_page_section_position($node,$view_mode) {
+	$move_first_page_section = false;
+	if (isset($node->content['field_page_sections']['#items']) && is_array($node->content['field_page_sections']['#items'])) {
+		$num_items = count($node->content['field_page_sections']['#items']);
+		if ($num_items > 0 ) {
+			
+			$field_items = field_get_items('node',$node,'field_section_position');
+			if (!empty($field_items) && isset($field_items[0]['value'])) {
+				$value = (int) $field_items[0]['value'];
+				if ($value > 0) {
+					$move_first_page_section = true;
+					$setSliderWeight = false;
+					switch ($value) {
+						case 2:
+							$setSliderWeight = isset($node->content['field_slide']);
+							break;
+					}
+				}
+			}
+			if ($move_first_page_section) {
+				$items = $node->content['field_page_sections']['#items'];
+				$firstItem = array_shift($items);
+				$last_index = $num_items - 1;
+
+				for ($i=0;$i < $num_items;$i++) {
+					if ($i == 0) {
+						$firstRenderItem = $node->content['field_page_sections'][$i];
+					}
+					if ($i < $last_index) {
+						$node->content['field_page_sections'][$i] = $node->content['field_page_sections'][($i+1)];
+					}
+					else {
+						unset($node->content['field_page_sections'][$i]);
+					}
+				}
+				$node->content['field_page_sections']['#items'] = $items;
+			}
+			$node->content['top']['#items'] = array($firstItem);
+			$node->content['top'][0] = array(
+				'#markup' => render($firstRenderItem)
+			);
+			if ($setSliderWeight) {
+				$node->content['top']['#weight'] = -1000;
+				$node->content['field_slide']['#weight'] = -999;
+			}
+		}
+	}
+	return $move_first_page_section;
 }
 
 /*
@@ -81,8 +156,26 @@ function ftoverrides_ds_fields_info($entity_type) {
 			);
 			return array($entity_type => $fields);
 			break;
+		case 'node':
+			$fields['top'] = array(
+					'title' => t('Target top section'),
+					'field_type' => DS_FIELD_TYPE_FUNCTION,
+					'function' => 'ftoverrides_top_section',
+					'properties' => array(
+							'settings' => array(
+							),
+					)
+			);
+			return array($entity_type => $fields);
+			break;
 	}
 	return;
+}
+
+function ftoverrides_top_section($field) {
+	if (isset($field['entity']) && is_object($field['entity']) && $field['entity_type'] == 'node') {
+		return t("Top section");
+	}
 }
 
 
