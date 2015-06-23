@@ -1,0 +1,160 @@
+<?php
+/*
+* Provide configurable smarter match criteria to prevent duplicate taxonomy term entries
+*/
+
+define('TXORG_MAX_DISPLAY_ALL_MERGE_TERMS', 100);
+
+define('TXORG_SYNONYMS_FIELD_NAME','synonyms_synonyms');
+
+define('TXORG_MAX_OPTIONS_EDITABLE_WITH_SELECTBOXES',60);
+
+function txorg_menu() {
+	$items = array();
+	$items['taxonomy/term/%taxonomy_term/reassign'] = array(
+			'title' => 'Merge',
+			'description' => 'Merge related terms into this term',
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array('txorg_merge_form', 2, NULL),
+			'access callback' => 'taxonomy_term_edit_access',
+			'access arguments' => array(2),
+			'type' => MENU_LOCAL_TASK,
+			'weight' => 28,
+			'file' => 'txorg.edit.inc',
+	);
+	
+	$items['taxonomy/term/%taxonomy_term/transfer'] = array(
+			'title' => 'Transfer',
+			'description' => 'Reassign this term to another term',
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array('txorg_transfer_form', 2, NULL),
+			'access callback' => 'taxonomy_term_edit_access',
+			'access arguments' => array(2),
+			'type' => MENU_LOCAL_TASK,
+			'weight' => 29,
+			'file' => 'txorg.edit.inc',
+	);
+	
+	$txorgSettings = array(
+			'title' => 'Taxonomy Organiser Settings',
+			'page callback' => 'txorg_settings',
+			'page arguments' => array(3),
+			'access arguments' => array('administer site configuration'),
+			'type' => MENU_LOCAL_TASK,
+			'weight' => -1,
+			'file' => 'txorg.admin.inc',
+	);
+	$items['admin/structure/taxonomy/taxonomy-organiser'] = $txorgSettings;
+	
+	$vocablist = array(
+			'title' => 'Organise',
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array('txorg_fields_form', 3, NULL),
+			'access arguments' => array('administer site configuration'),
+			'type' => MENU_LOCAL_TASK,
+			'weight' => 30,
+			'file' => 'txorg.edit.inc',
+	);
+	
+	$items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/taxonomy-organiser'] = $vocablist;
+	$vocablist['title'] = 'Manage by field';
+	$vocablist['weight'] = -1;
+	$vocablist['type'] = MENU_DEFAULT_LOCAL_TASK;
+	$items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/taxonomy-organiser/list'] = $vocablist;
+
+	$items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/taxonomy-organiser/reassign']  = array(
+			'title' => 'Reassign by Pattern',
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array('txorg_merge_form', 3, NULL),
+			'access arguments' => array('administer site configuration'),
+			'type' => MENU_LOCAL_TASK,
+			'weight' => 10,
+			'file' => 'txorg.edit.inc',
+	);
+	
+	$items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/taxonomy-organiser/fields/%s/%s/%s'] = array(
+			'title' => 'Manage by instance',
+			'page callback' => 'drupal_get_form',
+			'page arguments' => array('txorg_field_instance_form', 3, 6, 7, 8, 9),
+			'access arguments' => array('administer site configuration'),
+			'type' => MENU_CALLBACK,
+			'weight' => 1,
+			'file' => 'txorg.edit.inc',
+	);
+	
+	$txorgSettings['weight'] = 20;
+	$txorgSettings['title'] = t("Settings");
+	$items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/taxonomy-organiser/settings'] = $txorgSettings;
+	return $items;
+}
+
+function txorg_taxonomy_term_presave($term) {
+	if (isset($term->vid)) {
+		module_load_include('inc','txorg','txorg.edit');
+		_txorg_taxonomy_term_presave($term);
+	}
+}
+
+function txorg_theme() {
+	return array(
+			'txorg_table' => array(
+					'function'=>'theme_txorg_table',
+					'arguments'=> array('form' => NULL ),
+					'render element' => 'fields',
+					'file' => 'txorg.table.inc'
+			),
+			'txorg_taxonomy_overview_vocabularies' => array(
+					'function'=>'theme_txorg_taxonomy_overview_vocabularies',
+					'arguments'=> array('form' => NULL ),
+					'render element' => 'form',
+					'file' => 'txorg.table.inc'
+			)
+	);
+}
+
+
+function txorg_form_taxonomy_overview_vocabularies_alter(&$form, &$form_state, $form_id) {
+	module_load_include('inc','txorg','txorg.table');
+	_txorg_form_taxonomy_overview_vocabularies_alter($form);
+	return $form;
+}
+
+function txorg_pattern_merge_enabled($vid = 0) {
+	if (!is_numeric($vid)) {
+		$vid = 0;
+	}
+	$result = NULL;
+	if ($vid > 0) {
+		$result = variable_get('txorg_pattern_merge_' . $vid,NULL);
+	}
+	if (!is_bool($result)) {
+		$result = (bool) variable_get('txorg_pattern_merge_0',true);
+	}
+	return $result;
+}
+
+
+function txorg_default_lang() {
+	$default = 'en';
+	$languages = language_list();
+	if (!empty($languages)) {
+		$index = 0;
+		$weight = -1;
+		$langs = array();
+		foreach ($languages as $langcode => $language) {
+			if ($language->enabled == 1) {
+				$langs[$language->weight.'_'.$index] = $langcode;
+				$index++;
+			}
+		}
+		if (!empty($langs)) {
+			ksort($langs);
+			$default = array_shift($langs);
+		}
+	}
+	return $default;
+}
+
+function txorg_reset_messages() {
+	unset($_SESSION['messages']);
+}

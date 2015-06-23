@@ -692,5 +692,5 @@ function references_dialog_get_admin_path($entity_type, $op, $bundle = NULL, $en
  * the references dialog.
  */
 function theme_references_dialog_links($links) {
-  return theme('links', array('links' => $links, 'attributes' => array('class' => 'references-dialog-links')));
+  return theme('links', array('links' => $links, 'attributes' => array('class' => array('references-dialog-links'))));
 }

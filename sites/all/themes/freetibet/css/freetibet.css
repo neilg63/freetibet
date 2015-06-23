@@ -188,6 +188,12 @@ input.form-submit {
 		margin: 0 0.25em 0 0;
 }
 
+#header li.regular-donation a,
+#header li.donate a,
+#header li.join a {
+  color: #bc2373;
+}
+
 #header .block-menu-block ul > li { 
 	font-size: 1.5em;
 }
@@ -883,10 +889,6 @@ figure, figcaption,
 	
 	#header, #logo {
 		height: 10vw;
-	}
-	
-	#logo {
-		background-position: top center;
 	}
 	
 	body.menu-expanded #header {

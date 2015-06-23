@@ -1,0 +1,5 @@
+name = Taxonomy Organiser
+description = Enables content editors to easily merge and reassign taxonomy terms and fields referencing them
+core = 7.x
+dependencies[] = taxonomy
+package = Taxonomy
