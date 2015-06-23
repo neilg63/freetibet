@@ -20,19 +20,19 @@ function svgimg_theme_media_thumbnail($variables) {
 
   // Arguments for the thumbnail link.
   $thumb = $element['#children'];
-	if (isset($element['#file']) && is_object($element['#file'])) {
-		$file = $element['#file'];
-		if (isset($file->filemime)) {
-			if (strpos($file->filemime,'image/svg') === 0) {
-				$element['#style_name'] = NULL;
-				$thumb = preg_replace('#styles/[a-z0-9_-]+/(public|private)/#i','',$thumb);
-			}
-		}
-	}
-	$may_edit = true;
-	if (function_exists('file_entity_access')) {
-		$may_edit = file_entity_access('update', $element['#file']);
-	}
+  if (isset($element['#file']) && is_object($element['#file'])) {
+    $file = $element['#file'];
+    if (isset($file->filemime)) {
+      if (strpos($file->filemime,'image/svg') === 0) {
+        $element['#style_name'] = NULL;
+        $thumb = preg_replace('#styles/[a-z0-9_-]+/(public|private)/#i','',$thumb);
+      }
+    }
+  }
+  $may_edit = true;
+  if (function_exists('file_entity_access')) {
+    $may_edit = file_entity_access('update', $element['#file']);
+  }
   if ($may_edit) {
     $target = 'file/' . $element['#file']->fid . '/edit';
     $title = t('Click to edit details');

@@ -35,11 +35,11 @@ body {
 	max-width: 1424px;
 }
 
-#page-wrapper > div, #page-wrapper > header, #page-wrapper > footer {
+#page-wrapper > div, #page-wrapper > header, #page-wrapper > footer, #main, #page-wrapper > div {
 	padding: 0 2%;
 }
 
-#page-wrapper > div, #page-wrapper > header {
+#page-wrapper > section, #page-wrapper > header {
 	width: 96%;
 }
 

@@ -25,6 +25,7 @@
   </header>
 
   <div id="main">
+    <div class="header-rule"></div>
 		<?php print render($page['highlighted']); ?>
     <section id="content" class="column" role="main">
       <?php print $breadcrumb; ?>
@@ -40,9 +41,9 @@
       <?php endif; ?>
       <?php print render($page['content']); ?>
       <?php print $feed_icons; ?>
-    </div>
-
-  </section>
+    </section>
+    <?php print render($page['content_bottom']); ?>
+  </div>
 
   <?php print render($page['footer']); ?>
 

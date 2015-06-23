@@ -14,9 +14,9 @@ define('SVGIMG_PNG_PATH','svgimg');
 define('SVGIMG_DEFAULT_SIZE', '1024x800');
 
 function svgimg_menu() {
-	$items = array();
-	$path = svgimg_path();
-	
+  $items = array();
+  $path = svgimg_path();
+  
   $items[$path . '/%'] = array(
      'title' => 'SVG PNG render',
      'description' => 'Configure Metatag defaults.',
@@ -24,45 +24,55 @@ function svgimg_menu() {
      'access callback' => TRUE,
      'file' => 'svgimg.render.inc',
    );
-	
-	return $items;
+   
+   $items['admin/config/media/svg-img'] = array(
+     'title' => 'SVG Images',
+     'description' => 'Configure SVG Image Conversion options.',
+     'type' => MENU_NORMAL_ITEM,
+     'page callback' => 'drupal_get_form',
+     'page arguments' => array('svgimg_admin'),
+     'access arguments' => array('administer site configuration'),
+     'file' => 'svgimg.admin.inc',
+   );
+  
+  return $items;
 }
 
 /*
 * implements hook_field_attach_view_alter
 */
 function svgimg_field_attach_view_alter(&$output, $context) {
-	foreach ($output as $field_name => &$field_data) {
+  foreach ($output as $field_name => &$field_data) {
 
-		if (is_array($field_data) && isset($field_data['#field_type']) && is_array($field_data['#items']) ) {
-			switch ($field_data['#field_type']) {
-				case 'image':
-				case 'file':
-					$count = count($field_data['#items']);
-					if ($count > 0) {
-						module_load_include('inc', 'svgimg');
-						svgimg_image_svg_loop_items($field_data,$count);
-					}
-					break;		
-			}
-		}
-	}
+    if (is_array($field_data) && isset($field_data['#field_type']) && is_array($field_data['#items']) ) {
+      switch ($field_data['#field_type']) {
+        case 'image':
+        case 'file':
+          $count = count($field_data['#items']);
+          if ($count > 0) {
+            module_load_include('inc', 'svgimg');
+            svgimg_image_svg_loop_items($field_data,$count);
+          }
+          break;    
+      }
+    }
+  }
 }
 
 /*
  * Implements hook_field_formatter_info()
  */
 function svgimg_field_formatter_info() {
-	return array(
-		'svgimg' => array(
-				'label' => t('Inline SVG'),
-				'field types' => array('image','file'),
-				'settings' => array(
-					'wrapper_tag' => 'figure',
-					'classes' => NULL,
-					'add_script' => NULL,
-				),
-		),
+  return array(
+    'svgimg' => array(
+        'label' => t('Inline SVG'),
+        'field types' => array('image','file'),
+        'settings' => array(
+          'wrapper_tag' => 'figure',
+          'classes' => NULL,
+          'add_script' => NULL,
+        ),
+    ),
   );
 }
 
@@ -70,30 +80,30 @@ function svgimg_field_formatter_info() {
  * Implements hook_field_formatter_settings_summary()
 */
 function svgimg_field_formatter_settings_summary($field, $instance, $view_mode) {
-	$summary = '';
-	$display = $instance['display'][$view_mode];
-	switch ($display['type']) {
-		case 'svgimg': 
-			module_load_include('inc', 'svgimg','svgimg.admin');
-			$summary = _svgimg_field_formatter_settings_summary($field, $instance, $view_mode,$display);
-			break;
-	}
-	return $summary;
+  $summary = '';
+  $display = $instance['display'][$view_mode];
+  switch ($display['type']) {
+    case 'svgimg': 
+      module_load_include('inc', 'svgimg','svgimg.admin');
+      $summary = _svgimg_field_formatter_settings_summary($field, $instance, $view_mode,$display);
+      break;
+  }
+  return $summary;
 }
 
 /*
  * Implements hook_field_formatter_settings_form()
 */
 function svgimg_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
-	$display = $instance['display'][$view_mode];
-	$element = array();
-	switch ($display['type']) {
-		case 'svgimg': 
-			module_load_include('inc', 'svgimg','svgimg.admin');
-			$element = _svgimg_field_formatter_settings_form($field, $display,$form, $form_state);
-			break;
-	}
-	return $element;
+  $display = $instance['display'][$view_mode];
+  $element = array();
+  switch ($display['type']) {
+    case 'svgimg': 
+      module_load_include('inc', 'svgimg','svgimg.admin');
+      $element = _svgimg_field_formatter_settings_form($field, $display,$form, $form_state);
+      break;
+  }
+  return $element;
 }
 
 /*
@@ -103,11 +113,11 @@ function svgimg_field_formatter_view($entity_type, $entity, $field, $instance, $
   $element = array();
   switch ($display['type']) {
     case 'svgimg':
-    	if (!empty($items) && is_array($items)) {
-    		module_load_include('inc', 'svgimg');
-    		$element = svgimg_build_element($items,$display);
-    	}
-    	break;
+      if (!empty($items) && is_array($items)) {
+        module_load_include('inc', 'svgimg');
+        $element = svgimg_build_element($items,$display);
+      }
+      break;
   }
   return $element;
 }
@@ -117,19 +127,19 @@ function svgimg_field_formatter_view($entity_type, $entity, $field, $instance, $
 * Provide custom media thumbnail for SVG images
 */
 function svgimg_theme_registry_alter(&$theme_registry) {
-	if (!empty($theme_registry['media_thumbnail']['function'])) {
-		$theme_registry['media_thumbnail']['function'] = 'svgimg_theme_media_thumbnail';
-		$theme_path = drupal_get_path('module', 'svgimg');
-		$file_path = $theme_path . '/svgimg.theme.inc';
-		$theme_registry['media_thumbnail']['file'] = $file_path;
-		$theme_registry['media_thumbnail']['theme_path'] = $theme_path;
-		$theme_registry['media_thumbnail']['includes'] = array($file_path);
-	}
+  if (!empty($theme_registry['media_thumbnail']['function'])) {
+    $theme_registry['media_thumbnail']['function'] = 'svgimg_theme_media_thumbnail';
+    $theme_path = drupal_get_path('module', 'svgimg');
+    $file_path = $theme_path . '/svgimg.theme.inc';
+    $theme_registry['media_thumbnail']['file'] = $file_path;
+    $theme_registry['media_thumbnail']['theme_path'] = $theme_path;
+    $theme_registry['media_thumbnail']['includes'] = array($file_path);
+  }
 }
 
 /*
 * Fetch path to directory for PNG alternatives
 */
 function svgimg_path() {
-	return variable_get('file_public_path','sites/default/files') . '/' . SVGIMG_PNG_PATH;
+  return variable_get('file_public_path','sites/default/files') . '/' . SVGIMG_PNG_PATH;
 }

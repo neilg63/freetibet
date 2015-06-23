@@ -49,6 +49,7 @@ stylesheets[all][]        = css/fields.css
 stylesheets[print][]      = css/print.css
 
 stylesheets[all][]        = css/freetibet.css
+stylesheets[all][]        = css/legacy.css
 
 ; Example of adding handheld stylesheets. The iPhone's preferred media type
 ; is based on the CSS3 Media queries. http://www.w3.org/TR/css3-mediaqueries/
@@ -86,9 +87,9 @@ regions[top]         		= Header top
 regions[header]         = Header
 regions[highlighted]    = Highlighted
 regions[content]        = Content
+regions[content_bottom] = Content Bottom
 regions[footer]         = Footer
 regions[bottom]         = Page bottom
-regions[page_bottom]    = Page bottom
 
 
 ; Various page elements output by the theme can be toggled on and off. The

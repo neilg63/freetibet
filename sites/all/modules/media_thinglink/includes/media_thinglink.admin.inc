@@ -107,7 +107,7 @@ function media_thinglink_add($form, &$form_state = array(), $redirect = NULL) {
  *  Validation for media_thinglink_add().
  */
 function media_thinglink_add_validate($form, &$form_state) {
-  $pattern = '(([0-9A-Za-z]{2})\.thingpic.com\/images\/([\\w]+)\/([^\\s"]*))';
+  $pattern = '#([0-9A-Za-z]{2})\.(thingpic.com/images/(\w+)/([^\s"]*)|thinglink\.com/scene/\w+|thinglink.me/api/image/\w+)#';
   if (!preg_match($pattern, $form_state['values']['url'], $matches)) {
     form_set_error('url', t('Please submit a valid Thinglink image URL.'));
   }

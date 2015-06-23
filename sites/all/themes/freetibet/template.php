@@ -305,6 +305,8 @@ function freetibet_menu_link($variables) {
 	} else {
 		$path = $element['#href'];
 	}
+  $parts = explode('/',$path);
+  $path = array_pop($parts);
 	if ($path == '<front>') {
 		$path = 'home';
 	}

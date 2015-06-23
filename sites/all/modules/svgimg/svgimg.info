@@ -4,3 +4,4 @@ core = 7.x
 
 dependencies[] = media
 dependencies[] = file_entity
+configure = admin/config/media/svg-img

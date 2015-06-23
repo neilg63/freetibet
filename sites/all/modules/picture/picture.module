@@ -1253,8 +1253,8 @@ function theme_picture(array $variables) {
 
     if (variable_get('picture_fallback_method', 'src') === 'src') {
       $min_ie9_fallback = array(
-        '#theme' => 'image',
-        '#path' => $src,
+        '#theme' => 'image_srcset',
+        '#uri' => $src,
         '#alt' => isset($attributes['alt']) ? $attributes['alt'] : '',
         '#title' => isset($attributes['title']) ? $attributes['title'] : '',
         '#attributes' => array_diff_key($attributes, array('alt' => '', 'title' => '')),
@@ -1264,8 +1264,8 @@ function theme_picture(array $variables) {
     else {
       // Fallback image for < IE9.
       $min_ie9_fallback = array(
-        '#theme' => 'image',
-        '#path' => $src,
+        '#theme' => 'image_srcset',
+        '#uri' => $src,
         '#alt' => isset($attributes['alt']) ? $attributes['alt'] : '',
         '#title' => isset($attributes['title']) ? $attributes['title'] : '',
         '#attributes' => array_diff_key($attributes, array('alt' => '', 'title' => '')),
@@ -1866,6 +1866,9 @@ function picture_link_types($instance) {
  * Picture mapping factory.
  */
 function picture_mapping_object_factory($schema, $data) {
+  if (!class_exists('PictureMapping')) {
+    module_load_include('php', 'picture', 'includes/PictureMapping');
+  }
   $mapping = new PictureMapping();
   $mapping->setValues($schema, $data);
   return $mapping;

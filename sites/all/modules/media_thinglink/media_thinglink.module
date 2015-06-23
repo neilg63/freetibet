@@ -54,7 +54,7 @@ function media_thinglink_menu() {
     'title' => 'Add media from Thinglink',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('media_thinglink_add'),
-    'access arguments' => array('configure thinglink'),
+    'access arguments' => array('create page content'),
     'type' => MENU_LOCAL_ACTION,
     'file' => 'includes/media_thinglink.admin.inc',
     'weight' => -1,
@@ -69,7 +69,7 @@ function media_thinglink_init() {
   $endpoint = variable_get('thinglink_endpoint', 'http://www.thinglink.com/jse/embed.js');
 
   if ($id) {
-    drupal_add_js('__tlid = ' . drupal_to_js($id) . ';', 'inline', 'footer');
+    drupal_add_js('__tlid = ' . drupal_json_encode($id) . ';', 'inline', 'footer');
   }
   drupal_add_js($endpoint, array('type' => 'external', 'scope' => 'footer', 'weight' => 100, 'defer' => TRUE));
 }

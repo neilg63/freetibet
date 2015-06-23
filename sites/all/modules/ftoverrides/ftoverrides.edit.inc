@@ -20,22 +20,33 @@ function _ftoverrides_form_node_form_alter(&$form,&$form_state,$form_id = NULL) 
 			}
 			
 			if (count($arrClasses) > 0) {
-				$form['node_class']['css_class']['#size'] = 120;
+        $default = $form['node_class']['css_class']['#default_value'];
+        if (!empty($default) && is_string($default)) {
+          $default = explode(' ', $default);
+        }
+        else {
+          $default = array();
+        }
+				$form['node_class']['css_class']['#type'] = 'select';
+        $form['node_class']['css_class']['#multiple'] = TRUE;
+        $form['node_class']['css_class']['#size'] = count($arrClasses);
+        $form['node_class']['css_class']['#options'] = $arrClasses;
+        $form['node_class']['css_class']['#default_value'] = $default;
 				$form['node_class']['css_class']['#description'] .= " " . t("These will be added to wrapper tag of the node for additional styling");
 				$items = array();
 				foreach ($arrClasses as $key => $value) {
 					$items[] = $key . ' : ' . $value;
 				}
 				
-				$vars = array(
+				/*$vars = array(
 					'type' => 'ul',
 					'title' => 'Available class names for this content type',
 					'items' => $items
 				);
 				
-				$form['node_class']['css_class']['#suffix'] = theme('item_list', $vars);
+				$form['node_class']['css_class']['#suffix'] = theme('item_list', $vars);*/
 	  }
-			}
+	}
 			
 			
 	
@@ -66,6 +77,7 @@ function _ftoverrides_form_node_form_alter(&$form,&$form_state,$form_id = NULL) 
 			case 'media_section':
 			case 'box':
 			case 'key_points':
+      case 'slide_section':
 				$form['path']['#access'] = FALSE;
 				$form['author']['#access'] = FALSE;
 				$form['metatags']['#access'] = FALSE;
@@ -78,4 +90,19 @@ function _ftoverrides_form_node_form_alter(&$form,&$form_state,$form_id = NULL) 
 				break;
 		}
 	}
+}
+
+
+function _ftoverrides_node_presave($node) {
+  if (isset($node->node_class)) {
+    if (isset($node->node_class['css_class']) && is_array($node->node_class['css_class'])) {
+      if (!empty( $node->node_class['css_class'])) {
+        $node->node_class['css_class'] = implode(' ', $node->node_class['css_class']);
+      }
+      else {
+        $node->node_class['css_class'] = '';
+      }
+      
+    }
+  }
 }
