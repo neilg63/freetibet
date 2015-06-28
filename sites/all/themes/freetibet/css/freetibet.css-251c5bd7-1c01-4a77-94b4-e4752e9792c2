@@ -115,13 +115,6 @@ html.lt-ie9 #logo {
 	height: 100%;
 }
 
-.region-content-bottom {
-  clear: both;
-  position: relative;
-  margin: 1em 0;
-  margin: 2vh 0;
-}
-
 #header .region-header nav,
 #header .region-header > div,
 #header .region-header button {
@@ -180,24 +173,9 @@ input.form-submit {
 		position:relative;
 }
 
-.view-content ul,
-.view-content ul li,
-#header .block-menu-block ul {
-	list-style: none;
-}
-
-.view-content ul,
-.view-content ul li {
-  padding: 0;
-  margin: 0;
-}
-
-#content article.node > div.block-views {
-  margin: 0;
-}
-
 #header .block-menu-block ul {
 	padding-left: 0;
+	list-style: none;
 	text-align: center;
 }
 
@@ -212,8 +190,7 @@ input.form-submit {
 
 #header li.regular-donation a,
 #header li.donate a,
-#header li.join a,
-#header li.join-free-tibet a {
+#header li.join a {
   color: #bc2373;
 }
 
@@ -408,7 +385,6 @@ iframe#pdf {
 
 /* Slider */
 
-.entity-shopify-product .field-name-shopify-product-images img,
 figure img, picture img, #content .field-name-field-box .field-name-field-image img {
   width: 100%;
   height: auto;
@@ -768,24 +744,15 @@ figure.view-mode-medium:hover figcaption {
 	padding: 0 2em 0 0;
 }
 
-#payment-donation-form .form-submit,
 .large-button a {
+	display: block;
 	background-color: #23BCB9;
 	color: white;
+	font-size: 2em;
 	padding: 0.25em;
 	border-radius: 0.25em;
 	white-space: nowrap;
-}
-
-.large-button a {
-	display: block;
-  font-size: 2em;
 	margin: 0 0.5em 0.5em 0;
-}
-
-#payment-donation-form .form-submit {
-  border: none;
-  font-size: 1em;
 }
 
 .large-button a:hover {
@@ -914,136 +881,12 @@ figure, figcaption,
 	transition: all 1s ease;
 }
 
-.node-landing > .block-views,
-.view-articles-by-topic ul li {
-  clear: both;
-  width: 100%;
-}
-
-.view-articles-by-topic ul li .field-name-field-image {
-  float: left;
-  width: 15%;
-  padding: 0 2% 1em 0;
-}
-
-.view-articles-by-topic ul li .view-mode-mini_teaser {
-  margin: 0.5em 0;
-}
-
-.view-articles-by-topic ul li h4 {
-  margin-bottom: 0.25em;
-  font-size: 1.05em;
-}
-
-.view-articles-by-topic ul li .field-name-body {
-  font-size: 0.9em;
-}
-
-.view-articles-by-topic ul li .field-name-field-news-date {
-  font-size: 0.75em;
-  padding: 0.25em 0;
-}
-
-.view-articles-by-topic ul li {
-  padding: 0;
-}
-
-
-/*
-SHopify
-*/
-
-.view-top-shopify-products .views-row {
+.node-landing > .block-views {
   clear: both;
 }
 
-.entity-property-title .entity-property-label {
-  display: none;
-}
-
-.entity-shopify-product .field-name-shopify-product-images {
-  float: left;
-  width: 15%;
-  padding: 0;
-  overflow: hidden;
-}
-
-.entity-property-title {
-  font-weight: bold;
-  color: #23BCB9;
-}
-
-.entity-property-body-html p {
-  margin: 0;
-  padding: 0 0 0.5em 0;
-  font-size: 0.9em;
-}
-
-.entity-shopify-product .group-details {
-  position: relative;
-  float: right;
-  margin: 0 0 0 2%;
-  width: 80%;
-}
-
-.entity-shopify-product .shopify-add-to-cart-form {
-  clear: both;
-}
-
-.shopify-add-to-cart-form > div > .form-wrapper,
-.shopify-add-to-cart-form > div > .form-item {
-  float: left;
-  padding: 0 2em 0 0;
-  max-width: 10em;
-  margin: 0;
-}
-
-.shopify-add-to-cart-form > div > .form-item select,
-.shopify-add-to-cart-form > div > .form-item label {
-  display: inline-block;
-}
-
-#payment-donation-form .form-item, #payment-donation-form .form-wrapper,
-#payment-donation-form .form-item label, #payment-donation-form .form-item input, .payment-info {
-  display: inline-block;
-}
-
-#payment-donation-form .form-item, #payment-donation-form .form-wrapper,
-#payment-donation-form .form-item label {
-  height: 2em;
-}
-
-#payment-donation-form .form-item,
-#payment-donation-form .form-item label {
-  padding: 0 0 0 1em;
-}
-
-#payment-donation-form {
-  position: relative;
-  margin: 1em 0 4em 0;
-}
-
-.payment-info {
-  height: 1.5em;
-  width: 6em;
-  margin: 0;
-  padding: 0 1em 0 0;
-}
-
-#payment-donation-form .form-item .description {
-  position: absolute;
-  bottom: -1.5em;
-  font-size: 0.8em;
-  left: 2em;
-}
-
-div.paypal,
-.paypal-standard,
-.paypal-express {
-  background-image: url(//www.paypalobjects.com/webstatic/i/logo/rebrand/ppcom.svg);
-  background-repeat: no-repeat;
-  background-position: bottom right;
-  background-size: contain;
+.view-articles-by-topic {
+  
 }
 
 @media screen and (max-width: 799px) {
@@ -1233,7 +1076,7 @@ div.paypal,
 @media screen and (min-width: 1080px) {
 	
 	#content {
-		font-size: 1.1em;
+		font-size: 1.1rem;
 	}
 	
 	#header, #logo {
@@ -1290,7 +1133,7 @@ div.paypal,
 			width: 20em;
 	}
 	#content {
-		font-size: 1.2em;
+		font-size: 1.2rem;
 	}
 	
 	#content .field-name-field-box > article {
@@ -1302,7 +1145,7 @@ div.paypal,
 @media screen and (min-width: 1380px) {
 	
 	#content {
-		font-size: 1.25em;
+		font-size: 1.25rem;
 	}
 	
 	#header, #logo {
@@ -1452,7 +1295,7 @@ div.paypal,
 @media screen and (min-width: 1414px) {
 	
 	#content {
-		font-size: 1.25em;
+		font-size: 1.25rem;
 	}
 		
 	article > .flexslider .slides > li,
@@ -1517,14 +1360,10 @@ div.paypal,
 	margin: 1em 1em 0 0;
 }
 
-#content .node a.more-link,
-#content .node .read-more a {
+#content .view-mode-teaser .read-more a {
 	display: inline-block;
-  margin-left: 1em;
-  text-style: italic;
 }
 
-#content .node a.more-link:after,
 #content .view-mode-teaser .read-more a:after {
 	content: " \00BB";
 }

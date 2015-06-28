@@ -441,17 +441,6 @@ background:url('../images/addcart.png') 0 -43px no-repeat;
 color: #CCEBEB;	
 }
 
-.form-wrapper {
-border:2px solid #23BCB9;   
-}
-
-.form-wrapper .form-wrapper, .form-actions.form-wrapper {
-   border:0px solid #fff;
-}
-
-#uc-product-add-to-cart-form-1325 input.form-text {
-    width: 200px;
-}
 
 #customer-pane .fieldset-description {
 display:none;

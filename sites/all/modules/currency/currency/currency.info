@@ -38,9 +38,9 @@ files[] = tests/CurrencyViewsHandlerFieldWebTestCase.test
 files[] = tests/CurrencyViewsHandlerFilterWebTestCase.test
 files[] = tests/CurrencyWebTestCase.test
 
-; Information added by Drupal.org packaging script on 2014-04-27
-version = "7.x-2.4"
+; Information added by Drupal.org packaging script on 2015-06-24
+version = "7.x-2.5"
 core = "7.x"
 project = "currency"
-datestamp = "1398598222"
+datestamp = "1435153681"
 

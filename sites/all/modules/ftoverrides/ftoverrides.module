@@ -251,3 +251,72 @@ function ftoverrides_wysiwyg_editor_settings_alter(&$settings, $context) {
 		}
 	}
 }
+
+function ftoverrides_form_payment_donation_form_alter(&$form,&$form_state,$form_id) {
+  
+  if (isset($form['payment_method']) && isset($form['payment_method']['#pmids'])) {
+    $pmids = $form['payment_method']['#pmids'];
+    if (is_array($pmids) && count($pmids) == 1) {
+      $pmid = array_shift($pmids) ;
+      $query = db_select('payment_method','pm')->fields('pm');
+      $query->condition('pm.pmid',$pmid);
+      $result = $query->execute();
+      if ($result) {
+        $pm = $result->fetch();
+        $method_label = t("Pay by");
+        $form['payment_method']['#title'] = $method_label;
+        $min_amount = variable_get('ftoverrides_min_donation_amount', 5);
+        $params = array('@amount'=> $min_amount,'@currency' => '£');
+        $form['payment_donation_amount']['#description'] = t("Minimum amount : @currency @amount",$params);
+        $pm_class = str_replace('_','-',$pm->name);
+        $form['actions']['payment_donation_pay']['#value'] = t("Donate");
+        $form['info'] = array(
+          '#type' => 'markup',
+          '#markup' => '<div class="payment-info '.$pm_class.'" title="'.$method_label . ": " . $pm->title_generic.'"></div>'
+        );
+        $form['payment_method']['#access'] = false;
+        $form['min_amount'] = array(
+          '#type' => 'hidden',
+          '#value' => $min_amount,
+          '#attributes' => array('id' => 'edit-min-donation-amount')
+        );
+        $default_amount = variable_get('ftoverrides_default_donation_amount', 10);
+        $form['default_amount'] = array(
+          '#type' => 'hidden',
+          '#value' => $default_amount,
+          '#attributes' => array('id' => 'edit-default-donation-amount')
+        );
+        $form['error_msg'] = array(
+          '#type' => 'hidden',
+          '#value' => t("Please enter a valid amount of at least @currency @amount",$params),
+          '#attributes' => array('id' => 'edit-donation-error-msg')
+        );
+        $form['comma_error_msg'] = array(
+          '#type' => 'hidden',
+          '#value' => t("Please use only points for decimals"),
+          '#attributes' => array('id' => 'edit-comma-error-msg')
+        );
+        $form['#after_build'][] = 'ftoverrides_donation_form_after_build';
+      }
+    }
+  }
+}
+
+function ftoverrides_donation_form_after_build($form, &$form_state) {
+  drupal_add_js(drupal_get_path('module','ftoverrides') . '/js/donate.js');
+  return $form;
+}
+
+function ftoverrides_form_block_admin_configure_alter(&$form,&$form_state,$form_id) {
+  if (isset($form['module']) && $form['module']['#value'] == 'payment_donation') {
+    module_load_include('inc','ftoverrides','ftoverrides.edit');
+    _ftoverrides_form_block_admin_configure_alter($form,$form_state);
+  }
+}
+
+function ftoverrides_donation_block_admin_configure_submit(&$form,&$form_state) {
+  if (isset($form_state['values']['ftoverrides_min_donation_amount'])) {
+    module_load_include('inc','ftoverrides','ftoverrides.edit');
+    _ftoverrides_donation_block_admin_configure_submit($form_state['values']);
+  }
+}

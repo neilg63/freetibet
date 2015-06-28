@@ -1229,7 +1229,6 @@ function txorg_term_field_count_matches($fieldName=NULL,$tid = 0,$entity_type=NU
 		$comparator = '>';
 	}
 	if (!empty($entity_type)) {
-		//$query = db_select($entityTable,'e')->fields('e',array($entity_pk));
 		$info = entity_get_info($entity_type);
 		$entityTable = $info['base table'];
 		$entity_pk = $info['entity keys']['id'];
@@ -1411,6 +1410,13 @@ function txorg_field_instance_form(&$form, $vocab,$field_name,$entity_type = NUL
 				$item = $data[$i];
 				$classes = array();
 				$entity = $entities[$item->entity_id];
+        $term_items = field_get_items($entity_type,$entity,$field_name);
+        if (!empty($term_items)) {
+          $item->tids = array();
+          foreach ($term_items as $ti) {
+            $item->tids[] = $ti['tid'];
+          }
+        }
 				switch ($control) {
 					case 'select':
 					case 'checkboxes':

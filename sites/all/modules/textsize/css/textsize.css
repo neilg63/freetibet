@@ -6,6 +6,7 @@ ul.textsize-selector, ul.textsize-selector li {
 ul.textsize-selector {
   list-style-type: none;
 	margin:0;
+  padding:1em 0 0 0;
   font-size: 20px;
   font-size: 1.25em;
 }
@@ -38,15 +39,15 @@ ul.textsize-selector li.selected {
   color: #23BCB9;
 }
 
-html.textsize-small #content {
+html.textsize-small #main {
 	font-size: 0.9em;
 }
 
-html.textsize-large #content {
+html.textsize-large #main {
 	font-size: 1.2em;
 }
 
-html.textsize-xlarge #content {
+html.textsize-xlarge #main {
 	font-size: 1.5em;
 }
 

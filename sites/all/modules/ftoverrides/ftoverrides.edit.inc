@@ -106,3 +106,40 @@ function _ftoverrides_node_presave($node) {
     }
   }
 }
+
+function _ftoverrides_form_block_admin_configure_alter(&$form,&$form_state) {
+  $min_amount = variable_get('ftoverrides_min_donation_amount', 5);
+  $form['settings']['ftoverrides_min_donation_amount'] = array(
+    '#type' => 'textfield',
+    '#title' => t("Minimum amount"),
+    '#default_value' => $min_amount,
+    '#size' => 4
+  );
+
+  $default_amount = variable_get('ftoverrides_default_donation_amount', 10);
+  $form['settings']['ftoverrides_default_donation_amount'] = array(
+    '#type' => 'textfield',
+    '#title' => t("Default amount"),
+    '#default_value' => $default_amount,
+    '#size' => 4
+  );
+
+  if (is_array($form['#submit'])) {
+    array_unshift($form['#submit'],'ftoverrides_donation_block_admin_configure_submit');
+  }
+}
+
+function _ftoverrides_donation_block_admin_configure_submit(&$settings) {
+  $var_name = 'ftoverrides_min_donation_amount';
+  $value = (float) $settings[$var_name];
+  if (is_numeric($value)) {
+   variable_set($var_name, $value); 
+  }
+  $var_name = 'ftoverrides_default_donation_amount';
+  if (isset($settings[$var_name])) {
+    $value = (float) $settings[$var_name];
+    if (is_numeric($value)) {
+     variable_set($var_name, $value);
+    }
+  }
+}

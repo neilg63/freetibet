@@ -68,7 +68,6 @@ function shopify_api_client() {
       return NULL;
     }
   }
-
   // Create the client
   return new ShopifyClient($domain, $token, $key, $secret);
 }
