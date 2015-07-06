@@ -130,11 +130,16 @@ html.lt-ie9 #logo {
 
 
 /* Basic elements */
-div.error {
-	background: #FEF5F1 url("../images/error24.png") no-repeat 8px 8px;
+
+.hidden {
+  display: none;
+}
+
+.error {
+	color: #cc0000;
 }
 div.status {
-	background: #F8FFF0 url("../images/status24.png") no-repeat 8px 8px;
+	color: #009900;
 }
 
 a:link, a:hover, a:visited, a:active {
@@ -781,6 +786,27 @@ figure.view-mode-medium:hover figcaption {
 	display: block;
   font-size: 2em;
 	margin: 0 0.5em 0.5em 0;
+}
+
+/*
+* Donation form
+*/
+#payment-donation-form .form-item-payment-donation-amount {
+  color: white;
+}
+
+#payment-donation-form .form-item-payment-donation-amount input,
+#payment-donation-form .form-item-payment-donation-amount select,
+#payment-donation-form .form-item-payment-donation-amount label,
+#payment-donation-form .form-item-payment-donation-amount div {
+  color: #666666;
+}
+
+#payment-donation-form .form-item-payment-donation-amount input.form-text {
+  margin-left: -1.5em;
+}
+#payment-donation-form .form-item-payment-donation-amount select {
+  font-size: 1em;
 }
 
 #payment-donation-form .form-submit {

@@ -5,6 +5,8 @@
  * Miscellaneous overrides for Freetibet site
  */
 
+define('FTOVERRIDES_SHOPIFY_PRODUCT_TEASER_IMAGE_DISPLAY_MODE', 'last');
+
 function ftoverrides_form_search_block_form_alter(&$form,&$form_state,$form_id) {
 
 	$form['background'] = array(
@@ -173,6 +175,26 @@ function ftoverrides_ds_fields_info($entity_type) {
 			);
 			return array($entity_type => $fields);
 			break;
+  	case 'shopify_product':
+      
+  		$fields['shopify_title_link'] = array(
+  				'title' => t('Title link to Shopify product page'),
+  				'field_type' => DS_FIELD_TYPE_FUNCTION,
+  				'function' => 'ftoverrides_shopify_title_link',
+  		);
+      
+  		$fields['shopify_image_link'] = array(
+  				'title' => t('Image link to Shopify product page'),
+  				'field_type' => DS_FIELD_TYPE_FUNCTION,
+  				'function' => 'ftoverrides_shopify_image_link',
+  		);
+      
+  		$fields['shopify_detail_link'] = array(
+  				'title' => t('View more link to Shopify product page'),
+  				'field_type' => DS_FIELD_TYPE_FUNCTION,
+  				'function' => 'ftoverrides_shopify_detail_link',
+  		);
+  		return array($entity_type => $fields);  
 	}
 	return;
 }
@@ -274,12 +296,29 @@ function ftoverrides_form_payment_donation_form_alter(&$form,&$form_state,$form_
           '#type' => 'markup',
           '#markup' => '<div class="payment-info '.$pm_class.'" title="'.$method_label . ": " . $pm->title_generic.'"></div>'
         );
+        
+        $default_currency_code = 'GBP';
+        
+        $options = array(
+          'GBP' => 'UK £',
+          'EUR' => 'Euro',
+          'USD' => 'US $',
+        );
+
+        $form['payment_donation_amount']['currency_code'] = array(
+          '#type' => 'select',
+          '#options' => $options,
+          '#default_value' => $default_currency_code,
+          '#weight' => -10
+        );
+        
         $form['payment_method']['#access'] = false;
         $form['min_amount'] = array(
           '#type' => 'hidden',
           '#value' => $min_amount,
           '#attributes' => array('id' => 'edit-min-donation-amount')
         );
+
         $default_amount = variable_get('ftoverrides_default_donation_amount', 10);
         $form['default_amount'] = array(
           '#type' => 'hidden',
@@ -296,7 +335,25 @@ function ftoverrides_form_payment_donation_form_alter(&$form,&$form_state,$form_
           '#value' => t("Please use only points for decimals"),
           '#attributes' => array('id' => 'edit-comma-error-msg')
         );
+        
+        if (is_array($form['#validate']) && !in_array('ftoverrides_donation_form_validate', $form['#validate'])) {
+          $form['#validate'][] = 'ftoverrides_donation_form_validate';
+        }
         $form['#after_build'][] = 'ftoverrides_donation_form_after_build';
+      }
+    }
+  }
+}
+
+function ftoverrides_donation_form_validate(&$form,&$form_state) {
+  $values = $form_state['values'];
+  if (isset($values['payment_donation_amount']) && isset($values['payment_donation_amount']['currency_code'])) {
+    $cc = $values['payment_donation_amount']['currency_code'];
+    if (is_string($cc) && strlen($cc) === 3) {
+      $form['payment_donation_amount']['#currency_code'] = $cc;
+      $form['payment_donation_amount']['currency_code']['#default_value'] = $cc;
+      if (isset($form_state['payment']) && is_object($form_state['payment'])) {
+        $form_state['payment']->currency_code = $cc;
       }
     }
   }
@@ -304,6 +361,9 @@ function ftoverrides_form_payment_donation_form_alter(&$form,&$form_state,$form_
 
 function ftoverrides_donation_form_after_build($form, &$form_state) {
   drupal_add_js(drupal_get_path('module','ftoverrides') . '/js/donate.js');
+  if (is_array($form['#validate']) && !in_array('ftoverrides_donation_form_validate', $form['#validate'])) {
+    $form['#validate'][] = 'ftoverrides_donation_form_validate';
+  }
   return $form;
 }
 
@@ -319,4 +379,78 @@ function ftoverrides_donation_block_admin_configure_submit(&$form,&$form_state) 
     module_load_include('inc','ftoverrides','ftoverrides.edit');
     _ftoverrides_donation_block_admin_configure_submit($form_state['values']);
   }
+}
+
+function ftoverrides_shopify_detail_link($field) {
+	if ($entity = _ftoverrides_extra_entity_from_ds_field($field)) {
+		$product_link = _ftoverrides_get_shopfify_product_link($entity);
+		if (!empty($product_link)) {
+      $details_label = variable_get('ftoverrides_shopify_product_view_details','View details');
+      $details_label_long = variable_get('ftoverrides_shopify_product_view_details_long','View product details page on our shopify site');
+      $opts = array('attributes' => array('class' => array('shopify-product-link'),'title' => $details_label_long));
+			return l($details_label, $product_link, $opts);
+		}
+	}
+}
+
+function ftoverrides_shopify_title_link($field) {
+	if ($entity = _ftoverrides_extra_entity_from_ds_field($field)) {
+		$product_link = _ftoverrides_get_shopfify_product_link($entity);
+		if (!empty($product_link)) {
+      $details_label_long = variable_get('ftoverrides_shopify_product_view_details_long','View product details page on our shopify site');
+      $opts = array('attributes' => array('class' => array('shopify-product-link'),'title' => $details_label_long));
+			return l($entity->title, $product_link, $opts);
+		}
+	}
+}
+
+function ftoverrides_shopify_image_link($field) {
+	if ($entity = _ftoverrides_extra_entity_from_ds_field($field)) {
+		$product_link = _ftoverrides_get_shopfify_product_link($entity);
+		if (!empty($product_link)) {
+      $details_label_long = variable_get('ftoverrides_shopify_product_view_details_long','View product details page on our shopify site');
+      $opts = array('attributes' => array('class' => array('shopify-product-link'),'title' => $details_label_long), 'html' => TRUE);
+      $mode = variable_get('ftoverrides_shopify_product_teaser_image_display_mode',FTOVERRIDES_SHOPIFY_PRODUCT_TEASER_IMAGE_DISPLAY_MODE);
+      //$items = field_get_items('shopify_product',$entity,'shopify_product_images');
+      if (!empty($entity->shopify_product_images)) {
+        // first last image
+        foreach ($entity->shopify_product_images as $lang => $data) {
+          if (is_string($lang) && is_array($data) && isset($data[0])) {
+            if ($mode == 'last') {
+              $image_items = array(array_pop($data));
+            } else {
+              $image_items = array(array_unshift($data));
+            }
+            $entity->shopify_product_images[$lang] = $image_items;
+          }
+        }
+        $display = array('settings' => array('image_style' => 'shopify_product_thumbnail'),'label' => 'hidden');
+        $view = field_view_field('shopify_product',$entity,'shopify_product_images',$display);
+        $html = render($view);
+        return l($html, $product_link, $opts);
+      }
+		}
+	}
+}
+
+function _ftoverrides_extra_entity_from_ds_field($field) {
+  if (isset($field['entity']) && is_object($field['entity'])) {
+      return $field['entity'];
+  }
+  return false;
+}
+
+function _ftoverrides_get_shopfify_product_link($entity) {
+  $base_url = '';
+  if (is_object($entity)) {
+  	$handle = $entity->handle;
+  	if (!empty($handle)) {
+  		$base_url = variable_get('ftoverrides_shopify_domain','http://shop.freetibet.org');
+      $product_prefix = variable_get('ftoverrides_shopify_product_prefix','products');
+    }
+    if (!empty($product_prefix)) {
+      $base_url .= '/' . $product_prefix;
+    }
+  }
+  return $base_url . '/' . $handle;
 }

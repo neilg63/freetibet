@@ -623,8 +623,12 @@ function sharethis_include_js() {
     }
     drupal_add_js($st_js, 'inline');
     
-    //$external = "//ws.sharethis.com/button/buttons.js";
-    $external = ((isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') ? "https://ws." : "http://w.") . "sharethis.com/button/buttons.js";
+	if((isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == 'https')) {
+		$external = "https://ws.sharethis.com/button/buttons.js";
+	} else {
+		$external = "http://w.sharethis.com/button/buttons.js";
+	}
+
     drupal_add_js($external, 'external');
     
     $stlight = get_stLight_options($data_options);

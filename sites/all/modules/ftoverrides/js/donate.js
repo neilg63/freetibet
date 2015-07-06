@@ -11,6 +11,7 @@
       s.amount_rgx = new RegExp('\\d+\\.');
       s.min_donation_amount = 0;
       s.amount_desc = s.form.find('.description:first');
+      s.amount_desc.addClass('hidden');
       s.error_msg = '';
       s.comma_error_msg = '';
 			if (s.min_donation.length>0) {
@@ -37,7 +38,7 @@
         s.form.on('submit', function(e){
           var s = Drupal.settings.fto, valid = true, error_msgs = [],desc='';
           if (s.amount_desc.hasClass('error')) {
-            s.amount_field.removeClass('error');
+            s.amount_field.removeClass('error').addClass('hidden');
             if (s.amount_desc.attr('title')) {
               desc = s.amount_desc.attr('title');
               s.amount_desc.html(desc);
@@ -74,7 +75,7 @@
             };
             s.amount_desc.html(error_msgs.join(' and ').replace(/\band\s+please\b/i,'and'));
             s.amount_field.addClass('error');
-            s.amount_desc.addClass('error');
+            s.amount_desc.addClass('error').removeClass('hidden');
           }
         });
       }
