@@ -1,0 +1,9 @@
+name = Commerce Express Checkout Link
+description = Supplements Commerce Express Checkout with a custom link
+package = Commerce (custom)
+core = 7.x
+dependencies[] = views
+dependencies[] = commerce_product
+
+files[] = ft_checkoutlink_handler_field.inc
+

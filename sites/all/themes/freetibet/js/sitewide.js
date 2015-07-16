@@ -52,8 +52,14 @@
 			return size;
 		};
 
-	$.fn.fitIframes = function() {
+	$.fn.fitIframes = function(w,h) {
 	   var items = this, numItems = items.length,item, i=0,w,h,fr,fw,fh,ar;
+     if (!w) {
+       w = 16;
+     }
+     if (!h) {
+       h = 9.5;
+     }
 	   if (numItems>0) {
 		   for (;i<numItems;i++) {
 			   item = $(items[i]);
@@ -68,7 +74,7 @@
 					   }
 				   }
 				   else {
-					   ar = 16/9.5;
+					   ar = h/w;
 				   }
 				   h = w / ar;
 				   fr.css({width:'100%',height: h + 'px' });
@@ -140,7 +146,7 @@
 			var s = Drupal.settings.ft;
 			s.desktopWidth = 800;
 			s.width = window.viewportSize.getWidth();
-			s.iframes = $('.file-video, .file-audio-soundcloud');
+			s.iframes = $('.file-video, .file-audio-soundcloud,.field-name-field-iframe');
 			s.b = $('body');
 			s.sbox =  $('#block-search-form');
 			s.header = $('#header');
