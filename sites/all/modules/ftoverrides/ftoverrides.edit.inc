@@ -108,6 +108,7 @@ function _ftoverrides_node_presave($node) {
 }
 
 function _ftoverrides_form_block_admin_configure_alter(&$form,&$form_state) {
+  module_load_include('inc','ftoverrides','ftoverrides.donate');
   $min_amount = variable_get('ftoverrides_min_donation_amount', 5);
   $form['settings']['ftoverrides_min_donation_amount'] = array(
     '#type' => 'textfield',
@@ -251,6 +252,7 @@ function _ftoverrides_parse_presets($strValue = '') {
 }
 
 function _ftoverrides_donation_block_admin_configure_submit(&$settings) {
+  module_load_include('inc','ftoverrides','ftoverrides.donate');
   $var_name = 'ftoverrides_min_donation_amount';
   $value = (float) $settings[$var_name];
   if (is_numeric($value)) {

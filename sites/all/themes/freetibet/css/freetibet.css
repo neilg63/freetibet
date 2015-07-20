@@ -95,8 +95,13 @@ body.front div#block-system-main div.content iframe {
 	float: right;
 }
 
+#content .entity,
 #content div.messages {
   clear: both;
+}
+
+#content table td, #content table th {
+  padding: 0.125em 0.625em 0.125em 0;
 }
 
 #logo {
@@ -1261,8 +1266,8 @@ SHopify
 }
 
 div.paypal,
-.paypal-standard,
-.paypal-express {
+div.paypal-standard,
+div.paypal-express-checkout {
   /*background-image: url(//www.paypalobjects.com/webstatic/i/logo/rebrand/ppcom.svg);*/
   background-image: url(//www.paypalobjects.com/webstatic/mktg/Logo/AM_SbyPP_mc_vs_ms_ae_UK.png);
   background-repeat: no-repeat;
@@ -1365,7 +1370,9 @@ div.paypal,
 		font-size: 1.5em;
 		font-size: 3vw;
 	}
-  
+  #block-textsize-widget {
+    clear: both;
+  }
 }
 
 @media screen and (min-width: 640px) {

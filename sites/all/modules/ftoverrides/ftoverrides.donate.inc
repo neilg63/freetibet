@@ -124,6 +124,7 @@ function _theme_ftoverrides_donation_presets(array &$vars) {
       $attrs['data-cycle'] = $item['cycle'];
       $attrs['data-limit'] = $item['cycle_limit'];
       $options = _ftoverrides_currency_value_options($item['amount']);
+      $opt_vals = array();
       if (!empty($item['amount'])) {
         switch ($item['cycle']) {
           case 'single':
