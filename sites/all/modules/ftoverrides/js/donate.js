@@ -52,18 +52,35 @@
         s.blockNode.addClass('form-contracted');
         s.tabs = $('.node-donate .field-name-field-action li a');
         s.tabs.on('click',function(e){
-          var it = $(this), href = it.attr('href');
+          var s = Drupal.settings.fto, it = $(this), href = it.attr('href');
           if (href) {
-            var parts = href.split('//').pop().split('/'),path='';
+            var parts = href.split('//').pop().split('/'),path='',mode='';
             if (parts.length>1) {
               parts.shift();
-              path = parts.join('/').split('#').shift();
+              parts = parts.join('/').split('#');
+              path = parts.shift();
+              if (parts.length>0) {
+                mode = parts[0];
+              }
               switch (path) {
                 case 'donate':
                 case 'join':  
                   s.form.removeClass('contracted');
                   s.blockNode.removeClass('form-contracted').addClass('form-expanded');
                   e.preventDefault()
+                  switch (mode) {
+                    case 'give-now':
+                      s.presets.find('dt.donation-single').trigger('click');
+                      s.form.find('.form-item-cycle').addClass('hidden');
+                      break;
+                    case 'give-monthly':
+                      s.presets.find('dt.donation-monthly').trigger('click');
+                      s.form.find('.form-item-cycle').removeClass('hidden');
+                      break;
+                    default:
+                      s.form.find('.form-item-cycle').removeClass('hidden');
+                      break;
+                  }
                   break;
               }
               if (/^http/.test(href) && /freetibet.org/.test(href) == false) {
@@ -119,6 +136,25 @@
         s.presets = $('#donation-presets');
         if (s.context != 'join') {
           s.presets.parent().removeClass('hidden');
+          
+          s.currency_field.on('change',function(e){
+            var s = Drupal.settings.fto,it=$(this),sv=it.val();
+            s.currMonthly = $('#edit-donation-preset-monthly');
+            if (s.currMonthly.length>0) {
+              var opts = s.currMonthly.find('option'),numOpts=opts.length,i=0,vl;
+              for (;i<numOpts;i++) {
+                vl = opts.eq(i).attr('value');
+                if (vl) {
+                  if (vl.split(':').shift() == sv) {
+                    s.currMonthly.val(vl);
+                    s.amount_field.val(vl.split(':').pop());
+                    break;
+                  }
+                }
+              }
+            }
+          });
+          
         } else {
           s.form.addClass('controls-expanded');
           s.presetOpts = {};
@@ -203,6 +239,9 @@
         s.presets.find('dt').on('click', function(e){
           var it = $(this), s = Drupal.settings.fto;
           it.parent().find('.selected').removeClass('selected');
+          if (!it.hasClass('donation-single')) {
+            s.form.find('.form-item-cycle').addClass('hidden');
+          }
           it.addClass('selected');
           if (s.form.hasClass('controls-contracted')) {
             s.form.removeClass('controls-contracted').addClass('controls-expanded');

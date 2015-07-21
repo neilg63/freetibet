@@ -162,6 +162,7 @@ html.lt-ie9 #logo {
 
 /* Basic elements */
 
+form#payment-donation-form .hidden,
 .hidden {
   display: none;
 }
@@ -601,9 +602,12 @@ div.view table tbody tr.row-last {
 
 article.node > .flexslider {
 	position: relative;
-	width: 100%;
+}
+article.node > .flexslider .flex-viewport {
+  max-width: 99.9%;
 }
 
+article.node > .flexslider .flex-slide > .block,
 article.node > .flexslider .field-name-field-link,
 article.node > .flexslider figcaption {
 	position: absolute;	
@@ -615,25 +619,28 @@ article.node > .flexslider figure {
 	padding: 0;
 }
 
-
-
 #content .svg-img {
 	max-width: 100%;
 }
 
+article.node > .flexslider .flex-slide > .block,
 article.node > .flexslider .field-name-field-link {
-	max-width: 23%;
-	padding: 1em 2% 1em 2%;
-	bottom: 0;
-	text-align: right;
+	max-width: 20%;
 }
 
-article.node > .flexslider .image .field-name-field-link {
-	right: 2%;
+article.node > .flexslider .field-name-field-link {
+  padding: 1em 2% 1em 2%;
+  top: 36%;
 }
 
+article.node > .flexslider .flex-slide > .block {
+  padding: 0;
+  top: 25%;
+}
+
+article.node > .flexslider .flex-slide > .block,
 article.node > .flexslider .flex-slide .field-name-field-link {
-	right: 0;
+	left: 68.5%;
 }
 
 article.node > .flexslider .field-name-field-link a {
@@ -803,6 +810,7 @@ figure.view-mode-medium:hover figcaption {
 #content .node .view-mode-default {
 	padding: 2em 0;
 	clear: both;
+  position: relative;
 }
 
 #content .node .node-media-section > h2,
@@ -826,6 +834,11 @@ figure.view-mode-medium:hover figcaption {
 	padding: 0.25em;
 	border-radius: 0.25em;
 	white-space: nowrap;
+}
+
+#donation-presets {
+  margin: 0 0 1em 0;
+  padding: 0.25em 0 1em 0;
 }
 
 #payment-donation-form .donation-presets-container dt,
@@ -1631,7 +1644,8 @@ div.paypal-express-checkout {
   
 	article.node > .flexslider .slides > li,
 	article.node > .flexslider .slides > li figure {
-		 height: 61vw;
+		 height: 69vw;
+     background-color: white;
 	}
   
   article.node > .flexslider .slides > li figure img,
@@ -1655,10 +1669,26 @@ div.paypal-express-checkout {
 	article.node > .flexslider .flex-slide figcaption {
     top: 56vw;
 		left: 0;
-		width: 100%;
-    height: 5vw;
+		width: 70%;
+    height: auto;
 		font-size: 0.9em;
 	}
+  
+  
+  article.node > .flexslider .field-name-field-link {
+    padding: 0;
+    top: 56vw;
+    width: 25%;
+    height: auto;
+  }
+  
+  article.node > .flexslider .flex-slide > .block {
+    top: 21vw;
+    right: 10%;
+    width: 80%;
+    background-color: rgba(255,255,255,0.5);
+    z-index: 20;
+  }
 }
 
 @media screen and (max-width: 480px) {
@@ -1674,7 +1704,6 @@ div.paypal-express-checkout {
 	}
 	
 	article.node > .flexslider figcaption {
-		padding-top: 1em;
 		font-size: 0.75em;
 	}
 	
