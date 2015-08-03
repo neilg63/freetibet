@@ -22,9 +22,9 @@ files[] = views/views_handler_field_shopify_product_edit_link.inc
 files[] = views/views_handler_field_shopify_product.inc
 files[] = views/views_handler_field_shopify_price.inc
 
-; Information added by Drupal.org packaging script on 2015-05-28
-version = "7.x-1.0-alpha7"
+; Information added by Drupal.org packaging script on 2015-07-31
+version = "7.x-1.0-alpha8"
 core = "7.x"
 project = "shopify"
-datestamp = "1432848482"
+datestamp = "1438349940"
 

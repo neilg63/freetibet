@@ -330,6 +330,26 @@ function freetibet_menu_link($variables) {
 }
 
 
-function freetibet_references_dialog_links($links) {
-  return theme('links', array('links' => $links, 'attributes' => array('class' => array('references-dialog-links'))));
+function freetibet_references_dialog_links($variables) {
+  if (isset($variables['links']) && is_array($variables['links'])) {
+      $links = array();
+      $precedence = array('media-section','text','slide-section','key-points');
+      foreach ($variables['links'] as $item) {
+        $item['title'] = preg_replace('#^Create\s#','',$item['title']);
+        $parts = explode('/',$item['href']);
+        $type = array_pop($parts);
+        $links[$type] = $item;
+      }
+      $sortedLinks = array();
+      foreach ($precedence as $key) {
+        if (isset($links[$key])) {
+          $sortedLinks[$key] = $links[$key];
+          unset($links[$key]);
+        }
+      }
+      if (!empty($links)) {
+        $sortedLinks += $links;
+      }
+    return theme('links', array('links' => $sortedLinks, 'attributes' => array('class' => array('references-dialog-links'))));  
+  }
 }

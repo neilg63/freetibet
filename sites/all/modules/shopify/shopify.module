@@ -699,11 +699,12 @@ function shopify_added_to_cart() {
   $data = drupal_get_query_array(file_get_contents('php://input'));
   $parent = shopify_product_load_single($data['product_id'], 0);
   $product = shopify_product_load_single($data['product_id'], $data['variant_id']);
-  drupal_set_message(t('@parent - @title (@price) added to !cart_link', array(
+  $title = $product->label()  == 'Default Title' ? '' : '- ' . $product->label();
+  drupal_set_message(t('@parent @title (@price) added to !cart_link', array(
     '@parent' => $parent->label(),
-    '@title' => $product->label(),
+    '@title' => $title,
     '@price' => shopify_money_format() . $product->wrapper()->price->value(),
-    '!cart_link' => l(t('your cart'), 'https://' . shopify_store_info()->myshopify_domain . '/cart', array('attributes' => array('target' => '_blank'))),
+    '!cart_link' => l(t('your cart'), 'https://' . shopify_store_info()->myshopify_domain . '/cart'),
   )));
   print '';
 }
@@ -1161,6 +1162,14 @@ function shopify_add_to_cart_form($form, &$form_state, ShopifyProduct $product =
       '#type' => 'hidden',
       '#value' => 'back',
     );
+
+    $form['product']['variant']['quantity'] = array(
+      '#title' => t('Quantity'),
+      '#type' => 'textfield',
+      '#value' => 1,
+      '#size' => 1
+    );
+    
     if ($default_variant->inventory_policy == 'continue' || $default_variant->inventory_quantity > 0) {
       $form['product']['variant']['actions'] = array(
         '#type' => 'actions',
@@ -1620,7 +1629,7 @@ function shopify_block_view($delta = '') {
       $block['subject'] = t('Cart');
       $block['content'] = array(
         '#markup' => <<<_HTML
-      <a href="https://$domain/cart" target="_blank"><i class="fa fa-shopping-cart"></i> <span id="shopify-cart-text">Cart<span> (<span id='shopify-cart-total'></span>)</a>
+      <a href="https://$domain/cart"><i class="fa fa-shopping-cart"></i> <span id="shopify-cart-text">Cart<span> (<span id='shopify-cart-total'></span>)</a>
       <script type='text/javascript'>
         jQuery.ajax({
             type: 'GET',

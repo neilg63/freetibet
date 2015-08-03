@@ -274,6 +274,17 @@ function ftoverrides_wysiwyg_editor_settings_alter(&$settings, $context) {
 	}
 }
 
+/*
+* Mailchimp form label overrides
+*/
+
+function ftoverrides_form_mailchimp_lists_user_subscribe_form_email_updates_alter(&$form, &$form_state,$form_id) {
+  $form['mailchimp_lists']['mailchimp_email_updates']['mergevars']['EMAIL']['#title'] = t("Email");
+}
+
+/*
+* Payment form overrides
+*/
 function ftoverrides_form_payment_donation_form_alter(&$form,&$form_state,$form_id) {
   if (isset($form['payment_method']) && isset($form['payment_method']['#pmids'])) {
     module_load_include('inc','ftoverrides','ftoverrides.donate');

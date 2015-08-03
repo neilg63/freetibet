@@ -10,12 +10,13 @@ ul.references-dialog-links li.active, ul.references-dialog-links li a.active {
 }
 
 ul.references-dialog-links a {
-  padding-left: 20px;
-  margin: 5px;
+  padding: 0 1.5em;
+  margin: 0.5em;
 }
 
 ul.references-dialog-links li a.add-dialog {
-  background: url('../img/plus.png') left no-repeat;
+  background: url('../img/plus.png') top left no-repeat;
+  background-size: auto 66.7%;
 }
 
 ul.references-dialog-links li a.edit-dialog {
