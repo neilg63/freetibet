@@ -136,7 +136,12 @@ function _theme_ftoverrides_donation_presets(array &$vars) {
         }
       }
       $addendum = implode('/', $opt_vals);
-      $attrs['title'] = $addendum . " (" .$item['description'] .")";
+      if (isset($item['description'])) {
+        $addendum .= " (" .$item['description'] .")";
+      }
+      if (is_string($addendum)) {
+        $attrs['title'] = $addendum;
+      }
       $opt_vals = array_values($options);
     
       $html .= '<dt'.drupal_attributes($attrs).'>'.$item['title'].'</dt>';

@@ -1288,7 +1288,7 @@ function shopify_add_to_cart_ajax_callback($form, $form_state) {
  *   Returns TRUE if the user has access to the product.
  */
 function shopify_product_access($op, ShopifyProduct $entity = NULL, $account = NULL, $entity_type = 'shopify_product') {
-  if (user_access('administer shopify', $account) || user_access('edit shopify products', $account)) {
+  if (user_access('administer shopify', $account) || user_access('edit shopify products', $account) || !is_object($entity)) {
     // User has access to do all the things.
     return TRUE;
   }

@@ -95,6 +95,7 @@ function ftoverrides_set_first_page_section_position($node,$view_mode) {
 
 function _ftoverrides_set_first_page_section_position($node,$view_mode) {
 	$move_first_page_section = false;
+  $setSliderWeight = false;
 	if (isset($node->content['field_page_sections']['#items']) && is_array($node->content['field_page_sections']['#items'])) {
 		$num_items = count($node->content['field_page_sections']['#items']);
 		if ($num_items > 0 ) {
@@ -114,23 +115,26 @@ function _ftoverrides_set_first_page_section_position($node,$view_mode) {
 			}
 			if ($move_first_page_section) {
 				$items = $node->content['field_page_sections']['#items'];
-				$firstItem = array_shift($items);
-				$last_index = $num_items - 1;
+        if (count($items) > 0) {
+  				$firstItem = array_shift($items);
+  				$last_index = $num_items - 1;
 
-				for ($i=0;$i < $num_items;$i++) {
-					if ($i == 0) {
-						$firstRenderItem = $node->content['field_page_sections'][$i];
-					}
-					if ($i < $last_index) {
-						$node->content['field_page_sections'][$i] = $node->content['field_page_sections'][($i+1)];
-					}
-					else {
-						unset($node->content['field_page_sections'][$i]);
-					}
-				}
-				$node->content['field_page_sections']['#items'] = $items;
+  				for ($i=0;$i < $num_items;$i++) {
+  					if ($i == 0) {
+  						$firstRenderItem = $node->content['field_page_sections'][$i];
+  					}
+  					if ($i < $last_index) {
+  						$node->content['field_page_sections'][$i] = $node->content['field_page_sections'][($i+1)];
+  					}
+  					else {
+  						unset($node->content['field_page_sections'][$i]);
+  					}
+  				}
+  				$node->content['field_page_sections']['#items'] = $items;
+          $node->content['top']['#items'] = array($firstItem);
+        }
 			}
-			$node->content['top']['#items'] = array($firstItem);
+			
 			$node->content['top'][0] = array(
 				'#markup' => render($firstRenderItem)
 			);
@@ -311,7 +315,7 @@ function ftoverrides_block_view_alter(&$data, $block) {
     }
     switch ($context) {
       case 'join';
-          $block->title = "Join Online";
+        $block->title = "Join Online";
         break;
     }
   }

@@ -2,7 +2,7 @@
     font-family: 'metabold';
     src: url('fonts/meta-bold.eot');
     src: url('fonts/meta-bold.eot?#iefix') format('embedded-opentype'),
-         url('fonts/meta-bol#d.woff') format('woff'),
+         url('fonts/meta-bold.woff') format('woff'),
          url('fonts/meta-bold.ttf') format('truetype'),
          url('fonts/meta-bold.svg#meta-bold') format('svg');
     font-weight: normal;
@@ -328,38 +328,38 @@ input.form-submit {
 	outline:0;
 }
 
-#footer .block-menu-block ul, #footer .block-menu-block li {
+#footer .block-menu-block ul, #footer .block-menu li {
 	list-style-type: none;
 }
 
-#footer .block-menu-block ul,
-#footer nav.block-menu-block > ul > li {
+#footer .block-menu ul,
+#footer .block-menu > ul > li {
 	padding: 0;
 	margin:0;
 	float: none;
 }
 
-#footer nav.block-menu-block > ul > li li {
+#footer .block-menu > ul > li li {
 	padding: 0 0 0 1em;
 }
 
-#footer .block-menu-block li a {
+#footer .block-menu li a {
 	display: block;
 	color: white;
 }
 
-#footer .block-menu-block li a:hover {
+#footer .block-menu li a:hover {
 	color: #2faeb9;
 }
 
-#block-menu-menu-footer-menu {
-	clear: both;
+#footer #block-menu-menu-footer-menu {
+  clear: both;
 	height: 2em;
-	margin: 2em 0;
+	margin: 0 auto 0.25em auto;
 }
 
 /* Email signup */
-#footer .block-menu-block,
+#footer .block-menu,
 #footer #block-mailchimp-lists-email-updates {
 	margin-top: 1em;
 }
@@ -508,17 +508,12 @@ div.view table tbody tr.row-last {
     margin:0 0 1em 1em;
 }
 
-#block-menu-menu-footer-menu {
-	clear: both;
-	margin: 0 auto 0.25em auto;
-}
-
 #block-menu-menu-footer-menu ul {
 	margin: 0 auto;
 	text-align: center;
 }
 
-#block-menu-menu-footer-menu li {
+#footer #block-menu-menu-footer-menu li {
     list-style-type: none;
     list-style-image: none;
     display: inline-block;
@@ -1384,7 +1379,7 @@ div.paypal-express-checkout {
 		float: left;
 	}
 
-	#footer .block-menu-block {
+	#footer #block-menu-menu-main-menu-footer {
 		float: left;
 		width: 35%;
 	}
@@ -1481,7 +1476,7 @@ div.paypal-express-checkout {
 		clear: right;
 	}
 	
-	#header .block-menu-block ul > li {
+	#header .block-menu ul > li {
 		font-size: 1.2em;
 		padding: 0 0 0 1em;
 	}

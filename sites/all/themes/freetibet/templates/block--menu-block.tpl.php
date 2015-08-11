@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Custom block menu-block templatee
+ * Custom block menu-block template
  *
  */
 ?>
