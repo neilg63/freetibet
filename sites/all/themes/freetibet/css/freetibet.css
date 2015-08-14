@@ -695,11 +695,8 @@ div.node-media-section > .flexslider  .slides > li .field-name-field-text {
 }
 
 #content .field-name-field-box > article {
-	float: left;
-	width: 48%;
-	padding: 0;
-	margin: 0 2% 0 0;
-	overflow: hidden;
+	width: 100%;
+	margin: 0;
 }
 
 .field-name-field-box .field-name-field-image,
@@ -1041,7 +1038,7 @@ div.large-button {
 }
 
 #block-sharethis-sharethis-block {
-	
+  padding: 2em 0 1em 0;
 }
 
 #block-sharethis-sharethis-block {
@@ -1404,6 +1401,15 @@ div.paypal-express-checkout {
 		float: right;
 		width: 63%;
 	}
+  
+  #content .field-name-field-box > article {
+  	float: left;
+    height: 22em;
+  	width: 46%;
+  	padding: 0;
+  	margin: 0 4% 0 0;
+  	overflow: hidden;
+  }
 	
 	#content .node-media-section figure.view-mode-medium {
 		float: right;
@@ -1449,6 +1455,10 @@ div.paypal-express-checkout {
 
 @media screen and (min-width: 800px) {
 
+  #content .field-name-field-box > article {
+    height: 24em;
+  }
+
   #page-wrapper #header {
     margin: 0.75em auto 0 auto;
   }
@@ -1485,9 +1495,6 @@ div.paypal-express-checkout {
 		font-size: 2vw;
 	}
 	
-	#content .field-name-field-box > article {
-		height: 20em;
-	}
 	#block-search-form input.form-text {
 			width: 15em;
 	}
@@ -1600,8 +1607,9 @@ div.paypal-express-checkout {
 	}
 	
 	#content .field-name-field-box > article {
-		width: 31.33%;
-		margin: 0 2% 0 0;
+  	height: 22em;
+		width: 29.33%;
+		margin: 0 4% 0 0;
 	}
 }
 
@@ -1638,17 +1646,6 @@ div.paypal-express-checkout {
 		width: auto;
 	}
 
-	#content .field-name-field-box .field-name-field-image {
-		width: 50%;
-		float: left;
-	}
-
-	#content .field-name-field-box .field-name-body {
-		padding: 0 0 0 4%;
-		float: right;
-		width: 46%;
-	}
-	
 	#content .node .node-media-section .media-item {
 		clear: both;
 	}
@@ -1667,11 +1664,6 @@ div.paypal-express-checkout {
   #block-search-form {
     position: relative;
   }
-	
-	#content .field-name-field-box > article {
-		width: 100%;
-		margin: 0;
-	}
 	
   
 	article.node > .flexslider .slides > li,
@@ -1849,6 +1841,7 @@ div.paypal-express-checkout {
 #content .view-mode-teaser h3.node-title {
 	margin: 0.5em 0 0.125em 0;
 	font-size: 1.2em;
+  height: 2.5em;
 }
 
 #content .field-name-sharethis {

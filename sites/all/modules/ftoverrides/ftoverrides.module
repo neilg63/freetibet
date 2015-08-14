@@ -87,9 +87,9 @@ function ftoverrides_node_presave($node) {
 function ftoverrides_set_first_page_section_position($node,$view_mode) {
 	if ($view_mode == 'full' && isset($node->field_page_sections) && isset($node->content['field_page_sections']) && isset($node->content['top'])) {
 		$move_first_page_section = _ftoverrides_set_first_page_section_position($node,$view_mode);
-	}
-	if (!$move_first_page_section  && isset($node->content['top'])) {
-		unset($node->content['top']);
+  	if (!$move_first_page_section  && isset($node->content['top'])) {
+  		unset($node->content['top']);
+  	}
 	}
 }
 
