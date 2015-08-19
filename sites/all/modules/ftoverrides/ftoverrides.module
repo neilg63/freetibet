@@ -27,6 +27,7 @@ function ftoverrides_node_view($node,$view_mode) {
 		case 'box':
 		case 'take_action':
 		case 'key_points':
+    case 'slide_section':
 			if (node_is_page($node)) {
 				$nid = ftoverrides_fetch_parent_nid($node);
 				if ($nid > 0) {
@@ -40,8 +41,13 @@ function ftoverrides_node_view($node,$view_mode) {
 				if (!empty($items) && isset($items[0]) && isset($items[0]['value']) && is_string($items[0]['value'])) {
 					$mode = $items[0]['value'];
 				}
+        
 				if (!empty($items) && isset($items[0]) && isset($items[0]['value']) && is_string($items[0]['value'])) {
 					$mode = $items[0]['value'];
+				}
+				if ($mode != 'full' && empty($node->page_viewmode)) {
+					$node->page_viewmode = $mode;
+					$node->content = node_view($node,$mode);
 				}
 			
 				$show_title = true;
@@ -51,10 +57,7 @@ function ftoverrides_node_view($node,$view_mode) {
 					if (!empty($items) && isset($items[0]) && isset($items[0]['value']) && is_numeric($items[0]['value'])) {
 						$show_title = (bool) $items[0]['value'];
 					}
-					if ($mode != 'full' && empty($node->page_viewmode)) {
-						$node->page_viewmode = $mode;
-						$node->content = node_view($node,$mode);
-					}
+					
 					if (!$show_title && isset($node->content['title'])) {
 						unset($node->content['title']);
 					}

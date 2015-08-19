@@ -353,3 +353,73 @@ function freetibet_references_dialog_links($variables) {
     return theme('links', array('links' => $sortedLinks, 'attributes' => array('class' => array('references-dialog-links'))));  
   }
 }
+
+/*
+* Aux function used in page section templates
+* @return boolean
+*/
+function freetibet_page_section_classes(&$classes,&$ds_content_wrapper) {
+  $classes .= ' ';
+  $classes = preg_replace('#\bnode(-by-viewer)?\s+#','',$classes);
+  $classes = 'page-section ' . trim(preg_replace('#\s\s+#',' ',$classes));
+  $has_wrapper = $ds_content_wrapper != 'span';
+  if (function_exists('node_class') && is_object($node)) {
+  	$extra_class = node_class($node);
+  	if (!empty($extra_class)) {
+  		$classes .= ' ' . trim($extra_class);
+  	}
+  }
+  return $has_wrapper;
+}
+
+function freetibet_slide_fieldset_classes_alter(&$classes,&$variables) {
+  $arrClasses = explode(' ', $classes);
+  $filteredClasses = array();
+  $modeClass = 'none';
+  if (is_array($arrClasses) && !empty($arrClasses)) {
+    foreach ($arrClasses as $cName) {
+      $cName = trim($cName);
+      if (strpos($cName, 'view-mode-') === 0) {
+        $parts = explode('-mode-',$cName);
+        $modeClass = array_pop($parts);
+        break;
+      }
+    }
+  }
+
+  switch ($modeClass) {
+    case 'slider':
+    case 'full':
+      $classes = str_replace('entity-field-collection-item','flex-slide', trim($classes));
+      break;
+    default:
+    
+      break;
+  }
+
+  $has_block = false;
+  $has_link = false;
+  if (isset($variables['elements']['#entity'])) {
+    $fc =& $variables['elements']['#entity'];
+    $items = field_get_items('field_collection_item',$fc, 'field_media');
+    if (!empty($items) && is_array($items)) {
+      if (isset($items[0]['filemime']) && is_string($items[0]['filemime'])) {
+        $parts  = explode('/', $items[0]['filemime']);
+        $classes .=  ' ' . array_shift($parts);
+      }
+    }
+    $items = field_get_items('field_collection_item',$fc, 'field_highlighted');
+    if (!empty($items)) {
+      $classes .= ' has-block';
+      $has_block = true;
+    }
+    $items = field_get_items('field_collection_item',$fc, 'field_link');
+    if (!empty($items)) {
+      $classes .= ' has-link';
+      $has_link = true;
+    }
+  }
+  if ($has_block && $has_link) {
+    $classes .= ' has-link-and-block';
+  }
+}
