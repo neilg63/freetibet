@@ -87,7 +87,67 @@
 	
 	
 	Drupal.ft = {
-			
+    
+    handleFilterMenu: function(self) {
+      self.find('li.term').on('click',function(e){
+        var s = Drupal.settings.ft, it = $(this), par = it.parent(), refId = par.attr('id').replace('-menu',''), refSel = $('#'+refId);
+        if (refSel.length > 0) {
+          refSel.val(it.attr('data-opt'));
+          par.find('.selected').removeClass('selected');
+          it.addClass('selected');
+          s.viewsFilterForm.find('.form-submit').trigger('click');
+        }
+      });
+    },
+		
+    toggleViewsFilter: function(mode) {
+      var s = Drupal.settings.ft, i=0, j=0,sel,numOpts=0,opts,opt;
+      if (s.hasViewsFilter) {
+        if (mode == 'horizontal') {
+          if (s.viewsFilterForm.hasClass('has-filter-menu')) {
+            s.viewsFilterForm.find('ul.filter-menu').removeClass('hide');
+            s.viewsFilterForm.find('.form-item,label').addClass('hide');
+          } else {
+            var selList,item,txt,lbl;
+            for (; i < s.numFilterSels;i++) {
+              sel = s.filterSelectors.eq(i);
+              lbl = sel.parent().parent().parent().find('label');
+              selList = $('<ul class="filter-menu"></ul>');
+              selList.attr('id',sel.attr('id') + '-menu');
+              selList.append('<li class="label">'+lbl.text()+'</li>');
+              if (sel.hasClass('hide') == false) {
+                opts = sel.find('option');
+                numOpts = opts.length;
+                if (opts.length>0) {
+                  for (j=0;j<numOpts;j++) {
+                    opt = opts.eq(j);
+                    txt = opt.html();
+                    if (/-\s*any/i.test(txt)) {
+                      txt = 'All';
+                    }
+                    item = $('<li data-opt="'+opt.attr('value')+'" class="term">'+txt+'</li>');
+                    if (j == 0) {
+                      item.addClass('selected');
+                    }
+                    selList.append(item);
+                  }
+                }
+                sel.parent().addClass('hide');
+                lbl.addClass('hide');
+                lbl.after(selList);
+                Drupal.ft.handleFilterMenu(selList);
+              }
+            }
+            s.viewsFilterForm.addClass('has-filter-menu');
+          }
+          s.viewsFilterForm.find('.form-submit').addClass('hide');
+        } else {
+          s.viewsFilterForm.find('label,.form-item,.form-submit').removeClass('hide');
+           s.viewsFilterForm.find('ul.filter-menu').addClass('hide');
+        }
+      } 
+    },
+    	
 		resizeHandler: function() {
 			var s = Drupal.settings.ft, fc = s.iframes;
 			s.width = window.viewportSize.getWidth();
@@ -99,6 +159,15 @@
 			  s.b.removeClass('menu-expanded');
 			}
 			s.header.removeAttr('style');
+      if (s.width > s.mobile_max_width ) {
+        s.footerMenu.find('br').remove();
+        s.footerMenu.removeClass('mobile-width');
+         Drupal.ft.toggleViewsFilter('horizontal');
+      } else if (s.footerMenu.hasClass('mobile-width') == false) {
+        s.footerMenu.find('.facebook').before('<br />');
+        s.footerMenu.addClass('mobile-width');
+        Drupal.ft.toggleViewsFilter('default');
+      }
 		},
 
 		addTouchSupport: function() {
@@ -148,13 +217,21 @@
 			s.width = window.viewportSize.getWidth();
 			s.iframes = $('.file-video, .file-audio-soundcloud,.field-name-field-iframe');
 			s.b = $('body');
+      s.mobile_max_width = 799;
 			s.sbox =  $('#block-search-form');
 			s.header = $('#header');
 			s.menuItems = s.header.find('.region-header nav li');
 			s.numMenuItems = s.menuItems.length;
 			s.logo = $('#logo');
+      s.footerMenu = $('#block-menu-menu-footer-menu ul');
+      s.viewsFilterForm = $('.view-filters form');
+      s.hasViewsFilter = false;
+      if (s.viewsFilterForm.length>0) {
+        s.filterSelectors = s.viewsFilterForm.find('select');
+        s.numFilterSels = s.filterSelectors.length;
+        s.hasViewsFilter = s.numFilterSels>0;
+      }
 			this.resizeHandler();
-			//this.highlightPlatform3();
 			this.shareThisLabelClick();
 			this.addTouchSupport();
 			this.menuToggle();

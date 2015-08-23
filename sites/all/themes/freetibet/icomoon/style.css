@@ -9,6 +9,7 @@
 	font-style: normal;
 }
 
+#block-menu-menu-footer-menu li.follow-us,
 .view-house-types li .arrow,
 #field-slideshow-1-pager a,
 [class^="icon-"], [class*=" icon-"] {
@@ -19,8 +20,6 @@
 	font-variant: normal;
 	text-transform: none;
 	line-height: 1;
-
-	/* Better Font Rendering =========== */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
@@ -49,4 +48,19 @@
 .expanded-view .arrow:before,
 .icon-close:before {
 	content: "\e605";
+}
+
+#block-menu-menu-footer-menu li.facebook:before,
+.icon-facebook:before {
+	content: "\e60b";
+}
+
+#block-menu-menu-footer-menu li.youtube:before,
+.icon-youtube:before {
+	content: "\e60d";
+}
+
+#block-menu-menu-footer-menu li.twitter:before,
+.icon-twitter:before {
+	content: "\e60c";
 }

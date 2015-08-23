@@ -31,13 +31,16 @@ body {
 		color: #666666;
 }
 
-h1,h2,h3,h4,h5,h6, #header ul.menu li a, dt {
+h1,h2,h3,h4,h5,h6, #header ul.menu li a, dt, #block-menu-menu-main-menu-footer ul.menu li a {
     font-family: metabold, Helvetica, Arial, sans-serif;
 }
 
-h1,h2,h3, #header ul.menu li a {
-    text-transform: uppercase;
+h1,h2,h3, #header ul.menu li a, #block-menu-menu-main-menu-footer ul.menu li a  {
     font-weight: bold;
+}
+
+h1,h2, #content h3, #header ul.menu li a, #block-menu-menu-main-menu-footer ul.menu li a  {
+  text-transform: uppercase;
 }
 
 iframe {
@@ -59,9 +62,37 @@ body.front div#block-system-main div.content iframe {
 }
 
 #footer {
-	background-color: #666666;
-	margin: 1em 2% 3em 2%;
-	color: white;
+	margin: 1em 0 3em 0;
+}
+
+#footer #block-menu-menu-footer-menu {
+  margin: 2em auto;
+  background-color: #666666;
+  padding: 0.25em 0 1em 0;
+}
+
+#block-menu-menu-footer-menu ul {
+  margin: 0 auto;
+  padding: 0 1em;
+}
+
+#block-menu-menu-footer-menu li.follow-us {
+  font-size: 1.5em;
+  color: white;
+  top: 0.25em;
+}
+
+#block-menu-menu-footer-menu li.follow-us:before {
+  position:absolute;
+  top: 0;
+}
+
+#block-menu-menu-footer-menu li.follow-us a {
+  display: block;
+  width: 1.25em;
+  height: 1em;
+  opacity: 0;
+  overflow:hidden;
 }
 
 #page-wrapper #header {
@@ -138,7 +169,6 @@ html.lt-ie9 #logo {
   clear: both;
   position: relative;
   margin: 1em 0;
-  margin: 2vh 0;
 }
 
 #header .region-header nav,
@@ -163,11 +193,12 @@ html.lt-ie9 #logo {
 
 /* Basic elements */
 
+body #content .views-exposed-widget .hide,
 form#payment-donation-form .hidden,
-.hidden {
-  display: none;
+.hidden,
+.hide {
+    display:none;
 }
-
 .error {
 	color: #cc0000;
 }
@@ -175,7 +206,8 @@ div.status {
 	color: #009900;
 }
 
-a:link, a:hover, a:visited, a:active {
+a:link, a:hover, a:visited, a:active,
+.filter-menu li.selected {
 	color: #2faeb9;
 }
 a:link, a:visited {
@@ -221,8 +253,14 @@ input.form-submit {
 .item-list .pager li,
 .view-content ul,
 .view-content ul li,
-#header .block-menu-block ul {
+#header .block-menu-block ul,
+.filter-menu,
+.filter-menu, .filter-menu li {
 	list-style: none;
+}
+
+.views-exposed-form .form-item {
+  margin: 0;
 }
 
 .item-list .pager {
@@ -248,6 +286,45 @@ input.form-submit {
 	text-align: center;
 }
 
+.filter-menu {
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+.filter-menu li {
+  margin: 0.5em auto 0.25em auto;
+}
+
+.views-exposed-widgets label,
+.filter-menu li.label {
+  font-style: italic;
+}
+.filter-menu li.label {  
+  padding: 0 2em 0 0;
+}
+
+.filter-menu li.term {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0 0.75em;
+}
+
+.views-exposed-widgets .views-exposed-widget * {
+  display: inline-block;
+}
+
+.views-exposed-widgets label {
+  padding: 0 1em 0 0;
+}
+
+#content .views-exposed-form .views-exposed-widget .form-submit {
+  margin: 0;
+}
+
+.views-exposed-widgets .views-exposed-widget label {
+  float: left;
+}
 
 #header .block-menu-block li { 
 		font-weight:bold;
@@ -340,11 +417,15 @@ input.form-submit {
 	float: none;
 }
 
+#footer .block-menu ul {
+  width: 100%;
+}
+
 #footer .block-menu > ul > li li {
 	padding: 0 0 0 1em;
 }
 
-#footer .block-menu li a {
+#block-menu-menu-footer-menu li a {
 	display: block;
 	color: white;
 }
@@ -355,22 +436,54 @@ input.form-submit {
 
 #footer #block-menu-menu-footer-menu {
   clear: both;
-	height: 2em;
+	min-height: 2em;
 	margin: 0 auto 0.25em auto;
+}
+
+#footer .block-mailchimp-lists,
+#footer .join-promo {
+  width: 100%;
+  text-align: center;
+}
+
+#footer .join-promo p {
+  padding: 0.125em;
+  margin: 0 auto;
 }
 
 /* Email signup */
 #footer .block-menu,
 #footer #block-mailchimp-lists-email-updates {
 	margin-top: 1em;
+  width: 100%;
+  text-align: center;
+}
+
+#mailchimp-lists-user-subscribe-form {
+  min-height: 1.25em;
+  margin-bottom: 1em;
 }
 
 #footer .block-mailchimp-lists {
-  float: right;
   margin-bottom: 4em;
+  text-align: center;
+  margin: 1em auto 2em auto;
+  width: 100%;
 }
 
+#footer .block-mailchimp-lists h3,
+#footer .block-mailchimp-lists form,
+#footer .block-mailchimp-lists div,
+#footer .block-mailchimp-lists input,
+#footer .block-mailchimp-lists label {
+  display: inline-block;
+}
 
+#footer .block-mailchimp-lists .form-item {
+  white-space: nowrap;
+  margin: 0 auto;
+  width: 16em;
+}
 
 
 #content article.view-mode-full,
@@ -549,6 +662,7 @@ div.view table tbody tr.row-last {
 #footer #block-menu-menu-footer-menu li {
     list-style-type: none;
     list-style-image: none;
+    position: relative;
     display: inline-block;
     margin: 0.5em;
 }
@@ -591,10 +705,6 @@ div.view table tbody tr.row-last {
 
 .view-id-publications {
     margin-left: 1em;
-}
-
-.hide {
-    display:none;
 }
 	
 	/* Block Class custom styling end */
@@ -838,6 +948,10 @@ button.large-button {
 	background: none;
 	padding: 0.125em 0.25em;
   font-size: 1em;
+}
+
+#footer form .form-submit {
+  margin-left: 4em;
 }
 
 button.large-button {
@@ -1139,7 +1253,7 @@ div.large-button {
 }
 
 #block-sharethis-sharethis-block {
-  padding: 2em 0 1em 0;
+  padding: 0.5em 0 0.25em 0;
 }
 
 #block-sharethis-sharethis-block {
@@ -1484,7 +1598,7 @@ div.paypal-express-checkout {
   }
   #content div.node-media-section > .flexslider  .slides > li:hover .field-name-field-text p {
     margin: 0;
-  }
+  }  
 }
 
 @media screen and (min-width: 640px) {
@@ -1494,19 +1608,34 @@ div.paypal-express-checkout {
 	}
 
 	#footer #block-menu-menu-main-menu-footer {
-		float: left;
-		width: 35%;
+		width: 100%;
+    text-align: center;
+    border-top: solid 1px #2faeb9;
+    padding: 1em 0 0.5em 0;
 	}
   
-  #user-login label,
-  #footer .block-mailchimp-lists label {
+  #footer #block-menu-menu-main-menu-footer ul {
+    margin: 0 auto;
+  }
+  
+  ul.filter-menu li,
+  #footer #block-menu-menu-main-menu-footer li {
+    display: inline-block;
+    padding: 0 1em;
+  }
+  
+  #block-menu-menu-main-menu-footer a {
+    font-size: 1.25em;
+    text-transform: uppercase;
+  }
+  
+  #user-login label {
     width: 29%;
     text-align: right;
     overflow: hidden;
   }
 
   #footer .block-mailchimp-lists .form-type-checkbox label {
-    width: 60%;
     text-align:left;
     margin-left: 1%;
   }
@@ -1514,11 +1643,6 @@ div.paypal-express-checkout {
     margin-left: 25.5%;
   }
 
-	#footer #block-mailchimp-lists-email-updates {
-		float: right;
-		width: 63%;
-	}
-  
   article > .view-mode-boxes > div > figure,
   #content .field-name-field-box > article {
   	float: left;
@@ -1547,8 +1671,7 @@ div.paypal-express-checkout {
 		max-width: 100%;
 	}
 	
-  #user-login .form-submit,
-  #footer .block-mailchimp-lists .form-submit {
+  #user-login .form-submit {
     margin-left: 29.5%;
   }
 
@@ -1559,15 +1682,15 @@ div.paypal-express-checkout {
 
   #user-login .form-text,
   #footer input.form-text {
-    width: 16em;
-    max-width: 65%;
+    width: 8em;
     overflow: hidden;
   }
 
   #user-login input.form-text,
   #user-login label,
   #footer .form-item label,
-  #footer .form-item input {
+  #footer .form-item input,
+  #footer .mailchimp-newsletter-wrapper {
     display: inline-block;
   }
   
@@ -1682,9 +1805,9 @@ div.paypal-express-checkout {
     width: 9em;
   }
   
-	#footer #block-mailchimp-lists-email-updates {
-		width: 45%;
-	}
+  #block-menu-menu-footer-menu li.follow-us a {
+    width: 1.5em;
+  }
 }
 
 @media screen and (min-width: 1200px) {
@@ -1785,6 +1908,13 @@ div.paypal-express-checkout {
 	}
 }
 
+@media screen and (max-width: 639px) {
+  #block-menu-menu-footer-menu li {
+    width: 90%;
+    margin: 0 5%;
+  }
+}
+
 @media screen and (max-width: 799px) {
 	
   #block-search-form {
@@ -1848,6 +1978,17 @@ div.paypal-express-checkout {
     background-color: rgba(255,255,255,0.5);
     z-index: 20;
   }
+  
+  #footer #block-menu-menu-footer-menu li.follow-us {
+    width: 27.33%;
+    margin: 0 2%;
+    left: -0.5em;
+  }
+  
+  #block-menu-menu-footer-menu li.follow-us a {
+    width: 100%;
+  }
+  
 }
 
 @media screen and (max-width: 480px) {
@@ -1884,6 +2025,14 @@ div.paypal-express-checkout {
   .view-news-by-topic .view-content .views-row figure {
       width: 100%;
    }
+}
+
+@media screen and (min-width: 481px) and (max-width: 799px) {
+  #footer .block-menu ul li {
+    display: inline-block;
+    width: 30%;
+    margin-bottom: 0.5em;
+  }
 }
 
 @media screen and (min-width: 481px) and (max-width: 720px) {

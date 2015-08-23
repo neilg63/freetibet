@@ -295,6 +295,9 @@ function _freetibet_menu_tree(array &$variables) {
 
 function freetibet_menu_link($variables) {
 	$element = $variables['element'];
+	if (!is_array($element['#attributes']['class'])) {
+		$element['#attributes']['class']=array();
+	}
 	$sub_menu = '';
 	if ($element['#below']) {
 		$sub_menu = render($element['#below']);
@@ -307,13 +310,37 @@ function freetibet_menu_link($variables) {
 	}
   $parts = explode('/',$path);
   $path = array_pop($parts);
+  $path = strtolower($path);
+  $numParts = count($parts);
+  $maxParts = $numParts < 4? $numParts : 4;
+  if ($numParts> 0) {
+    for ($i =0; $i < 4; $i++) {
+      $cn = strtolower(trim($parts[$i]));
+      if (strpos($cn,'.') > 0) {
+        $ps = explode('.', $cn);
+        $cNameParts = array();
+        foreach ($ps as $index => $p) {
+          if (strlen($p)>1 && !preg_match('#(www|freetibet|org|uk|com|info)#',$p)) {
+            $cNameParts[] = $p;
+          }
+        }
+        if (!empty($cNameParts)) {
+          $domainClass = implode('-', $cNameParts);
+          $element['#attributes']['class'][] = $domainClass;
+          if (preg_match('#(twitter|facebook|youtube|intagram)#',$domainClass)) {
+            $element['#attributes']['class'][] = 'follow-us';
+            $element['#attributes']['title'] = $element['#title'];
+          }
+        }
+      }
+    }
+  }
 	if ($path == '<front>') {
 		$path = 'home';
 	}
-	if (!is_array($element['#attributes']['class'])) {
-		$element['#attributes']['class']=array();
+	if (strlen($path) > 1) {
+	  $element['#attributes']['class'][] = str_replace('/','-',$path);
 	}
-	$element['#attributes']['class'][] = str_replace('/','-',$path);
 	if (current_path() == $element['#href']) {
 		$element['#attributes']['class'][] = 'active';
 	}
