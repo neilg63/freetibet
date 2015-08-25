@@ -1,0 +1,15 @@
+Index: varnish.admin.inc
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- varnish.admin.inc	(revision 93cae9e01cd5f66c22d508ad0d97032548f6c73f)
++++ varnish.admin.inc	(revision )
+@@ -40,6 +40,7 @@
+       '2' => '2.0.x',
+       '2.1' => '2.1.x',
+       '3' => '3.x',
++      '4' => '4.x',
+     ),
+   );
+ 
