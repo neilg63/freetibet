@@ -426,6 +426,8 @@ function freetibet_slide_fieldset_classes_alter(&$classes,&$variables) {
 
   $has_block = false;
   $has_link = false;
+  $has_subtitle = false;
+  $variables['override_block_title'] = false;
   if (isset($variables['elements']['#entity'])) {
     $fc =& $variables['elements']['#entity'];
     $items = field_get_items('field_collection_item',$fc, 'field_media');
@@ -440,6 +442,14 @@ function freetibet_slide_fieldset_classes_alter(&$classes,&$variables) {
       $classes .= ' has-block';
       $has_block = true;
     }
+    
+    $items = field_get_items('field_collection_item',$fc, 'field_subtitle');
+    if (!empty($items) && !empty($items[0]['value'])) {
+      $classes .= ' has-subitle';
+      $has_subtitle = true;
+      $subtitle = $items[0]['value'];
+    }
+    
     $items = field_get_items('field_collection_item',$fc, 'field_link');
     if (!empty($items)) {
       $classes .= ' has-link';
@@ -448,5 +458,26 @@ function freetibet_slide_fieldset_classes_alter(&$classes,&$variables) {
   }
   if ($has_block && $has_link) {
     $classes .= ' has-link-and-block';
+  }
+  if ($has_subtitle && $has_link) {
+    $classes .= ' has-subtitle-and-link';
+  }
+  if ($has_subtitle && $has_block) {
+    $classes .= ' has-subtitle-and-block';
+    if (strlen($subtitle) > 1) {
+      $variables['block_title'] = $subtitle;
+      $fc->field_subtitle = array();
+      $variables['override_block_title'] = true;
+    }
+  }
+}
+
+function freetibet_replace_block_title(&$variables, &$ds_content) {
+  if (isset($variables['block_title']) && is_string($variables['block_title'])) {
+    $block_title = trim($variables['block_title']);
+    if (strlen($block_title) > 2) {
+      $ds_content = preg_replace('#(<h3\b[^>]*?block-title\b[^>]*?>)[^<]*?(</h3>)#i',"$1".$block_title."$1",$ds_content);
+      $ds_content = preg_replace('#(<p\b[^>]*?field-name-field-subtitle\b[^>]*?>)[^<]*?(</p>)#i','',$ds_content);
+    }
   }
 }

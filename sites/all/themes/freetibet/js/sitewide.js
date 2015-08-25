@@ -90,11 +90,13 @@
     
     handleFilterMenu: function(self) {
       self.find('li.term').on('click',function(e){
-        var s = Drupal.settings.ft, it = $(this), par = it.parent(), refId = par.attr('id').replace('-menu',''), refSel = $('#'+refId);
+        var s = Drupal.settings.ft, it = $(this), par = it.parent(), refId = par.attr('id').replace(/-(sub)?menu$/,''), refSel = $('#'+refId),tid;
         if (refSel.length > 0) {
-          refSel.val(it.attr('data-opt'));
-          par.find('.selected').removeClass('selected');
-          it.addClass('selected');
+          e.stopImmediatePropagation();
+          s.currTermFilter = it.attr('data-opt');
+          refSel.val(s.currTermFilter);
+          //par.parent().find('.selected').removeClass('selected');
+          it.addClass('loading');
           s.viewsFilterForm.find('.form-submit').trigger('click');
         }
       });
@@ -108,13 +110,16 @@
             s.viewsFilterForm.find('ul.filter-menu').removeClass('hide');
             s.viewsFilterForm.find('.form-item,label').addClass('hide');
           } else {
-            var selList,item,txt,lbl;
+            var selList,catList,item,txt,lbl;
             for (; i < s.numFilterSels;i++) {
               sel = s.filterSelectors.eq(i);
               lbl = sel.parent().parent().parent().find('label');
               selList = $('<ul class="filter-menu"></ul>');
-              selList.attr('id',sel.attr('id') + '-menu');
-              selList.append('<li class="label">'+lbl.text()+'</li>');
+              catList = selList.clone();
+              selList.attr('id',sel.attr('id') + '-menu').addClass('large');
+              catList.attr('id',sel.attr('id') + '-submenu');
+              selList.append('<li class="label">'+$.trim(lbl.text())+'</li>');
+              catList.append('<li class="label">Category</li>');
               if (sel.hasClass('hide') == false) {
                 opts = sel.find('option');
                 numOpts = opts.length;
@@ -126,16 +131,27 @@
                       txt = 'All';
                     }
                     item = $('<li data-opt="'+opt.attr('value')+'" class="term">'+txt+'</li>');
-                    if (j == 0) {
+                    if (
+                      (j == 0 && s.currTermFilter < 1)
+                      || (opt.attr('value') == s.currTermFilter)
+                    ) {
                       item.addClass('selected');
                     }
-                    selList.append(item);
+                    if (j< s.maxTopicItems) {
+                      selList.append(item);
+                    } else {
+                      catList.append(item);
+                    }
+                    
                   }
                 }
                 sel.parent().addClass('hide');
                 lbl.addClass('hide');
                 lbl.after(selList);
-                Drupal.ft.handleFilterMenu(selList);
+                if (numOpts > s.maxTopicItems) {
+                  selList.after(catList);
+                }
+                Drupal.ft.handleFilterMenu(s.viewsFilterForm);
               }
             }
             s.viewsFilterForm.addClass('has-filter-menu');
@@ -159,7 +175,7 @@
 			  s.b.removeClass('menu-expanded');
 			}
 			s.header.removeAttr('style');
-      if (s.width > s.mobile_max_width ) {
+      if (s.width >= s.desktopWidth ) {
         s.footerMenu.find('br').remove();
         s.footerMenu.removeClass('mobile-width');
          Drupal.ft.toggleViewsFilter('horizontal');
@@ -210,20 +226,26 @@
 			});
 		},
 			
-		init: function() {
-			Drupal.settings.ft = {};
-			var s = Drupal.settings.ft;
-			s.desktopWidth = 800;
-			s.width = window.viewportSize.getWidth();
-			s.iframes = $('.file-video, .file-audio-soundcloud,.field-name-field-iframe');
-			s.b = $('body');
-      s.mobile_max_width = 799;
-			s.sbox =  $('#block-search-form');
-			s.header = $('#header');
-			s.menuItems = s.header.find('.region-header nav li');
-			s.numMenuItems = s.menuItems.length;
-			s.logo = $('#logo');
-      s.footerMenu = $('#block-menu-menu-footer-menu ul');
+		init: function(mode) {	
+      if (mode == 'full') {
+  			Drupal.settings.ft = {};
+      }
+  		var s = Drupal.settings.ft;
+      if (mode == 'full') {
+  			s.desktopWidth = 800;
+  			s.width = window.viewportSize.getWidth();
+  			s.iframes = $('.file-video, .file-audio-soundcloud,.field-name-field-iframe');
+  			s.b = $('body');
+  			s.sbox =  $('#block-search-form');
+  			s.header = $('#header');
+  			s.menuItems = s.header.find('.region-header nav li');
+  			s.numMenuItems = s.menuItems.length;
+  			s.logo = $('#logo');
+        s.footerMenu = $('#block-menu-menu-footer-menu ul');
+        s.currTermFilter = 0;
+        s.maxTopicItems = 5;
+      }
+      
       s.viewsFilterForm = $('.view-filters form');
       s.hasViewsFilter = false;
       if (s.viewsFilterForm.length>0) {
@@ -242,7 +264,8 @@
   Drupal.behaviors.ft = {
     attach : function(context) {
     	// now initialize
-    	Drupal.ft.init();
+      var mode = context instanceof HTMLDocument? 'full' : 'partial';
+      Drupal.ft.init(mode);
     }
   };
 }(jQuery));
