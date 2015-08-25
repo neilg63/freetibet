@@ -87,6 +87,7 @@ regions[top]         		= Header top
 regions[header]         = Header
 regions[highlighted]    = Highlighted
 regions[content]        = Content
+regions[aside]          = Sidebar, Right
 regions[content_bottom] = Content Bottom
 regions[footer]         = Footer
 regions[bottom]         = Page bottom

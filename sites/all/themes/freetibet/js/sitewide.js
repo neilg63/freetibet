@@ -118,8 +118,8 @@
               catList = selList.clone();
               selList.attr('id',sel.attr('id') + '-menu').addClass('large');
               catList.attr('id',sel.attr('id') + '-submenu');
-              selList.append('<li class="label">'+$.trim(lbl.text())+'</li>');
-              catList.append('<li class="label">Category</li>');
+              //selList.append('<li class="label">'+$.trim(lbl.text())+'</li>');
+              //catList.append('<li class="label">Category</li>');
               if (sel.hasClass('hide') == false) {
                 opts = sel.find('option');
                 numOpts = opts.length;
@@ -185,6 +185,24 @@
         Drupal.ft.toggleViewsFilter('default');
       }
 		},
+    
+    scrollHandler: function() {
+      var s = Drupal.settings.ft;
+      if (s.hasPinnedSection) {
+        var sTop = $(window).scrollTop(),itemTop=0,isFixed = s.pinnedSection.hasClass('fixed');
+        sTop += $(window).height() / 32;
+        if (isFixed) {
+          itemTop = s.pinnedSection.next().position().top; 
+        } else {
+          itemTop = s.pinnedSection.position().top;
+        }
+        if (sTop  > itemTop && isFixed == false) {
+          s.pinnedSection.addClass('fixed');
+        } else if (sTop  <= itemTop && isFixed) {
+          s.pinnedSection.removeClass('fixed');
+        }
+      }
+    },
 
 		addTouchSupport: function() {
 			document.addEventListener("touchstart", function(){
@@ -244,6 +262,13 @@
         s.footerMenu = $('#block-menu-menu-footer-menu ul');
         s.currTermFilter = 0;
         s.maxTopicItems = 5;
+        s.pinnedSection = $('.top-section-pinned .field-name-top');
+        s.hasPinnedSection = s.pinnedSection.length > 0;
+  			$(window).on('resize orientationchange',Drupal.ft.resizeHandler);
+        $(document).on('scroll',Drupal.ft.scrollHandler);
+  			this.shareThisLabelClick();
+  			this.addTouchSupport();
+        this.menuToggle();
       }
       
       s.viewsFilterForm = $('.view-filters form');
@@ -254,10 +279,6 @@
         s.hasViewsFilter = s.numFilterSels>0;
       }
 			this.resizeHandler();
-			this.shareThisLabelClick();
-			this.addTouchSupport();
-			this.menuToggle();
-			$(window).on('resize orientationchange',Drupal.ft.resizeHandler);
 		}
 	};
 	

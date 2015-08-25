@@ -23,28 +23,22 @@ body {
 }
 
 #page-wrapper,
-.region-bottom {
-  /*
-   * If you want to make the page a fixed width and centered in the viewport,
-   * this is the standards-compliant way to do that. See also the ie6.css file
-   * for the necessary IE5/IE6quirks hack to center a div.
-   */
+.region-bottom,
+#content article.top-section-pinned > .fixed > div {
   margin-left: auto;
   margin-right: auto;
   width: 100%;
 	max-width: 1424px;
 }
 
+#content article.top-section-pinned > .fixed > div > *,
 #page-wrapper > div, #page-wrapper > header, #page-wrapper > footer, #main, #page-wrapper > div {
 	padding: 0 2%;
 }
 
-#page-wrapper > section, #page-wrapper > header {
-	width: 96%;
-}
-
+#page-wrapper > section, #page-wrapper > header,
 #page-wrapper > footer {
-	width: 92%;
+	width: 96%;
 }
 
 #page-wrapper > header, #page-wrapper > footer {

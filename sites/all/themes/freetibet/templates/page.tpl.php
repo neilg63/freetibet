@@ -6,7 +6,6 @@
  * Complete documentation for this file is available online.
  * @see https://drupal.org/node/1728148
  */
-
 ?>
 <div id="page-wrapper">
 
@@ -42,6 +41,11 @@
       <?php print render($page['content']); ?>
       <?php print $feed_icons; ?>
     </section>
+    <?php if ($has_aside): ?>
+      <aside class="sidebar">
+        <?php print $aside; ?>
+      </aside>
+    <?php endif; ?>
     <?php print render($page['content_bottom']); ?>
   </div>
 

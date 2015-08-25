@@ -135,6 +135,7 @@ body.front div#block-system-main div.content iframe {
 
 
 #content > article > .page-section,
+#content > article.no-default-image > .field-name-body,
 #content div.messages {
   clear: both;
 }
@@ -1017,7 +1018,38 @@ figure.view-mode-medium:hover figcaption {
 .node-take-action.view-mode-full button.large-button,
 .node-take-action.view-mode-default button.large-button {
 	float: right;
-	margin: 0 2em 2em 0;
+	margin: 0 2em 1em 0;
+}
+
+#content .fixed .node-take-action.view-mode-default button.large-button {
+  margin: 0 1em 0.5em 0;
+}
+
+#content .node > .field-name-top .node-take-action h2 {
+  padding: 0.5em 0;
+  margin: 0 0 0.5em 0;
+}
+
+#content .field-name-top .node-take-action h2,
+#content .field-name-top .node-take-action .field-name-body {
+  float: left;
+}
+
+#content .field-name-top.fixed .node-take-action.no-body h2 {
+  padding: 0.5em 2%;
+}
+
+#content article.top-section-pinned > .fixed {
+  position: fixed;
+  top: 3.125vh;
+  left:0;
+  right:0;
+  background-color: white;
+  width: 100%;
+}
+
+#content article.top-section-pinned > .fixed > div {
+  padding: 0 2%;
 }
 
 #content .node .view-mode-full,
@@ -1720,6 +1752,16 @@ div.paypal-express-checkout {
 }
 
 @media screen and (min-width: 800px) {
+
+  body.has-sidebar #content {
+    float: left;
+    width: 63%;
+  }
+  
+  body.has-sidebar aside.sidebar {
+    float: right;
+    width: 32%;
+  }
 
   #content .field-name-field-box > article {
     height: 24em;

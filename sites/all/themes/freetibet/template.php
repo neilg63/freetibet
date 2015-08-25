@@ -137,11 +137,11 @@ function freetibet_preprocess_html(&$variables, $hook) {
 			if (is_int($badIndex) && isset($variables['classes_array']) && is_array($variables['classes_array']) && array_key_exists($badIndex, $variables['classes_array'])) {
 				unset($variables['classes_array'][$badIndex]);
 			}
-			$page = freetibet_add_page_section_classes($variables['classes_array']);
+      _freetibet_add_aside($variables);
+			$pageData = freetibet_add_page_section_classes($variables['classes_array']);
 		}
 	}
 }
-
 
 /**
  * Override or insert variables into the page templates.
@@ -157,12 +157,12 @@ function freetibet_preprocess_page(&$variables, $hook) {
 		if (!is_array($variables['classes_array'])) {
 			$variables['classes_array'] = array();
 		}
-		$page = freetibet_add_page_section_classes($variables['classes_array']);
-
+		$pageData = freetibet_add_page_section_classes($variables['classes_array']);
+    _freetibet_add_aside($variables);
 		// Assign section a variable in template.php
-		$variables['section'] = $page->section;
+		$variables['section'] = $pageData->section;
 		$variables['is_admin'] = user_is_logged_in() && user_access('administer nodes');
-		
+    
 		if (isset($variables['page']['content']['system_main']['nodes'])) {
 			$nData = $variables['page']['content']['system_main']['nodes'];
 			if (count($nData)>1 && isset($nData['#sorted']) && $nData['#sorted'] == 1) {
@@ -227,6 +227,27 @@ function freetibet_preprocess_page(&$variables, $hook) {
 		
 	} // end of default theme overrides
 	
+}
+
+function _freetibet_add_aside(&$variables) {
+  $page = $variables['page'];
+  $aside = NULL;
+  $has_aside = false;
+  $variables['aside'] = NULL;
+  if (isset($page['aside'])) {
+    $aside = render($page['aside']);
+    $has_aside = (!empty($aside) && is_string($aside) && strlen($aside) > 10);
+    if ($has_aside) {
+      $variables['classes_array'][] = 'has-sidebar';
+      $variables['aside'] = $aside;
+      $ns = array_search('no-sidebars',$variables['classes_array']);
+      if ($ns >- 0) {
+        unset($variables['classes_array']);
+        $variables['classes_array'] = array_values($variables['classes_array']);
+      }
+    }
+  }
+  $variables['has_aside'] = $has_aside;
 }
 
 function freetibet_css_alter(&$css) {
@@ -399,6 +420,43 @@ function freetibet_page_section_classes(&$classes,&$ds_content_wrapper) {
   return $has_wrapper;
 }
 
+function freetibet_take_action_node_classes_alter(&$classes,&$variables) {
+  $arrClasses = explode(' ', $classes);
+  $has_body = false;
+  $has_image = false;
+  if (isset($variables['elements']['#node'])) {
+    $n =& $variables['elements']['#node'];
+    $items = field_get_items('node',$n, 'field_body');
+    if (!empty($items) && is_array($items)) {
+      if (isset($items[0]['value'])) {
+        if (strlen($items[0]['value']) > 2) {
+          $has_body = true;
+        }
+      }
+    }
+    $items = field_get_items('node',$n, 'field_image');
+    if (!empty($items)) {
+      if (isset($items[0]['fid']) && is_numeric($items[0]['fid'])) {
+        if ($items[0]['fid'] > 0) {
+          $has_image = true;
+        }
+      }
+    }
+  }
+  if ($has_body) {
+    $classes .= ' has-body';
+  }
+  else {
+    $classes .= ' no-body';
+  }
+  if ($has_image) {
+    $classes .= ' has-image';
+  }
+  else {
+    $classes .= ' no-image';
+  }
+}
+
 function freetibet_slide_fieldset_classes_alter(&$classes,&$variables) {
   $arrClasses = explode(' ', $classes);
   $filteredClasses = array();
@@ -479,5 +537,66 @@ function freetibet_replace_block_title(&$variables, &$ds_content) {
       $ds_content = preg_replace('#(<h3\b[^>]*?block-title\b[^>]*?>)[^<]*?(</h3>)#i',"$1".$block_title."$1",$ds_content);
       $ds_content = preg_replace('#(<p\b[^>]*?field-name-field-subtitle\b[^>]*?>)[^<]*?(</p>)#i','',$ds_content);
     }
+  }
+}
+
+function freetibet_add_node_classes(&$classes, &$content,$node) {
+  $content_fields = array_keys($content);
+  $hide_defimg = $node->field_hide_default_image;
+  $classes = trim($classes);
+  $has_image = false;
+  if (in_array('field_image',$content_fields)) {
+  	$suppress = false;
+  	if (isset($hide_defimg) && is_array($hide_defimg)) {
+  		foreach ($hide_defimg as $lang => $vals) {
+  			if (!empty($vals) && isset($vals[0]) && isset($vals[0]['value'])) {
+  				$suppress = (bool) $vals[0]['value'];
+  			}
+  		}
+  	}
+  	if (!$suppress) {
+  		$classes .= ' has-default-image';
+  	} else {
+  	  $has_image = true;
+  	}
+  }
+  if (!$has_image) {
+    $classes .= ' no-default-image';
+  }
+  if (in_array('field_key_points',$content_fields)) {
+  	$num_items = count($content['field_key_points']['#items']);
+  	$hasKeyPoints = false;
+  	if ($num_items > 0) {
+  		foreach ($content['field_key_points']['#items'] as $index => $data) {
+  			if (isset($content['field_key_points'][$index]['entity']['field_collection_item'])) {
+  				foreach ($content['field_key_points'][$index]['entity']['field_collection_item'] as $id => $fd) {
+  					if (isset($fd['field_text']['#items'][0]['value'])) {
+  						if (strlen($fd['field_text']['#items'][0]['value']) > 2) {
+  							$hasKeyPoints = true;
+  							break;
+  						}
+  					}
+  				}
+  			}
+  			break;
+  		}
+  	}
+  	if ($hasKeyPoints) {
+  		$classes .= ' has-key-points';
+  	}
+  }
+
+  if (function_exists('node_class') && is_object($node)) {
+  	$extra_class = node_class($node);
+  	if (!empty($extra_class)) {
+  		$classes .= ' ' . trim($extra_class);
+  	}
+  }
+
+  if (isset($node->node_extra_class) && is_string($node->node_extra_class)) {
+    $extra_class = $node->node_extra_class;
+  	if (!empty($extra_class)) {
+  		$classes .= ' ' . trim($extra_class);
+  	}
   }
 }

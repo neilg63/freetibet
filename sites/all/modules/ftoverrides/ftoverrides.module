@@ -88,6 +88,7 @@ function ftoverrides_node_presave($node) {
 }
 
 function ftoverrides_set_first_page_section_position($node,$view_mode) {
+  $node->node_extra_class = '';
 	if ($view_mode == 'full' && isset($node->field_page_sections) && isset($node->content['field_page_sections']) && isset($node->content['top'])) {
 		$move_first_page_section = _ftoverrides_set_first_page_section_position($node,$view_mode);
   	if (!$move_first_page_section  && isset($node->content['top'])) {
@@ -98,7 +99,7 @@ function ftoverrides_set_first_page_section_position($node,$view_mode) {
 
 function _ftoverrides_set_first_page_section_position($node,$view_mode) {
 	$move_first_page_section = false;
-  $setSliderWeight = false;
+  $extraClass = '';
 	if (isset($node->content['field_page_sections']['#items']) && is_array($node->content['field_page_sections']['#items'])) {
 		$num_items = count($node->content['field_page_sections']['#items']);
 		if ($num_items > 0 ) {
@@ -108,10 +109,9 @@ function _ftoverrides_set_first_page_section_position($node,$view_mode) {
 				$value = (int) $field_items[0]['value'];
 				if ($value > 0) {
 					$move_first_page_section = true;
-					$setSliderWeight = false;
 					switch ($value) {
 						case 2:
-							$setSliderWeight = isset($node->content['field_slide']);
+							$extraClass = 'top-section-pinned';
 							break;
 					}
 				}
@@ -141,9 +141,8 @@ function _ftoverrides_set_first_page_section_position($node,$view_mode) {
 			$node->content['top'][0] = array(
 				'#markup' => render($firstRenderItem)
 			);
-			if ($setSliderWeight) {
-				$node->content['top']['#weight'] = -1000;
-				$node->content['field_slide']['#weight'] = -999;
+			if (!empty($extraClass)) {
+				$node->node_extra_class = $extraClass;
 			}
 		}
 	}
