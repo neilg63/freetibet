@@ -373,6 +373,7 @@ input.form-submit {
 
 #header .block-menu-block ul > li { 
 	font-size: 1.5em;
+  line-height: 1.25em;
 }
 
 /* Search */
@@ -1802,6 +1803,7 @@ div.paypal-express-checkout {
 	
 	header#header .block-menu-block ul > li {
 		font-size: 2vw;
+    line-height: 1.25em;
 	}
 	
 	#block-search-form input.form-text {
