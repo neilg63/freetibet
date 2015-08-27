@@ -557,8 +557,7 @@ function freetibet_add_node_classes(&$classes, &$content,$node) {
   	}
   	if (!$suppress) {
   		$classes .= ' has-default-image';
-  	} else {
-  	  $has_image = true;
+      $has_image = true;
   	}
   }
   if (!$has_image) {
