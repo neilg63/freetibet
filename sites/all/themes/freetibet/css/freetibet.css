@@ -1775,7 +1775,7 @@ div.paypal-express-checkout {
 
 	#header .region-header nav {
 		position: absolute;
-		bottom: -0.2em;
+		bottom: -0.1em;
 		right: 2%;
 	}
 	
@@ -1803,7 +1803,7 @@ div.paypal-express-checkout {
 	
 	header#header .block-menu-block ul > li {
 		font-size: 2vw;
-    line-height: 1.25em;
+    line-height: 1.2em;
 	}
 	
 	#block-search-form input.form-text {
