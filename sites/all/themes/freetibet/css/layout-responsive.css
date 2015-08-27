@@ -36,6 +36,10 @@ body {
 	padding: 0 2%;
 }
 
+body.front #main {
+  padding-top: 1.25em;
+}
+
 #page-wrapper > section, #page-wrapper > header,
 #page-wrapper > footer {
 	width: 96%;
