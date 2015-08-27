@@ -138,6 +138,7 @@ function freetibet_preprocess_html(&$variables, $hook) {
 				unset($variables['classes_array'][$badIndex]);
 			}
       _freetibet_add_aside($variables);
+   
 			$pageData = freetibet_add_page_section_classes($variables['classes_array']);
 		}
 	}
@@ -242,7 +243,7 @@ function _freetibet_add_aside(&$variables) {
       $variables['aside'] = $aside;
       $ns = array_search('no-sidebars',$variables['classes_array']);
       if ($ns >- 0) {
-        unset($variables['classes_array']);
+        unset($variables['classes_array'][$ns]);
         $variables['classes_array'] = array_values($variables['classes_array']);
       }
     }

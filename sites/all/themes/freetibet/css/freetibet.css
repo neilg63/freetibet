@@ -91,7 +91,8 @@ body.front div#block-system-main div.content iframe {
 
 #block-menu-menu-footer-menu li.follow-us:before {
   position:absolute;
-  top: 0;
+  left: 50%;
+  bottom: 0;
 }
 
 #block-menu-menu-footer-menu li.follow-us a {
