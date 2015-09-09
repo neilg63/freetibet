@@ -2,6 +2,15 @@
 
 function _ftoverrides_form_node_form_alter(&$form,&$form_state,$form_id = NULL) {
 	$node = $form['#node'];
+  if (arg(1) == 'add') {
+    $parent_nid = arg(3);
+    if (is_numeric($parent_nid) && $parent_nid > 0) {
+      $form['parent_entity_id'] = array(
+        '#type' => 'hidden',
+        '#value' => (int) $parent_nid,
+      );
+    }
+  }
 	if (isset($form['node_class']) && isset($form['node_class']['css_class'])) {
 		$arrClasses = array();
 			switch ($node->type) {
@@ -48,7 +57,14 @@ function _ftoverrides_form_node_form_alter(&$form,&$form_state,$form_id = NULL) 
 	  }
 	}
 			
-			
+	if (isset($form['field_block']) && is_array($form['field_block'])) {
+    foreach ($form['field_block'] as $lang => &$blockControl) {
+      if (is_array($blockControl) && isset($blockControl['#options'])) {
+        $blockControl['#size'] = 8;
+        break;
+      }
+    }
+  }		
 	
 	if (is_object($node) && isset($node->type)) {
 		if (isset($form['field_layout_mode'])) {
@@ -103,6 +119,45 @@ function _ftoverrides_node_presave($node) {
         $node->node_class['css_class'] = '';
       }
       
+    }
+  }
+}
+
+function _ftoverrides_node_insert($node) {
+  $parentNid = 0;
+  if (isset($node->parent_entity_id) && $node->parent_entity_id > 0) {
+    $parentNid = (int) $node->parent_entity_id;
+  }
+  if (arg(1) == 'add') {
+    $parNid = arg(3);
+    if (is_numeric($parNid) && $parNid > 1) {
+      switch ($node->type) {
+        case 'text':
+        case 'media_section':
+        case 'key_points':
+        case 'slide_section':
+        case 'box':
+        case 'take_action':
+          $parentNid = (int) $parNid;
+          break;
+      }
+    }
+  }
+  if ($parentNid > 0) {
+    $pn = node_load($parentNid);
+    if (is_object($pn)) {
+      
+      if (empty($pn->language)) {
+        $pn->language = LANGUAGE_NONE;
+      }
+      if (empty($pn->field_page_sections) || !isset($pn->field_page_sections[$pn->language])) {
+        $pn->field_page_sections = array($pn->language => array());
+      }
+      $pn->field_page_sections[$pn->language][] = array(
+        'target_id' => $node->nid
+      );
+      drupal_set_message("New page section: " . $node->nid . " added to " . $parentNid);
+      node_save($pn);
     }
   }
 }
@@ -287,6 +342,33 @@ function _ftoverrides_donation_block_admin_configure_submit(&$settings) {
         variable_set($var_name, $data);
         drupal_set_message("Suggested donation amounts saved");
       }
+    }
+  }
+  
+}
+
+function _ftoverrides_node_edit_view($node) {
+  
+  $info = field_info_field('field_page_sections');
+  if (is_array($info) && isset($info['settings']['handler_settings']['target_bundles'])) {
+    $bundles = $info['settings']['handler_settings']['target_bundles'];
+    if (is_array($bundles)) {
+      $links = array('<span class="label">'.t("Add page section:").'</span>');
+      $types = node_type_get_names();
+      $opts = array('query' => array('destination' => 'node/' . $node->nid));
+      $bKeys = array('media_section','text','slide_section','key_points');
+      $bKeys += $bundles;
+      $bKeys = array_unique($bKeys);
+      $lastIndex = count($bKeys) - 1;
+      foreach ($bKeys as $index => $type_name) {
+        $link = 'node/add/'. str_replace('_','-',$type_name) . '/' . $node->nid;
+        if ($index == $lastIndex) {
+          $opts['attributes']['class'] = array('last');
+        }
+        $links[] = l($types[$type_name],$link,$opts);
+      }
+      $node->add_page_section = '<div class="add-page-section">' . implode('',$links) . '</div>';
+      
     }
   }
   

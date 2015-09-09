@@ -336,7 +336,7 @@ function freetibet_menu_link($variables) {
   $numParts = count($parts);
   $maxParts = $numParts < 4? $numParts : 4;
   if ($numParts> 0) {
-    for ($i =0; $i < 4; $i++) {
+    for ($i =0; $i < $numParts; $i++) {
       $cn = strtolower(trim($parts[$i]));
       if (strpos($cn,'.') > 0) {
         $ps = explode('.', $cn);
@@ -407,7 +407,7 @@ function freetibet_references_dialog_links($variables) {
 * Aux function used in page section templates
 * @return boolean
 */
-function freetibet_page_section_classes(&$classes,&$ds_content_wrapper) {
+function freetibet_page_section_classes(&$classes,&$ds_content_wrapper,$node) {
   $classes .= ' ';
   $classes = preg_replace('#\bnode(-by-viewer)?\s+#','',$classes);
   $classes = 'page-section ' . trim(preg_replace('#\s\s+#',' ',$classes));
@@ -535,7 +535,7 @@ function freetibet_replace_block_title(&$variables, &$ds_content) {
   if (isset($variables['block_title']) && is_string($variables['block_title'])) {
     $block_title = trim($variables['block_title']);
     if (strlen($block_title) > 2) {
-      $ds_content = preg_replace('#(<h3\b[^>]*?block-title\b[^>]*?>)[^<]*?(</h3>)#i',"$1".$block_title."$1",$ds_content);
+      $ds_content = preg_replace('#(<h3\b[^>]*?block-title\b[^>]*?>)[^<]*?(</h3>)#i',"$1".$block_title."$2",$ds_content);
       $ds_content = preg_replace('#(<p\b[^>]*?field-name-field-subtitle\b[^>]*?>)[^<]*?(</p>)#i','',$ds_content);
     }
   }
@@ -543,7 +543,12 @@ function freetibet_replace_block_title(&$variables, &$ds_content) {
 
 function freetibet_add_node_classes(&$classes, &$content,$node) {
   $content_fields = array_keys($content);
-  $hide_defimg = $node->field_hide_default_image;
+  if (isset($node->field_hide_default_image)) {
+    $hide_defimg = $node->field_hide_default_image;
+  }
+  else {
+    $hide_defimg = false;
+  }
   $classes = trim($classes);
   $has_image = false;
   if (in_array('field_image',$content_fields)) {

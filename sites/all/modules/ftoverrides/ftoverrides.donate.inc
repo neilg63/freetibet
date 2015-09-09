@@ -52,7 +52,8 @@ function  _ftoverrides_form_payment_donation_form_alter(&$form,&$form_state,$for
       $form['info'] = array(
         '#type' => 'markup',
         '#markup' => '<div class="payment-info '.$pm_class.'" title="'.$method_label . ": " . $pm->title_generic.'"></div>',
-        '#prefix' => '<div class="donation-controls">'
+        '#prefix' => '<div class="donation-controls">',
+        '#weight' => 2000
       );
       
       $default_currency_code = 'GBP';

@@ -6,7 +6,7 @@
  */
 
 
-$has_wrapper = freetibet_page_section_classes($classes,$ds_content_wrapper);
+$has_wrapper = freetibet_page_section_classes($classes,$ds_content_wrapper,$node);
 freetibet_take_action_node_classes_alter($classes,$variables);
 if ($has_wrapper):
 ?>

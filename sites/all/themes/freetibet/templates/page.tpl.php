@@ -25,13 +25,14 @@
 
   <div id="main">
     <div class="header-rule"></div>
-		<?php print render($page['highlighted']); ?>
+		
     <section id="content" class="column" role="main">
       <?php print $breadcrumb; ?>
       <a id="main-content"></a>
       <?php if ($title): ?>
         <h1 class="page__title title" id="page-title"><?php print $title; ?></h1>
       <?php endif; ?>
+      <?php print render($page['highlighted']); ?>
 			<?php print render($tabs); ?>
       <?php print $messages; ?>
       <?php print render($page['help']); ?>

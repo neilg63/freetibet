@@ -77,7 +77,13 @@ function ftoverrides_node_view($node,$view_mode) {
 			}
 			break;
 		case 'page':
+    case 'blog':
+    case 'news_article':
 			ftoverrides_set_first_page_section_position($node,$view_mode);
+      if (user_access("edit any page content") && node_is_page($node)) {
+        module_load_include('inc','ftoverrides','ftoverrides.edit');
+        _ftoverrides_node_edit_view($node);
+      }
 			break;
 	}
 }
@@ -85,6 +91,11 @@ function ftoverrides_node_view($node,$view_mode) {
 function ftoverrides_node_presave($node) {
   module_load_include('inc','ftoverrides','ftoverrides.edit');
   _ftoverrides_node_presave($node);
+}
+
+function ftoverrides_node_insert($node) {
+  module_load_include('inc','ftoverrides','ftoverrides.edit');
+  _ftoverrides_node_insert($node);
 }
 
 function ftoverrides_set_first_page_section_position($node,$view_mode) {

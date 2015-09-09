@@ -4,7 +4,7 @@
  * @file
  * Display Suite 1 column template.
  */
-$has_wrapper = freetibet_page_section_classes($classes,$ds_content_wrapper);
+$has_wrapper = freetibet_page_section_classes($classes,$ds_content_wrapper,$node);
 if ($has_wrapper):
 ?>
 <<?php print $ds_content_wrapper; print $layout_attributes; ?> class="<?php print $classes;?>">
