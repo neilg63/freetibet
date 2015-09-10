@@ -31,7 +31,9 @@ body {
 		color: #666666;
 }
 
-h1,h2,h3,h4,h5,h6, #header ul.menu li a, dt, #block-menu-menu-main-menu-footer ul.menu li a {
+h1,h2,h3,h4,h5,h6, #header ul.menu li a, dt,
+#block-menu-menu-main-menu-footer ul.menu li a, 
+.quoted:before, .quoted:after {
     font-family: metabold, Helvetica, Arial, sans-serif;
 }
 
@@ -46,10 +48,6 @@ h1,h2, #content h3, #header ul.menu li a, #block-menu-menu-main-menu-footer ul.m
 iframe {
   border: none;
   width: 100%;
-}
-
-#page-wrapper {
-
 }
 
 body.front div#block-system-main div.content iframe {
@@ -219,7 +217,7 @@ a:link, a:hover, a:visited, a:active,
 .filter-menu li.selected,
 #content .fixed:hover > div > button.close,
 #content .key-point:before,
-blockquote.quoted:before, blockquote.quoted:after {
+.quoted:before, .quoted:after {
 	color: #2faeb9;
 }
 
@@ -1116,6 +1114,14 @@ figure.view-mode-medium:hover figcaption {
 	white-space: nowrap;
 }
 
+#content form .form-submit:hover,
+#footer form .form-submit:hover,
+#payment-donation-form .form-submit:hover,
+#content .flexslider .has-subtitle-and-link .field-name-field-link a:hover,
+.large-button a:hover {
+  color: yellow;
+}
+
 #donation-presets {
   margin: 0 0 1em 0;
   padding: 0.25em 0 1em 0;
@@ -1174,23 +1180,26 @@ ul.suggested-amounts {
 }
 
 form.single-mode ul {
-  margin: 0 1.5em 0 -1.5em;
+  margin: 0 0 0.5em 0;
   padding: 0 0.25em 0 0;
 }
 
 form.single-mode ul, form.single-mode li {
   list-style-type: none;
   display: inline-block;
+  position: relative;
 }
 
-form#payment-donation-form li {
-  padding: 0.125em 0.125em 0.25em 0.125em;
+form#payment-donation-form .suggested-amounts li {
+  padding: 0.125em 0.125em 0.5em 0.125em;
   margin: 0 0.125em 0.25em 0.125em;
   width: 1.25em;
+  height: 1em;
   background-color: #2faeb9;
   color: white;
   cursor: pointer;
   font-size: 0.8em;
+  bottom: 0.2em;
 }
 
 #block-payment-donation-payment-donation mode dd.donation-single {
@@ -1271,9 +1280,11 @@ form#payment-donation-form li {
 	margin: 0 0.5em 0.5em 0;
 }
 
-.flexslider .has-subtitle-and-link .field-name-field-link a {
+#content .flexslider .has-subtitle-and-link .field-name-field-link a {
   padding: 0.25em 0.5em;
   max-width: 16em;
+  color: white;
+  text-decoration: none;
 }
 
 /*
@@ -1295,8 +1306,12 @@ form#payment-donation-form li {
   left: -9999em;
 }
 #payment-donation-form .form-item-payment-donation-amount input.form-text {
-  margin-left: -1.5em;
+  margin-left: 0;
   width: 2em;
+}
+
+#payment-donation-form select {
+  margin: 0 -0.375em 0 0.375em;
 }
 
 #payment-donation-form .form-item-payment-donation-amount select {
@@ -1606,7 +1621,6 @@ body.not-logged-in #edit-mailchimp-lists-mailchimp-email-updates-title,
   height: 2em;
 }
 
-#payment-donation-form .form-item,
 #payment-donation-form .form-item label {
   padding: 0 0 0 1em;
 }
@@ -1619,6 +1633,7 @@ body.not-logged-in #edit-mailchimp-lists-mailchimp-email-updates-title,
 
 #payment-donation-form .form-item {
   margin: 0 auto;
+  padding: 0;
 }
 #payment-donation-form .donation-controls {
   width: 100%;
@@ -1804,7 +1819,7 @@ div.paypal-express-checkout {
    padding: 0 0 0 2.25em;
 }
 
-h2.centred, h3.centre,
+h2.centred, h3.centred, h4.centred,
 p.centred, #content .centred {
   text-align: center;
 }
@@ -1820,35 +1835,45 @@ blockquote.dashed {
   border: dashed 1px #999999;
 }
 
-blockquote.quoted {
+
+#content .quoted {
   position: relative;
   padding: 1em 2em;
   margin: 1em 0;
 }
 
-blockquote.quoted:before,
-blockquote.quoted:after {
+.quoted:before, .quoted:after,
+h4.quoted:before,
+h4.quoted:after {
   position: absolute;
   font-size: 3em;
+}
+
+blockquote.before,blockquote.after {
+  font-size: 4em;
 }
 
 blockquote.quoted p {
   margin: 0;
 }
 
-blockquote.quoted:before {
+.quoted:before,
+#content .quoted:before {
   content: "“";
   top: 0;
   left: 0;
 }
 
-blockquote.quoted:after {
+.quoted:after,
+#content .quoted:after {
   content: "”";
-  bottom: 0;
+  bottom: -0.375em;
   right: 0;
 }
 
-
+/*
+* Media queries
+*/
 @media screen and (max-width: 799px) {
 
 	
@@ -2657,4 +2682,3 @@ blockquote.quoted:after {
 	bottom: -3.25rem;
   clear: both;
 }
-

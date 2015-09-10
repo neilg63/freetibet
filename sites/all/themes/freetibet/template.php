@@ -537,6 +537,7 @@ function freetibet_replace_block_title(&$variables, &$ds_content) {
     if (strlen($block_title) > 2) {
       $ds_content = preg_replace('#(<h3\b[^>]*?block-title\b[^>]*?>)[^<]*?(</h3>)#i',"$1".$block_title."$2",$ds_content);
       $ds_content = preg_replace('#(<p\b[^>]*?field-name-field-subtitle\b[^>]*?>)[^<]*?(</p>)#i','',$ds_content);
+      $ds_content = preg_replace('#<div\b[^>]*?group-details\b[^>]*?>\s*</div>#i','',$ds_content);
     }
   }
 }
