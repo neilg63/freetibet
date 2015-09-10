@@ -1,0 +1,145 @@
+@font-face {
+    font-family: 'metabold';
+    src: url('fonts/meta-bold.eot');
+    src: url('fonts/meta-bold.eot?#iefix') format('embedded-opentype'),
+         url('fonts/meta-bold.woff') format('woff'),
+         url('fonts/meta-bold.ttf') format('truetype'),
+         url('fonts/meta-bold.svg#meta-bold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'metanormal';
+    src: url('fonts/meta-normal.eot');
+    src: url('fonts/meta-normal.eot?#iefix') format('embedded-opentype'),
+         url('fonts/meta-normal.woff') format('woff'),
+         url('fonts/meta-normal.ttf') format('truetype'),
+         url('fonts/meta-normal.svg#meta-normal') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html {
+	font-size: 16px;
+}
+
+body {
+    background:white;
+    font-family: metanormal, Helvetica, Arial, sans-serif;
+		color: #666666;
+}
+
+h1,h2,h3,h4,h5,h6, #header ul.menu li a, dt,
+#block-menu-menu-main-menu-footer ul.menu li a, 
+.quoted:before, .quoted:after {
+    font-family: metabold, Helvetica, Arial, sans-serif;
+}
+
+h1,h2,h3, #header ul.menu li a, #block-menu-menu-main-menu-footer ul.menu li a  {
+  font-weight: bold;
+}
+
+h1,h2, #content h3, #header ul.menu li a, #block-menu-menu-main-menu-footer ul.menu li a  {
+  text-transform: uppercase;
+}
+
+body.front div#block-system-main div.content iframe {
+	margin: 1em;
+}
+
+.float-left {
+	float: left;
+}
+
+.float-right {
+	float: right;
+}
+
+a:link, a:hover, a:visited, a:active,
+.filter-menu li.selected,
+#content .fixed:hover > div > button.close,
+#content .key-point:before,
+.quoted:before, .quoted:after {
+	color: #2faeb9;
+}
+
+a:link, a:visited {
+	text-decoration: none;
+}
+a:hover, a:active {
+	text-decoration: underline;
+}
+
+button.large-button {
+	margin: 0;
+}
+
+figure {
+	overflow: hidden;
+}
+
+.large-button a {
+	display: block;
+  font-size: 2em;
+	margin: 0 0.5em 0.5em 0;
+}
+
+.large-button a:hover {
+	color: yellow;
+}
+
+div.large-button {
+	padding-left: 5%;
+}
+
+h2.centred, h3.centred, h4.centred,
+p.centred, #content .centred {
+  text-align: center;
+}
+
+p.extra-vertical-padding {
+  padding-top: 1.5em;
+  padding-bottom: 1.5em;
+}
+
+blockquote.dashed {
+  padding: 1em;
+  margin: 1em;
+  border: dashed 1px #999999;
+}
+
+
+.quoted {
+  position: relative;
+  padding: 1em 2em;
+  margin: 1em 0;
+}
+
+.quoted:before, .quoted:after,
+h4.quoted:before,
+h4.quoted:after {
+  position: absolute;
+  font-size: 3em;
+}
+
+blockquote.before,blockquote.after {
+  font-size: 4em;
+}
+
+blockquote.quoted p {
+  margin: 0;
+}
+
+.quoted:before {
+  content: "“";
+  top: 0;
+  left: 0;
+}
+
+.quoted:after {
+  content: "”";
+  bottom: -0.375em;
+  right: 0;
+}
