@@ -65,7 +65,12 @@ function _ftoverrides_form_node_form_alter(&$form,&$form_state,$form_id = NULL) 
       }
     }
   }		
-	
+  if (isset($form['field_donation_settings'])) {
+    $form['field_donation_settings']['#type'] = 'fieldset';
+    $form['field_donation_settings']['#title'] = t("Donation settings");
+    $form['field_donation_settings']['#collapsible'] = TRUE;
+    $form['field_donation_settings']['#collapsed'] = TRUE;
+  }
 	if (is_object($node) && isset($node->type)) {
 		if (isset($form['field_layout_mode'])) {
 			$view_modes = ftoverrides_get_available_view_modes($node->type);
@@ -104,8 +109,15 @@ function _ftoverrides_form_node_form_alter(&$form,&$form_state,$form_id = NULL) 
 				$form['options']['promote']['#access'] = FALSE;
 				$form['options']['sticky']['#access'] = FALSE;
 				break;
+      case 'page':
+      case 'blog':
+      case 'donate':
+      case 'news_article':
+        $form['#after_build'][] = 'ftoverrides_node_form_after_build';
+        break;
 		}
 	}
+  
 }
 
 
@@ -119,6 +131,24 @@ function _ftoverrides_node_presave($node) {
         $node->node_class['css_class'] = '';
       }
       
+    }
+  }
+  if (isset($node->field_donation_settings)) {
+    $valid = false;
+    if (is_array($node->field_donation_settings)) {
+      foreach ($node->field_donation_settings as $lang => $fcData) {
+        if (is_string($lang) && is_array($fcData) && array_key_exists(0,$fcData)) {
+          if (isset($fcData[0]['field_default'])) {
+            if (isset($fcData[0]['field_default'][$lang][0]['value'])) {
+              $value = $fcData[0]['field_default'][$lang][0]['value'];
+              $valid = is_numeric($value);
+            }
+          }
+        }
+      }
+    }
+    if (!$valid) {
+      $node->field_donation_settings = array();
     }
   }
 }

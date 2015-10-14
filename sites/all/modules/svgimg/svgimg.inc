@@ -54,36 +54,15 @@ function svgimg_build_element(&$items,$display) {
 function svgimg_image_svg_loop_items(array &$field_data,$count = 0) {
   $matched = false;
   for ($i=0; $i < $count; $i++) {
-    $item = array();
-    $use_file_entity = false;
+    $item_matched = false;
     if (isset($field_data[$i]['#item'])) {
-      $item =& $field_data[$i]['#item']; 
+      $item_matched = _svgimg_apply_field_item_override($field_data[$i]['#item'], $field_data, $i, false);
     }
     else if (isset($field_data[$i]['file'])) {
-      $item =& $field_data[$i]['file']['#item'];
-      $use_file_entity = true;
+      $item_matched = _svgimg_apply_field_item_override($field_data[$i]['file']['#item'], $field_data, $i, true);
     }
-    if (!empty($item)) {
-      if (svgimg_image_is_svg($item)) {
-        $matched = true;
-        if ($use_file_entity) {
-          $style_name = $field_data[$i]['file']['#image_style'];
-          if ($field_data[$i]['file']['#theme'] != 'image_formatter') {
-            $field_data[$i]['file']['#theme'] = 'image_formatter';
-            $field_data[$i]['#image_style'] = NULL;
-          } 
-        } else {
-          $style_name = $field_data[$i]['#image_style'];
-        }
-        $data = svgimg_fetch_style_size($style_name);
-        $size = svgimg_image_svg_fetch_size($item);
-        svgimg_image_svg_map_style($item,$data,$size, $style_name);
-        if ($use_file_entity) {
-          $field_data[$i]['file']['#image_style'] = NULL;
-        } else {
-          $field_data[$i]['#image_style'] = NULL;
-        }
-      }
+    if ($item_matched) {
+      $matchhed = true;
     }
   }
   if ($matched) {
@@ -92,6 +71,38 @@ function svgimg_image_svg_loop_items(array &$field_data,$count = 0) {
     }
     $field_data['#attached']['js'][] = drupal_get_path('module', 'svgimg') . '/js/svgimg.js';
   }
+}
+
+/*
+* @param array &$item
+* @param array &$field_data
+* @param int $delta
+* @param bool $use_file_entity
+* @return bool
+*/
+function _svgimg_apply_field_item_override(&$item, &$field_data, $delta = 0,$use_file_entity = false) {
+  $matched = false;
+  if (svgimg_image_is_svg($item)) {
+    $matched = true;
+    if ($use_file_entity) {
+      $style_name = $field_data[$delta]['file']['#image_style'];
+      if ($field_data[$delta]['file']['#theme'] != 'image_formatter') {
+        $field_data[$delta]['file']['#theme'] = 'image_formatter';
+        $field_data[$delta]['#image_style'] = NULL;
+      } 
+    } else {
+      $style_name = $field_data[$delta]['#image_style'];
+    }
+    $data = svgimg_fetch_style_size($style_name);
+    $size = svgimg_image_svg_fetch_size($item);
+    svgimg_image_svg_map_style($item,$data,$size, $style_name);
+    if ($use_file_entity) {
+      $field_data[$delta]['file']['#image_style'] = NULL;
+    } else {
+      $field_data[$delta]['#image_style'] = NULL;
+    }
+  }
+  return $matched;
 }
 
 /*
@@ -121,9 +132,9 @@ function svgimg_fetch_style_size($style_name = NULL) {
 * Determine if an image file is SVG
 * @param array &$item
 */
-function svgimg_image_is_svg(array &$item) {
+function svgimg_image_is_svg(&$item) {
   $mime_key = 'jpg';
-  if (isset($item['filemime'])) {
+  if (is_array($item) && isset($item['filemime'])) {
     $mime_parts = explode('/',$item['filemime']);
     if ($mime_parts[0] == 'image') {
       $image_mime_parts = explode('+',$mime_parts[1]);
@@ -142,22 +153,18 @@ function svgimg_image_svg_fetch_size(array &$item) {
   if (isset($item['uri'])) {
     $path  = drupal_realpath($item['uri']);
     if ($path) {
-      $xml = simplexml_load_file($path);
-      $xml->registerXPathNamespace('svg', 'http://www.w3.org/2000/svg');
-      $xml->registerXPathNamespace('xlink', 'http://www.w3.org/1999/xlink');
-      $attrs = $xml->attributes();
-      $size['height'] = (int) (string) $attrs['height'];
-      $size['width'] = (int) (string) $attrs['width'];
+      $svg_data = svgimg_fetch_data($path);
+      $size = $svg_data->size();
     }
   }
   if ($size['height'] < 1) {
-          if ($size['width'] > 0) {
-            $size['height'] = $size['width'];
-          }
-          else {
-            $size = svgimg_default_size();
-          }
-        }
+    if ($size['width'] > 0) {
+      $size['height'] = $size['width'];
+    }
+    else {
+      $size = svgimg_default_size();
+    }
+  }
   return $size;
 }
 
@@ -249,4 +256,77 @@ function svgimg_default_size() {
     'height' => (int) $parts[1]
   );
   return variable_get('svgimg_default_size', $svgimg_default_size);
+}
+
+/*
+* @param string $svg_path
+*/
+function svgimg_fetch_source_size($svg_path = NULL) {
+  return svgimg_fetch_data($svg_path)->size();
+}
+
+/*
+* @param string $svg_path
+*/
+function svgimg_fetch_data($svg_path = NULL) {
+  $svg = file_get_contents($svg_path);
+  module_load_include('php','svgimg','includes/SvgimgData');
+  return new SvgimgData($svg);
+}
+
+/*
+* @param string $uri
+* @param string $directory_path
+*/
+function svgimg_root_path($uri = NULL, $directory_path = NULL) {
+  if (strpos($uri,'://') === false || strpos($uri,'://') < 1) {
+    $uri = 'public://' . $uri;
+  }
+  if (empty($directory_path)) {
+    $directory_path = variable_get('file_public_path', conf_path() . '/files');
+    // enable path translation for other file schemas, e.g. not on same server
+    return drupal_realpath($uri);
+  }
+  else {
+    return DRUPAL_ROOT . DIRECTORY_SEPARATOR .$directory_path . DIRECTORY_SEPARATOR . file_uri_target($uri);
+  }
+}
+
+/*
+* @param string $uri
+*/
+function svgimg_fetch_size($uri) {
+  $svg_path = svgimg_root_path($uri);
+  return svgimg_fetch_source_size($svg_path);
+}
+
+/*
+* @param object $entity
+* @param string $field_name
+*/
+function _svgimg_loop_entity_field_items($entity, $field_name) {
+  if (isset($entity->{$field_name}) && !empty($entity->{$field_name})) {
+    foreach ($entity->{$field_name} as $langcode => $field_items) {
+      if (!empty($field_items)) {
+        $changed = false;
+        foreach ($field_items as &$item) {
+          if ($item['fid'] > 0) {
+            $file = file_load($item['fid']);
+            if (is_object($file)) {
+              if (!empty($file->uri) && $file->filemime == 'image/svg+xml' && empty($item['width'])) {
+                
+                $size = svgimg_fetch_size($file->uri);
+                $item['width'] = $size['width'];
+                $item['height'] = $size['height'];
+                $changed = true;
+              }    
+            }
+          }
+        }
+        if ($changed) {
+          $entity->{$field_name} = array($langcode => $field_items);
+        }
+      }
+    }
+  }
 }

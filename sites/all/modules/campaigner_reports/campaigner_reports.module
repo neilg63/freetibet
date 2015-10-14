@@ -113,9 +113,13 @@ function campaigner_reports_view_report($chosenReport = "signatures"){
   if (!$csv) {
     $requestPage = isset($_GET['page']) ? $_GET['page'] : 0;
     $report->setPage($requestPage);
-    $sort = isset($_GET['sort']) ? $_GET['sort'] : FALSE;
+    $sort = isset($_GET['sort']) ? $_GET['sort'] : 'created';
 
-    if ($sort) {
+    if (!empty($sort)) {
+      if ($sort == 'created' && !isset($_GET['direction'])) {
+        $_GET['direction'] = 1;
+      }
+      $_GET['sort'] = $sort;
       $direction = isset($_GET['direction']) && $_GET['direction'] == 1 ? "DESC" : "ASC";
       $report->setSortColumn($sort, $direction);
     }

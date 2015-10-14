@@ -54,7 +54,8 @@ body.front div#block-system-main div.content iframe {
 	margin: 1em;
 }
 
-#main, #footer, #header {
+#main, #footer, #header,
+#content > article > .clearfix {
 	position: relative;
 	clear: both;
 }
@@ -206,6 +207,25 @@ form#payment-donation-form .hidden,
 .hide {
     display:none;
 }
+
+#content .form-textarea-wrapper textarea {
+  width: 100%;
+  min-height: 10em;
+  font-size: 1em;
+}
+
+#campaigner-petition-form .form-textarea-wrapper textarea,
+#campaigner-email-target-form .form-textarea-wrapper textarea {
+  height: 16em;
+}
+
+#campaigner-petition-form input.form-text,
+#campaigner-email-target-form input.form-text {
+  height: 1.5em;
+  min-width: 54%;
+}
+
+
 .error {
 	color: #cc0000;
 }
@@ -240,7 +260,6 @@ input.form-text {
     margin: 0.25em 0;
 		height: 1em;
 		border: solid 1px #2faeb9;
-    font-weight:bold;
 }
 
 input.form-submit {
@@ -248,6 +267,10 @@ input.form-submit {
 }
 .form-item input.error, .form-item textarea.error, .form-item select.error{
 	box-shadow: 1px 1px 2px #CC0000;
+}
+
+div.form-item {
+  position: relative;
 }
 
 /* Main navigation */
@@ -414,8 +437,23 @@ input.form-submit {
 	left: 0.175em;
 }
 
+#content .flexslider .form-type-item,
+#footer .block-mailchimp-lists .form-type-item,
 #search-block-form label {
 	display: none;
+}
+
+#footer .block-mailchimp-lists h3 {
+  margin-right: 1em;
+}
+
+#footer .block-mailchimp-lists span.error {
+  display: block;
+  clear: both;
+  position: absolute;
+  left: 0;
+  bottom: -1.5em;
+  font-size: 0.833em;
 }
 
 #block-search-form input.form-submit {
@@ -502,14 +540,6 @@ input.form-submit {
   width: 100%;
 }
 
-#footer .block-mailchimp-lists h3,
-#footer .block-mailchimp-lists form,
-#footer .block-mailchimp-lists div,
-#footer .block-mailchimp-lists input,
-#footer .block-mailchimp-lists label {
-  display: inline-block;
-}
-
 #footer .block-mailchimp-lists .form-item,
 #content .block-multiblock .form-item {
   white-space: nowrap;
@@ -517,7 +547,7 @@ input.form-submit {
 }
 
 #footer .block-mailchimp-lists .form-item {
-  width: 16em;
+  width: 100%;
 }
 
 #content .block-multiblock .form-item {
@@ -555,7 +585,7 @@ article > .node-media-section {
 	padding: 0 0 1em 1em;
 }
 
-#page-wrapper figure {
+#page-wrapper figure, #page-wrapper picture {
 	-moz-margin-before: 0;
 	-moz-margin-after: 0;
 	-moz-margin-start: 0;
@@ -607,6 +637,14 @@ iframe#pdf {
 }
 
 /* Slider */
+#content .flexslider {
+  margin: 0;
+}
+
+#content .section-title, #content media.section-title {
+  margin: 1.25em 0 0 0;
+}
+
 .flexslider .slides .view-mode-default,
 .flexslider .slides .view-mode-default picture {
   position: relative;
@@ -619,6 +657,10 @@ iframe#pdf {
   vertical-align: middle;
   display: inline-block;
   white-space: nowrap;
+}
+
+.flexslider .slides .view-mode-default picture div {
+  white-space: normal;
 }
 
 .flexslider .slides .view-mode-default picture:before {
@@ -639,7 +681,9 @@ iframe#pdf {
 }
 
 .entity-shopify-product .field-name-shopify-product-images img,
-figure img, picture img, #content .field-name-field-box .field-name-field-image img {
+figure img, picture img, 
+#content article.node > .field-name-field-image figure img,
+#content .field-name-field-box .field-name-field-image img {
   width: 100%;
   height: auto;
 }
@@ -789,6 +833,14 @@ article.node > .flexslider figcaption {
   text-transform: none;
 }
 
+#content .flexslider .form-item {
+  margin: 0 auto;
+}
+
+#content .flexslider h3 {
+  margin: 0.25em 0;
+}
+
 article.node > .flexslider figure {
 	margin: 0;
 	padding: 0;
@@ -799,16 +851,17 @@ article.node > .flexslider figure {
 }
 
 .page-section > .flexslider .flex-slide > .block,
-.page-section > .flexslider .group-details,
-article.node > .flexslider .flex-slide > .block,
-article.node > .flexslider .group-details {
+.page-section > .flexslider .group-details {
 	max-width: 20%;
 }
 
-.page-section > .flexslider .group-details,
-article.node > .flexslider .group-details {
+.page-section > .flexslider .group-details {
   padding: 1em 2% 1em 2%;
   top: 30%;
+}
+
+.page-section > .flexslider .group-details p {
+  margin: 0 0 0.5em 0;
 }
 
 .page-section > .flexslider .has-link-and-block .group-details,
@@ -918,7 +971,8 @@ article .flex-slide {
   position: relative;
 }
 
-div.node-media-section > .flexslider  .slides > li {
+div.node-media-section > .flexslider  .slides > li,
+div.node-media-section > .flexslider  .slides > li picture {
   height: 52vw;
   max-height: 83.33vh;
 }
@@ -926,9 +980,16 @@ div.node-media-section > .flexslider  .slides > li {
 div.node-media-section > .flexslider  .slides > li .field-name-field-text {
   position: absolute;
   bottom: 0;
-  left: 0;
+  left: 14%;
+  width: 68%;
   right: 0;
-  padding: 1em;
+  padding: 2%;
+  text-align: center;
+}
+
+div.node-media-section > .flexslider  .slides > li .field-name-field-text p {
+  padding: 0;
+  margin: 0.5em 0;
 }
 
 .field-name-field-image-section .view-mode-half_width,
@@ -975,6 +1036,7 @@ article > .view-mode-boxes > div > figure h4 {
 .field-name-body li {
 	padding-left: 1em;
 	text-indent: -1em;
+  padding-bottom: 0.25em;
 }
 
 #content aside.group-highlights {
@@ -999,14 +1061,11 @@ article > .view-mode-boxes > div > figure h4 {
 button.large-button {
 	border: none;
 	background: none;
-	padding: 0.125em 0.25em;
+	padding: 0.15em 0.25em;
   font-size: 1em;
 }
 
-#footer form .form-submit {
-  margin-left: 4em;
-}
-
+#footer form .form-submit {}
 button.large-button {
 	margin: 0;
 }
@@ -1042,13 +1101,13 @@ figure.view-mode-medium:hover figcaption {
 	color: white;
 }
 
-.node-take-action.view-mode-full button.large-button,
-.node-take-action.view-mode-default button.large-button {
+.node-take-action.view-mode-full .large-button,
+.node-take-action.view-mode-default .large-button {
 	float: right;
 	margin: 0.25em 1em 0.25em 0;
 }
 
-#content .fixed .node-take-action.view-mode-default button.large-button a {
+#content .fixed .node-take-action.view-mode-default .large-button a {
   margin: 0 0.5em 0.125em 0;
 }
 
@@ -1078,6 +1137,26 @@ figure.view-mode-medium:hover figcaption {
   z-index: 100;
 }
 
+#content .top-section-pinned > .field-name-field-image {
+  clear: right;
+}
+
+#content .view-mode-full .block-views {
+  clear: both;
+}
+
+#content .field-name-top {
+  width: 100%;
+}
+
+#content .field-name-top:after {
+  content: " ";
+  clear: both;
+  height: 0;
+  font-size: 0;
+  visibility: hidden;
+}
+
 #content article.top-section-pinned > .fixed > div {
   padding: 0 2%;
 }
@@ -1086,6 +1165,12 @@ figure.view-mode-medium:hover figcaption {
 #content .node .view-mode-default {
 	padding: 2em 0;
   position: relative;
+}
+
+#content .node .field-name-top .page-section,
+#content .node .field-name-top .view-mode-default,
+#content .node .field-name-top .view-mode-full {
+  padding-top: 0;
 }
 
 #content .node .node-media-section > h2,
@@ -1109,7 +1194,7 @@ figure.view-mode-medium:hover figcaption {
 .large-button a {
 	background-color: #bc2373;
 	color: white;
-	padding: 0.25em;
+	padding: 0.125em 0.25em;
 	border-radius: 0.25em;
 	white-space: nowrap;
 }
@@ -1167,8 +1252,11 @@ figure.view-mode-medium:hover figcaption {
   opacity: 0;
 }
 
-form.controls-expanded .form-item-payment-donation-amount .description {
+form#payment-donation-form .form-item-payment-donation-amount .description.error {
   opacity: 1;
+  min-width: 20em;
+  max-width: 100%;
+  color: red;
 }
 
 form#payment-donation-form > div {
@@ -1190,10 +1278,19 @@ form.single-mode ul, form.single-mode li {
   position: relative;
 }
 
-form#payment-donation-form .suggested-amounts li {
-  padding: 0.125em 0.125em 0.5em 0.125em;
+form#payment-donation-form .form-type-currency-amount {
+  z-index: 1;
+}
+
+form#payment-donation-form #edit-payment-donation-amount-currency-code {
+  position: relative;
+  z-index: 10;
+}
+
+form#payment-donation-form ul.suggested-amounts li {
+  padding: 0.125em 0.25em 0.5em 0.25em;
   margin: 0 0.125em 0.25em 0.125em;
-  width: 1.25em;
+  min-width: 1.25em;
   height: 1em;
   background-color: #2faeb9;
   color: white;
@@ -1210,6 +1307,10 @@ form#payment-donation-form .suggested-amounts li {
 
 #block-payment-donation-payment-donation form dt.donation-single {
   width: 30%;
+}
+
+#block-payment-donation-payment-donation > h3 {
+  display: none;
 }
 
 .node-donate .field-name-field-action {
@@ -1290,9 +1391,20 @@ form#payment-donation-form .suggested-amounts li {
 /*
 * Donation form
 */
-#payment-donation-form .form-item-payment-donation-amount {
+form .form-item-payment-donation-amount {
   color: white;
 }
+
+form.show-currency .form-item-payment-donation-amount {
+  color: #666666;
+}
+
+form#payment-donation-form.show-currency .form-item-payment-donation-amount ul,
+form#payment-donation-form.show-currency .form-item-payment-donation-amount div.form-item {
+  margin-left: 0.25em;
+}
+
+
 
 #payment-donation-form .form-item-payment-donation-amount input,
 #payment-donation-form .form-item-payment-donation-amount select,
@@ -1307,14 +1419,11 @@ form#payment-donation-form .suggested-amounts li {
 }
 #payment-donation-form .form-item-payment-donation-amount input.form-text {
   margin-left: 0;
-  width: 2em;
+  width: 2.5em;
 }
 
 #payment-donation-form select {
   margin: 0 -0.375em 0 0.375em;
-}
-
-#payment-donation-form .form-item-payment-donation-amount select {
   font-size: 1em;
 }
 
@@ -1621,6 +1730,10 @@ body.not-logged-in #edit-mailchimp-lists-mailchimp-email-updates-title,
   height: 2em;
 }
 
+#payment-donation-form .form-actions {
+  margin-left: 0.25em;
+}
+
 #payment-donation-form .form-item label {
   padding: 0 0 0 1em;
 }
@@ -1648,7 +1761,7 @@ body.not-logged-in #edit-mailchimp-lists-mailchimp-email-updates-title,
 
 #payment-donation-form .form-item .description {
   position: absolute;
-  bottom: -1.5em;
+  bottom: -1em;
   font-size: 0.8em;
   left: 2em;
 }
@@ -1876,7 +1989,6 @@ blockquote.quoted p {
 */
 @media screen and (max-width: 799px) {
 
-	
 	#content .field-name-sharethis {
 		display: none;
 	}
@@ -1897,7 +2009,6 @@ blockquote.quoted p {
   body.header-contracted #content article.top-section-pinned > .fixed {
     top: 4.9vw;
   }
-  
   
   #page-wrapper #header {
     background:white;
@@ -2033,6 +2144,26 @@ blockquote.quoted p {
     width: 100%;
   }
   
+  #footer .block-mailchimp-lists h3 {
+    margin: 0.25em auto;
+  }
+  
+  #footer .block-mailchimp-lists label {
+    width: 7em;
+    float: left;
+  }
+  
+  #footer .block-mailchimp-lists .form-item {
+    margin: 0.75em auto;
+    height: 2em;
+  }
+  
+  #footer .block-mailchimp-lists span.error {
+    bottom: -1em;
+    margin-left: 4em;
+    font-size: 0.75em;
+  }
+  
   #content div.node-media-section > .flexslider  .slides > li .field-name-field-text {
      opacity: 0; 
   }
@@ -2047,7 +2178,16 @@ blockquote.quoted p {
   }
   #content div.node-media-section > .flexslider  .slides > li:hover .field-name-field-text p {
     margin: 0;
-  }  
+  }
+  
+  #content .page-section > .flexslider .flex-slide > .block .form-type-textfield,
+  #content .page-section > .flexslider .flex-slide > .block label {
+     margin: 0.375em 0;
+   }
+  
+   .page-section > .flexslider .group-details {
+     padding: 0.5em 0 0.25em 0;
+   }   
 }
 
 @media screen and (max-height: 399px) and (max-width: 639px), screen and (min-width: 640px) and (max-width: 799px) {
@@ -2103,11 +2243,15 @@ blockquote.quoted p {
   }
   
   #content .view-mode-full > .field-name-field-image {
-  	clear: none;
   	float: right;
-  	width: 50%;
+  	width: 48%;
   	height: auto;
-  	padding: 0 0 1em 1em;
+  	padding: 0 0 1em 2%;
+  }
+  
+  #content .has-default-image > .field-name-body {
+  	padding: 0 0 1em 2%;
+    display: inline;
   }
   
   #user-login label {
@@ -2131,6 +2275,16 @@ blockquote.quoted p {
   	padding: 0 4% 0 0;
   	overflow: hidden;
     clear: none;
+  }
+  
+  .field-name-field-image-section .view-mode-half_width,
+  article > .view-mode-boxes > div > figure,
+  #content .field-name-field-box {
+    margin: 0;
+  }
+  
+  article > .view-mode-boxes > div > figure {
+    height: 19.5em;
   }
   
   article > .view-mode-boxes .field-name-field-text p {
@@ -2189,6 +2343,10 @@ blockquote.quoted p {
     display: inline-block;
   }
   
+  #footer .block-mailchimp-lists .form-item {
+    width: 16em;
+  }
+
 }
 
 @media screen and (min-width:640px) and (max-width:1199px) {
@@ -2252,8 +2410,26 @@ blockquote.quoted p {
 	
 	#block-search-form input.form-text {
 			width: 15em;
-	} 
+	}
   
+  #footer .block-mailchimp-lists h3,
+  #footer .block-mailchimp-lists form,
+  #footer .block-mailchimp-lists div,
+  #footer .block-mailchimp-lists input,
+  #footer .block-mailchimp-lists label {
+    display: inline-block;
+  }
+  
+  #footer form .form-submit {
+    margin-left: 4em;
+  }
+  article > .view-mode-boxes > div > figure {
+    height: 21em;
+  }
+  
+  div.node-media-section > .flexslider  .slides > li picture .field-name-field-text {
+    bottom: 1.5em;
+  }
 }
 
 @media screen and (min-width: 900px) {
@@ -2273,7 +2449,9 @@ blockquote.quoted p {
     width: 50%;
     margin: 0 auto;
   }
-  
+  article > .view-mode-boxes > div > figure {
+    height: 22.5em;
+  }
 }
 
 @media screen and (min-width: 1080px) {
@@ -2332,6 +2510,10 @@ blockquote.quoted p {
   #block-menu-menu-footer-menu li.follow-us a {
     width: 1.5em;
   }
+  
+  article > .view-mode-boxes > div > figure {
+    height: 23.75em;
+  }
 }
 
 @media screen and (min-width: 1200px) {
@@ -2341,7 +2523,7 @@ blockquote.quoted p {
   }
   
 	#page-title {
-		font-stretch: 1.25;
+		font-stretch: 1.2;
 	}
 	
 	#header .block-menu-block ul > li {
@@ -2395,6 +2577,12 @@ blockquote.quoted p {
   
   article > .view-mode-boxes > div > figure {
     height: 19.5em;
+  }
+  
+  #campaigner-petition-form input.form-text,
+  #campaigner-email-target-form input.form-text {
+    height: 1.5em;
+    min-width: 48%;
   }
   
 }
@@ -2466,6 +2654,40 @@ blockquote.quoted p {
   #content .view-mode-half_width > .group-right {
     width: 100%;
   }
+
+  #payment-donation-form input.form-submit {
+    font-size: 1.5em;
+  }
+  
+  #payment-donation-form .form-actions {
+    display: block;
+    margin: 0.5em auto;
+  }
+  
+  #content .page-section > .flexslider .flex-slide > .block input.form-text,
+  #content .page-section > .flexslider .flex-slide > .block label {
+    display: inline-block;
+  }
+  
+  #content .page-section > .flexslider .flex-slide > .block input.form-text {
+     width: 15em;
+  }
+  
+  #content .page-section > .flexslider .flex-slide > .block label {
+    width: 6.25em;
+  }
+  
+  #content .page-section > .flexslider .flex-slide > .block input.form-submit {
+    margin-left: 6.67em;
+  }
+  #content .flexslider .flex-slide > .block h3 {
+     font-size: 1em; 
+  }
+
+  #campaigner-petition-form input.form-text,
+  #campaigner-email-target-form input.form-text {
+    width: 100%;
+  }
   
 }
 
@@ -2477,17 +2699,11 @@ blockquote.quoted p {
 	
   
 	.page-section > .flexslider .slides > li,
-	.page-section > .flexslider .slides > li figure,
-	article.node > .flexslider .slides > li,
-	article.node > .flexslider .slides > li figure {
+	.page-section > .flexslider .slides > li figure {
 		 height: 80vw;
-     background-color: white;
 	}
   
-  .page-section > .flexslider .slides > li figure img,
-  .page-section > .flexslider .slides > li iframe,
-  article.node > .flexslider .slides > li figure img,
-  article.node > .flexslider .slides > li iframe {
+  .page-section > .flexslider .slides > li iframe {
     height: 54vw;
   }
   
@@ -2523,6 +2739,7 @@ blockquote.quoted p {
   }
 
   #content .page-section > .flexslider .flex-slide > .block,
+  #content .page-section > .flexslider .flex-slide form,
   #content .page-section > .flexslider .group-details {
     clear: both;  
     height: auto;
@@ -2533,9 +2750,6 @@ blockquote.quoted p {
     color: block;
   }
   
-  #content .page-section > .flexslider .flex-slide > .block form * {
-    display: inline-block;
-  }
   #content .page-section > .flexslider .flex-slide > .block form .form-item {
     margin-right: 2em;
   }
@@ -2550,14 +2764,36 @@ blockquote.quoted p {
     width: 100%;
   }
   
+  #payment-donation-form.single-mode ul.suggested-amounts {
+    display: block;
+    clear: both;
+    margin: 1em auto;
+  }
+  
+  div.node-media-section > .flexslider  .slides > li picture .field-name-field-text {
+    bottom: 2em;
+    font-size: 0.9em;
+  }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (min-width: 480px) and (max-width: 639px) {
+	.page-section > .flexslider .slides > li,
+	.page-section > .flexslider .slides > li figure {
+		 height: 88vw;
+	}
+}
+
+@media screen and (max-width: 479px) {
 	
 	#content .view-mode-full figure.view-mode-medium {
 		width: 100%;
 		float: none;
 		padding: 0.5em 0;
+	}
+  
+	.page-section > .flexslider .slides > li,
+	.page-section > .flexslider .slides > li figure {
+		 height: 96vw;
 	}
 	
   .page-section > .flexslider figcaption,
@@ -2588,6 +2824,7 @@ blockquote.quoted p {
      padding: 0;
      max-width: auto;
    }
+   
 }
 
 @media screen and (min-width: 320px) and (max-width: 799px) {
@@ -2598,7 +2835,7 @@ blockquote.quoted p {
 }
 
 
-@media screen and (min-width: 320px) and (max-width: 480px) {
+@media screen and (min-width: 320px) and (max-width: 479px) {
   #footer .block-menu ul li {
     width: 45%;
   }
@@ -2629,6 +2866,17 @@ blockquote.quoted p {
     float: left;
      width: 48%;
    }
+
+   #content .page-section > .flexslider .flex-slide > .block .form-type-textfield,
+   #content .page-section > .flexslider .flex-slide > .block label {
+     display: inline-block;
+   }
+   
+   #campaigner-petition-form input.form-text,
+   #campaigner-email-target-form input.form-text {
+     min-width: 80%;
+   }
+   
 }
 
 @media screen and (min-width: 800px) and (max-width: 1079px) {
@@ -2639,6 +2887,11 @@ blockquote.quoted p {
    
   #content .view-news-by-topic .view-content .views-row div.group-details {
      width: 73%;
+   }
+   
+   #campaigner-petition-form input.form-text,
+   #campaigner-email-target-form input.form-text {
+     min-width: 66%;
    }
 }
 
@@ -2659,10 +2912,11 @@ blockquote.quoted p {
 	.page-section > .flexslider  .flex-slide,	
 	article > .flexslider .slides > li,
 	article > .flexslider  .flex-slide {
-		height: 490px;
+		height: 514px;
 	}
   
-  div.node-media-section > .flexslider  .slides > li {
+  div.node-media-section > .flexslider  .slides > li,
+  div.node-media-section > .flexslider  .slides > li picture {
     height: 765px
   }
   

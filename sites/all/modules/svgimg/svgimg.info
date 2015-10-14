@@ -2,6 +2,4 @@ name = SVG Image Tag
 description = Enables SVG files to be referenced in img tags with png alternatives
 core = 7.x
 
-dependencies[] = media
-dependencies[] = file_entity
 configure = admin/config/media/svg-img

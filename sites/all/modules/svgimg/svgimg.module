@@ -128,12 +128,19 @@ function svgimg_field_formatter_view($entity_type, $entity, $field, $instance, $
 */
 function svgimg_theme_registry_alter(&$theme_registry) {
   if (!empty($theme_registry['media_thumbnail']['function'])) {
-    $theme_registry['media_thumbnail']['function'] = 'svgimg_theme_media_thumbnail';
+    
     $theme_path = drupal_get_path('module', 'svgimg');
     $file_path = $theme_path . '/svgimg.theme.inc';
-    $theme_registry['media_thumbnail']['file'] = $file_path;
-    $theme_registry['media_thumbnail']['theme_path'] = $theme_path;
-    $theme_registry['media_thumbnail']['includes'] = array($file_path);
+    if (isset($theme_registry['media_thumbnail'])) {
+      $theme_registry['media_thumbnail']['function'] = 'svgimg_theme_media_thumbnail';
+      $theme_registry['media_thumbnail']['file'] = $file_path;
+      $theme_registry['media_thumbnail']['theme_path'] = $theme_path;
+      $theme_registry['media_thumbnail']['includes'] = array($file_path);
+    }
+    $theme_registry['image_widget']['function'] = 'svgimg_theme_image_widget';
+    $theme_registry['image_widget']['file'] = $file_path;
+    $theme_registry['image_widget']['theme_path'] = $theme_path;
+    $theme_registry['image_widget']['includes'] = array($file_path);
   }
 }
 
@@ -141,5 +148,104 @@ function svgimg_theme_registry_alter(&$theme_registry) {
 * Fetch path to directory for PNG alternatives
 */
 function svgimg_path() {
-  return variable_get('file_public_path','sites/default/files') . '/' . SVGIMG_PNG_PATH;
+  return variable_get('file_public_path', conf_path() . '/files') . '/' . SVGIMG_PNG_PATH;
+}
+
+/*
+* Implements hook_field_widget_form_alter
+*/
+function svgimg_field_widget_form_alter(&$element, &$form_state, $context) {
+  $indexed = isset($element[0]);
+  $type = NULL;
+  if ($indexed) {
+    if (isset($element[0]['#type'])) {
+      $type = $element[0]['#type'];
+    }
+  }
+  else {
+    if (isset($element['#type'])) {
+      $type = $element['#type'];
+    }
+  }
+  if ($type == 'managed_file') {
+    if ($indexed) {
+      $num_elements = count($element);
+      foreach ($element as $key => &$subelement) {
+        if (is_numeric($key) && is_array($subelement) && isset($subelement['#type'])) {
+          _svgimg_assign_extensions($subelement,$context);
+        }
+      }
+    }
+    else {
+      _svgimg_assign_extensions($element,$context);
+    }
+  }
+}
+
+/*
+* @param array &$element
+* @param array &$context
+*/
+function _svgimg_assign_extensions(&$element, &$context) {
+  if (isset($context['instance']['settings']['file_extensions'])) {
+    $extensions = $context['instance']['settings']['file_extensions'];
+    if (preg_match('#\bsvg\b#i', $extensions)) {
+      $element['#upload_validators']['file_validate_extensions'] = array($extensions);
+      $description_parts = explode('<strong>', $element['#description']);
+      $num_description_parts = count($description_parts);
+      if ($num_description_parts >= 2) {
+        $last_index = $num_description_parts - 1;
+        $description_parts[$last_index] = $extensions . '</strong>';
+        
+        $element['#description'] = implode('<strong>', $description_parts);
+      }
+    }
+  }
+}
+
+/*
+* Implement hook_field_attach_presave
+*/
+function svgimg_field_attach_presave($entity_type, $entity) {
+  if ($entity_type == 'file' && is_object($entity) && isset($entity->filemime)) {
+    if ($entity->filemime == 'image/svg+xml') {
+      module_load_include('inc', 'svgimg');
+      $size = svgimg_fetch_size($entity->uri);
+      $dimensions = array('width','height');
+      foreach ($dimensions as $dim) {
+        $entity->metadata[$dim] = $size[$dim];
+        $entity->{$dim} = $size[$dim];
+      }
+    }
+  }
+  else {
+    $bundle = _svgimg_entity_get_bundle($entity, $entity_type);
+    $info = field_info_instances($entity_type,$bundle);
+    if (is_array($info)) {
+      foreach ($info as $field_name => $field_data) {
+        switch ($field_data['widget']['module']) {
+          case 'image':
+          case 'media':
+             module_load_include('inc', 'svgimg');
+             _svgimg_loop_entity_field_items($entity,$field_name);
+          break;
+        }
+      }
+    }
+  }
+}
+
+/*
+* Fetch bundle from an entity of any type
+* @param object $entity
+* @param string $entity_type
+*/
+function _svgimg_entity_get_bundle($entity, $entity_type) {
+  $info = entity_get_info($entity_type);
+  if (empty($info['entity keys']['bundle'])) {
+    return $entity_type;
+  }
+  else {
+    return $entity->{$info['entity keys']['bundle']};
+  }
 }

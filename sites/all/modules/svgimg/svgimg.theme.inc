@@ -62,3 +62,34 @@ function svgimg_theme_media_thumbnail($variables) {
   $output .= $label . $suffix;
   return $output;
 }
+
+/*
+* Override for Drupal core theme_image_widget to render SVG Images without styles
+*/
+function svgimg_theme_image_widget($variables) {
+  $element = $variables['element'];
+  $output = '';
+  $output .= '<div class="image-widget form-managed-file clearfix">';
+
+  if (isset($element['preview'])) {
+    $output .= '<div class="image-preview">';
+    $vars = array('height' => 100,'width' => 100,'attributes' => array('style' => 'height:auto'));
+    $vars['path'] = $element['#file']->uri;
+    $vars['alt'] = $element['#file']->alt;
+    $vars['title'] = $element['#file']->title;
+    $element['preview']['#markup'] = theme('image', $vars);
+    $output .= drupal_render($element['preview']);
+    $output .= '</div>';
+  }
+
+  $output .= '<div class="image-widget-data">';
+  if ($element['fid']['#value'] != 0) {
+    $element['filename']['#markup'] .= ' <span class="file-size">(' . format_size($element['#file']->filesize) . ')</span> ';
+  }
+  $output .= drupal_render_children($element);
+  $output .= '</div>';
+  $output .= '</div>';
+
+  return $output;
+}
+
