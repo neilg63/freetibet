@@ -1036,7 +1036,7 @@ article > .view-mode-boxes > div > figure h4 {
 .field-name-body li {
 	padding-left: 1em;
 	text-indent: -1em;
-  padding-bottom: 0.25em;
+  padding-bottom: 0.25emB;
 }
 
 #content aside.group-highlights {
@@ -1099,6 +1099,11 @@ figure.view-mode-medium:hover figcaption {
 	background-color: #777777;
 	background-color: rgba(0,0,0,0.5);
 	color: white;
+}
+
+div.page-section figure.no-media .block {
+  position: relative;
+  width: 100%;
 }
 
 .node-take-action.view-mode-full .large-button,
@@ -2345,6 +2350,10 @@ blockquote.quoted p {
   
   #footer .block-mailchimp-lists .form-item {
     width: 16em;
+  }
+
+  #content .view-mode-full .block-views {
+    padding-top: 2em;
   }
 
 }

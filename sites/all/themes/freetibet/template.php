@@ -378,6 +378,31 @@ function freetibet_menu_link($variables) {
 	return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
 }
 
+function freetibet_html_head_alter(&$head_elements) {
+  if(isset($head_elements['metatag_og:image_0'])){
+    $head_elements['metatag_og:image_0']['#value'] = str_replace(' ', '%20', $head_elements['metatag_og:image_0']['#value']);
+  }
+  if(isset($head_elements['metatag_image_src'])){
+    if (arg(0) == 'node') {
+      $arg1 = arg(1);
+      $arg2 = arg(2);
+      if (is_numeric($arg1) && empty($arg2)) {
+        $arg1 = (int) $arg1;
+        $n = node_load($arg1);
+        if (is_object($n)) {
+          $items = field_get_items('node', $n, 'field_image');
+          if (!empty($items) && isset($items[0]['uri'])) {
+            $image_url = file_create_url($items[0]['uri']);
+            $image_url = str_replace(' ', '%20', $image_url);
+            $head_elements['metatag_image_src']['#value'] = $image_url;
+          }
+        }
+      }
+    }
+    
+  }
+}
+
 
 function freetibet_references_dialog_links($variables) {
   if (isset($variables['links']) && is_array($variables['links'])) {
@@ -489,12 +514,27 @@ function freetibet_slide_fieldset_classes_alter(&$classes,&$variables) {
   $variables['override_block_title'] = false;
   if (isset($variables['elements']['#entity'])) {
     $fc =& $variables['elements']['#entity'];
+    
+    $items = field_get_items('field_collection_item',$fc, 'field_strapline');
+    if (!empty($items) && isset($items[0]['value'])) {
+      $val = $items[0]['value'];
+      if ($val == '<none>') {
+  //      var_dump($variables['elements']['field_strapline'],array_keys($variables));exit;
+        unset($variables['elements']['field_strapline']);
+      }
+    }
+    
     $items = field_get_items('field_collection_item',$fc, 'field_media');
+    $hasMedia = false;
     if (!empty($items) && is_array($items)) {
       if (isset($items[0]['filemime']) && is_string($items[0]['filemime'])) {
         $parts  = explode('/', $items[0]['filemime']);
         $classes .=  ' ' . array_shift($parts);
+        $hasMedia = true;
       }
+    }
+    if (!$hasMedia) {
+      $classes .=  ' no-media';
     }
     $items = field_get_items('field_collection_item',$fc, 'field_highlighted');
     if (!empty($items)) {

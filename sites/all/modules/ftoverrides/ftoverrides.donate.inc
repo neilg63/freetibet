@@ -192,6 +192,7 @@ function _ftoverrides_donation_context() {
         case 'join':
           $data->item_name = t('Free Tibet supporter');
           break;
+        case 'renew':  
         case 'renewal':
             $data->item_name = t('Free Tibet renewal');
             break;  
@@ -371,7 +372,16 @@ function ftoverrides_donation_presets($context = 'donate') {
       break;
   }
   if (!empty($context)) {
-    $return = variable_get('ftoverrides_donation_presets_'.$context,$default);
+    switch ($context) {
+      case 'renew':
+      case 'renewal':
+        $preset_context = 'join';
+        break;
+      default:
+        $preset_context = $context;
+        break;
+    }
+    $return = variable_get('ftoverrides_donation_presets_'.$preset_context,$default);
   }
   else {
     $return = $default;

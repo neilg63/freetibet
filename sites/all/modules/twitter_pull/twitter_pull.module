@@ -109,7 +109,6 @@ function twitter_pull_render($twitkey, $title = NULL, $num_items = NULL, $themek
   $title = (empty($title) && $title != FALSE ) ? t('Related Tweets') : filter_xss($title);
   $themekey = empty($themekey) ? 'twitter_pull_listing' : $themekey;
   $num_items = empty($num_items) ? twitter_pull_num_items() : $num_items;
-
   if (!$lazy_load) {
     $tweets = twitter_pull_retrieve($twitkey, $num_items, $rts, $exclude_replies);
   }
@@ -160,7 +159,6 @@ function twitter_pull_retrieve($twitkey, $num_items = NULL, $rts = NULL, $exclud
   $cache = cache_get($cache_key, TWITTER_PULL_CACHE_TABLE);
 
   $tweets = array();
-
   if (!empty($cache) && !empty($cache->data) && (time() < $cache->expire)) {
     $tweets =  $cache->data;
   }
