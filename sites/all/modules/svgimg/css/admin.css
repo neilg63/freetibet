@@ -1,0 +1,70 @@
+.sample-svgimg-set > figure {
+  position: relative;
+  float: left;
+  width: 45%;
+  padding: 0 0 2em 0;
+  margin: 0;
+  text-align: center;
+  -moz-transition: width 400ms ease;
+  -webkit-transition: width 400ms ease;
+  transition: width 400ms ease;
+}
+
+.sample-svgimg-set > figure img {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.sample-svgimg-set > figure.source-svg img {
+  width: 100%;
+  height: auto;
+}
+
+.sample-svgimg-set > figure.source-svg:hover {
+  width: 100%;
+}
+
+.sample-svgimg-set > figure > figcaption {
+  position: absolute;
+  top: 45%;
+  width: 100%;
+  text-align: center;
+}
+.sample-svgimg-set > figure.sample-image > figcaption {
+  font-size: 1.2em;
+  text-style: italic;
+  color: black;
+  opacity: 0.75;
+  -moz-transform: rotate(30deg) scaleX(1.5);
+  -webkit-transform: rotate(30deg) scaleX(1.5);
+  transform: rotate(30deg) scaleX(1.5);
+}
+
+.sample-svgimg-set > figure.not-available > figcaption {
+  color: red;
+}
+
+.sample-svgimg-set > figure.sample-image:hover > figcaption {
+  color: #cc3333;
+  font-size: 2.4em;
+}
+
+@media screen and (min-width: 800px) {
+  .sample-svgimg-set > figure.sample-image > figcaption {
+    font-size: 1.6em;
+  }
+  .sample-svgimg-set > figure.sample-image:hover > figcaption {
+    color: #cc3333;
+    font-size: 3.2em;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .sample-svgimg-set > figure.sample-image > figcaption {
+    font-size: 2em;
+  }
+  .sample-svgimg-set > figure.source-svg:hover > figcaption {
+    color: #cc3333;
+    font-size: 4em;
+  }
+}

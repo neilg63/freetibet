@@ -1,0 +1,18 @@
+#content form .field-type-number-integer .form-item label {
+  display: inline-block;
+  min-width: 10em;
+}
+
+#content form .field-type-number-integer .form-item .form-text {
+  width: 3em;
+  margin-right: 2em;
+}
+
+#content form .field-type-number-integer .form-item .form-checkbox {
+  margin-right: 0.5em;
+}
+
+fieldset#edit-field-donation-settings fieldset {
+  border: none;
+  padding: 0;
+}
