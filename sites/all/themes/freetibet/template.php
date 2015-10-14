@@ -395,6 +395,12 @@ function freetibet_html_head_alter(&$head_elements) {
             $image_url = file_create_url($items[0]['uri']);
             $image_url = str_replace(' ', '%20', $image_url);
             $head_elements['metatag_image_src']['#value'] = $image_url;
+            $head_elements['og:image'] = $head_elements['system_meta_content_type'];
+            $head_elements['og:image']['#attributes'] = array(
+              'property' => 'og:image',
+              'content' => $image_url
+            );
+            $head_elements['og:image']['#weight'] = 20;
           }
         }
       }
@@ -519,8 +525,11 @@ function freetibet_slide_fieldset_classes_alter(&$classes,&$variables) {
     if (!empty($items) && isset($items[0]['value'])) {
       $val = $items[0]['value'];
       if ($val == '<none>') {
-  //      var_dump($variables['elements']['field_strapline'],array_keys($variables));exit;
+        unset($variables['field_strapline']);
         unset($variables['elements']['field_strapline']);
+        unset($variables['content']['field_strapline']);
+        unset($fc->field_strapline);
+        $classes .= 'no-strapline';
       }
     }
     
