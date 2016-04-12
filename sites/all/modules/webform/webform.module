@@ -4637,9 +4637,11 @@ function webform_components($include_disabled = FALSE, $reset = FALSE) {
       $components += $module_components;
     }
     drupal_alter('webform_component_info', $components);
+    if (!empty($b) && is_array($a) && isset($a['label'])) {
     uasort($components, function($a, $b) {
       return strnatcasecmp($a['label'], $b['label']);
     });
+    }
     $enabled = array_diff_key($components, $disabled);
   }
 
